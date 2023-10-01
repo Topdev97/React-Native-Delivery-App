@@ -1,4 +1,3 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
 
 import { useColorScheme } from 'react-native';
@@ -6,7 +5,6 @@ import Colors from '../../constants/Colors';
 
 import CustomHeader from '@/components/CustomHeader';
 import { Ionicons } from '@expo/vector-icons';
-import { View } from '@/components/Themed';
 
 
 function TabBarIcon(props: {

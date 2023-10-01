@@ -8,7 +8,7 @@ import Restaurants from '@/components/Restaurants';
 const Page = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+      <ScrollView contentContainerStyle={{ paddingBottom: 40, paddingTop: 80 }}>
         <Categories />
         <Text style={styles.header}>Top picks in your neighbourhood</Text>
         <Restaurants />
