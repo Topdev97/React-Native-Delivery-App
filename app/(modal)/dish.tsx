@@ -22,11 +22,10 @@ const Dish = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['bottom']}>
       <View style={styles.container}>
-        <Text style={styles.dishName}>{id}</Text>
-        <Image  source={item?.img} style={styles.image} />
+        <Image source={item?.img} style={styles.image} />
         <View style={{ padding: 20 }}>
           <Text style={styles.dishName}>
-            {item?.name}                                              
+            {item?.name}
           </Text>
           <Text style={styles.dishInfo}>
             {item?.info}

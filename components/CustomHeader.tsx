@@ -34,11 +34,11 @@ const CustomHeader = () => {
       <BottomSheet ref={bottomSheetRef} />
 
       <View style={styles.container}>
-        <TouchableOpacity onPress={openModal}>
+        <TouchableOpacity onPress={() => openModal()}>
           <Image style={styles.bike} source={require('@/assets/images/bike.png')} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.titleContainer} onPress={openModal}>
+        <TouchableOpacity style={styles.titleContainer} onPress={() => openModal()}>
           <Text style={styles.title}>Delivery · Now</Text>
           <View style={styles.locationName}>
             <Text style={styles.subtitle}>London</Text>

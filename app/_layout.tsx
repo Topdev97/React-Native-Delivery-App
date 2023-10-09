@@ -121,6 +121,20 @@ function RootLayoutNav() {
             ),
           }}
         />
+        <Stack.Screen
+          name="razorpay"
+          options={{
+            headerTitle: 'Payments',
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.goBack();
+                }}>
+                <Ionicons name="arrow-back" size={28} color={Colors.primary} />
+              </TouchableOpacity>
+            ),
+          }}
+        />
       </Stack>
       </BottomSheetModalProvider>
     </ThemeProvider>

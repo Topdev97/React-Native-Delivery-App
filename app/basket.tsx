@@ -6,7 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { Link } from 'expo-router';
 import SwipeableRow from '@/components/SwipeableRow';
-
+import RazorpayCheckout from 'react-native-razorpay';
+import { RAZOR_PAY_ID } from "@env"
 
 const Basket = () => {
   const { products, total, clearCart, reduceProduct } = useBasketStore();
@@ -18,9 +19,42 @@ const Basket = () => {
   };
 
   const startCheckout = () => {
-    setOrder(true);
-    clearCart();
+    console.log("Starting checkout...");
+    console.log("RAZOR_PAY_ID:", RAZOR_PAY_ID);
+
+    const options = {
+      description: 'Credits towards consultation',
+      image: 'https://i.imgur.com/3g7nmJC.png',
+      currency: 'INR',
+      key: "rzp_test_RIkfY31DaGQRYF",
+      amount: 5000,
+      order_id: "#222222",
+      name: 'foo',
+      prefill: {
+        email: 'void@razorpay.com',
+        contact: '8610593462',
+        name: 'Razorpay Software'
+      },
+      theme: { color: '#F37254' }
+    };
+
+    // console.log("Options:", RazorpayCheckout.open);
+
+
+    RazorpayCheckout.open(options)
+      .then((data) => {
+        console.log("Payment Success:", data);
+        alert(`Success: ${data.razorpay_payment_id}`);
+        // setOrder(true);
+        // clearCart();
+      })
+      .catch((error) => {
+        console.log("Payment Error:", error);
+        alert(`Error: ${error}`);
+      });
   };
+
+
 
   return (
     <>
@@ -79,7 +113,7 @@ const Basket = () => {
           <View style={styles.footer}>
             <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff' }}>
               <TouchableOpacity style={styles.fullButton} onPress={startCheckout}>
-                <Text style={styles.footerText}>Order now</Text>
+                <Text style={styles.footerText}>Order now {RAZOR_PAY_ID}</Text>
               </TouchableOpacity>
             </SafeAreaView>
           </View>
