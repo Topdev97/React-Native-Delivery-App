@@ -1,60 +1,21 @@
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import React, { useState } from 'react';
 import useBasketStore from '@/store/basketStore';
 import Colors from '@/constants/Colors';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { Link } from 'expo-router';
 import SwipeableRow from '@/components/SwipeableRow';
-import RazorpayCheckout from 'react-native-razorpay';
-import { RAZOR_PAY_ID } from "@env"
+import BottomButton from '@/components/BottomButton';
+
 
 const Basket = () => {
-  const { products, total, clearCart, reduceProduct } = useBasketStore();
+  const { products, total, reduceProduct } = useBasketStore();
   const [order, setOrder] = useState(false);
 
   const FEES = {
     service: 2.99,
     delivery: 5.99,
   };
-
-  const startCheckout = () => {
-    console.log("Starting checkout...");
-    console.log("RAZOR_PAY_ID:", RAZOR_PAY_ID);
-
-    const options = {
-      description: 'Credits towards consultation',
-      image: 'https://i.imgur.com/3g7nmJC.png',
-      currency: 'INR',
-      key: "rzp_test_RIkfY31DaGQRYF",
-      amount: 5000,
-      order_id: "#222222",
-      name: 'foo',
-      prefill: {
-        email: 'void@razorpay.com',
-        contact: '8610593462',
-        name: 'Razorpay Software'
-      },
-      theme: { color: '#F37254' }
-    };
-
-    // console.log("Options:", RazorpayCheckout.open);
-
-
-    RazorpayCheckout.open(options)
-      .then((data) => {
-        console.log("Payment Success:", data);
-        alert(`Success: ${data.razorpay_payment_id}`);
-        // setOrder(true);
-        // clearCart();
-      })
-      .catch((error) => {
-        console.log("Payment Error:", error);
-        alert(`Error: ${error}`);
-      });
-  };
-
-
 
   return (
     <>
@@ -80,7 +41,7 @@ const Basket = () => {
                 <View style={styles.row}>
                   <Text style={{ color: Colors.primary, fontSize: 18 }}>{item.quantity}x</Text>
                   <Text style={{ flex: 1, fontSize: 18 }}>{item.name}</Text>
-                  <Text style={{ fontSize: 18 }}>${item.price * item.quantity}</Text>
+                  <Text style={{ fontSize: 18 }}>₹{item.price * item.quantity}</Text>
                 </View>
               </SwipeableRow>
             )}
@@ -89,34 +50,27 @@ const Basket = () => {
                 <View style={{ height: 1, backgroundColor: Colors.grey }}></View>
                 <View style={styles.totalRow}>
                   <Text style={styles.total}>Subtotal</Text>
-                  <Text style={{ fontSize: 18 }}>${total}</Text>
+                  <Text style={{ fontSize: 18 }}>₹{total}</Text>
                 </View>
 
                 <View style={styles.totalRow}>
                   <Text style={styles.total}>Service fee</Text>
-                  <Text style={{ fontSize: 18 }}>${FEES.service}</Text>
+                  <Text style={{ fontSize: 18 }}>₹{FEES.service}</Text>
                 </View>
 
                 <View style={styles.totalRow}>
                   <Text style={styles.total}>Delivery fee</Text>
-                  <Text style={{ fontSize: 18 }}>${FEES.delivery}</Text>
+                  <Text style={{ fontSize: 18 }}>₹{FEES.delivery}</Text>
                 </View>
 
                 <View style={styles.totalRow}>
                   <Text style={styles.total}>Order Total</Text>
-                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}>${(total + FEES.service + FEES.delivery).toFixed(2)}</Text>
+                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}>₹{(total + FEES.service + FEES.delivery).toFixed(2)}</Text>
                 </View>
               </View>
             }
           />
-
-          <View style={styles.footer}>
-            <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff' }}>
-              <TouchableOpacity style={styles.fullButton} onPress={startCheckout}>
-                <Text style={styles.footerText}>Order now {RAZOR_PAY_ID}</Text>
-              </TouchableOpacity>
-            </SafeAreaView>
-          </View>
+     <BottomButton nav={"/razorpay"} title={"Make Payment"} orderTotal={(total + FEES.service + FEES.delivery).toFixed(2)}/>
         </>
       )}
     </>
@@ -124,6 +78,17 @@ const Basket = () => {
 };
 
 const styles = StyleSheet.create({
+  linkButton:{
+ 
+  },
+  paymentBtn:{
+    flex:0.15,
+    backgroundColor:Colors.primary,
+    justifyContent:"center",
+    alignItems:"center",
+    margin:16,
+    borderRadius:10
+  },
   row: {
     flexDirection: 'row',
     backgroundColor: '#fff',
@@ -146,6 +111,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: Colors.medium,
   },
+  linkFooter: {
+    flex: 0.3,
+    borderWidth: 5,
+    borderRadius: 20,
+    width:"100%" 
+  },
   footer: {
     position: 'absolute',
     backgroundColor: '#fff',
@@ -161,12 +132,13 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   fullButton: {
+    flex: 0.3,
+    borderWidth: 5,
+    borderRadius: 20,
     backgroundColor: Colors.primary,
     paddingHorizontal: 16,
-    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
     height: 50,
   },
   footerText: {

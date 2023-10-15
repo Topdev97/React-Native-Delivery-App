@@ -2,12 +2,9 @@
 import Colors from '@/constants/Colors';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { BottomSheetModalProvider, TouchableOpacity } from '@gorhom/bottom-sheet';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack, useNavigation } from 'expo-router';
 import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
-
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -47,11 +44,10 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
   const navigation = useNavigation();
 
   return (
-    <ThemeProvider value={colorScheme !== 'dark' ? DarkTheme : DefaultTheme}>
+    <>
     <BottomSheetModalProvider>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -124,7 +120,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="razorpay"
           options={{
-            headerTitle: 'Payments',
+            headerTitle: '  Payments',
             headerLeft: () => (
               <TouchableOpacity
                 onPress={() => {
@@ -137,6 +133,6 @@ function RootLayoutNav() {
         />
       </Stack>
       </BottomSheetModalProvider>
-    </ThemeProvider>
+    </>
   );
 }
