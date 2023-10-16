@@ -45,10 +45,11 @@ const CustomHeader = () => {
             <Ionicons name="chevron-down" size={20} color={Colors.primary} />
           </View>
         </TouchableOpacity>
-
+        <Link href={'/menus'} asChild>
         <TouchableOpacity style={styles.profileButton}>
           <Ionicons name="person-outline" size={20} color={Colors.primary} />
         </TouchableOpacity>
+        </Link>
       </View>
       <SearchBar />
     </SafeAreaView>
