@@ -38,7 +38,7 @@ const Details = () => {
       headerTintColor: Colors.primary,
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.roundButton}>
-          <Ionicons name="arrow-back" size={24} color={Colors.primary} />
+          <Ionicons name="chevron-back" size={24} color={Colors.primary} />
         </TouchableOpacity>
       ),
       headerRight: () => (

@@ -4,7 +4,6 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  Pressable,
 } from "react-native";
 import React, { useState } from "react";
 import useBasketStore from "@/store/basketStore";
@@ -12,10 +11,9 @@ import Colors from "@/constants/Colors";
 import ConfettiCannon from "react-native-confetti-cannon";
 import { Link } from "expo-router";
 import SwipeableRow from "@/components/SwipeableRow";
-import BottomButton from "@/components/Buttons/BottomButton";
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 
-const Basket = () => {
+const OrderDetails = () => {
   const { products, total, reduceProduct } = useBasketStore();
   const [order, setOrder] = useState(false);
 
@@ -98,10 +96,10 @@ const Basket = () => {
             }
           />
           <HalfBottomButton
-            title={"Order-Now"}
+            title={"Re-Order"}
             nav={"/razorpay"}
             orderTotal={(total + FEES.service + FEES.delivery).toFixed(2)}
-            width={"45%"}
+            width={"50%"}
           />
         </>
       )}
@@ -188,4 +186,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Basket;
+export default OrderDetails;
