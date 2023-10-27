@@ -215,6 +215,20 @@ function RootLayoutNav() {
               header: () => <HeaderReview />,
             }}
           />
+          <Stack.Screen
+            name="trackOrder"
+            options={{
+              headerTitle: "Track Order",
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.goBack();
+                  }}>
+                  <Icon name="chevron-back" size={28} color={Colors.primary} />
+                </TouchableOpacity>
+              ),
+            }}
+          />
         </Stack>
       </BottomSheetModalProvider>
     </>

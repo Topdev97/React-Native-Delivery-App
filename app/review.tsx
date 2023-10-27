@@ -33,6 +33,7 @@ const Review = () => {
           flex: 1,
           marginTop: 240,
           alignItems: "center",
+          marginBottom: 50,
         }}>
         <Text style={styles.hotel}>Hotel Annapoorna</Text>
         <View style={styles.container}>
@@ -137,16 +138,15 @@ const styles = StyleSheet.create({
   },
   userProfileContainer: {
     alignItems: "center",
-    display: "flex",
     justifyContent: "center",
-    padding: 15,
-    borderRadius: 100,
-    backgroundColor: "white",
+    position: "absolute",
+    bottom: -230, // Position at the bottom
     width: 108,
     height: 108,
-    position: "absolute",
-    top: 175,
-    left: 125,
+    backgroundColor: "white",
+    borderRadius: 100,
+    left: "50%",
+    transform: [{ translateX: -54 }], // Center horizontally
   },
   userProfileText: {
     fontSize: 18,

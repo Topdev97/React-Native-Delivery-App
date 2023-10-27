@@ -16,7 +16,7 @@ export default function OrderHistory() {
   const orders = [
     {
       orderId: "#686876",
-      status: "Delivered",
+      status: "Prepared",
       date: "2023-10-15",
       time: "15:30",
       orderPrice: 50.0,
@@ -54,12 +54,13 @@ export default function OrderHistory() {
   return (
     <ScrollView style={styles.container}>
       {orders.map((item, i) => (
-        <Link href={"/orderDetails"} style={{ paddingVertical: 6 }} key={i}>
+        <View style={{ paddingVertical: 0 }} key={i}>
           <View style={{ ...styles.orderContainer, width: fullwidth - 20 }}>
             <View style={styles.flex}>
               <Text style={styles.title}>{item.title}...</Text>
               <Text style={styles.title}> ₹{item.orderPrice}</Text>
             </View>
+
             <View style={{ ...styles.flex, paddingTop: 6 }}>
               <View>
                 <Text>Order {item.orderId}</Text>
@@ -78,27 +79,29 @@ export default function OrderHistory() {
             </View>
 
             <View style={styles.buttonContainer}>
-              <View
-                style={{
-                  width: fullwidth / 2.5,
-                  height: 42,
-                  ...styles.button,
-                }}>
-                <Link
-                  href={{
-                    pathname: "/razorpay",
-                    params: { orderTotal: item.orderPrice },
-                  }}
-                  style={styles.link}>
-                  <Icon
-                    name={"refresh-outline"}
-                    size={20}
-                    color={Colors.tranparentButtonColor}
-                    mb={10}
-                  />
-                  <Text style={styles.buttonText}>Reorder</Text>
-                </Link>
-              </View>
+              {item.status != "Prepared" && (
+                <View
+                  style={{
+                    width: fullwidth / 2.5,
+                    height: 42,
+                    ...styles.button,
+                  }}>
+                  <Link
+                    href={{
+                      pathname: "/razorpay",
+                      params: { orderTotal: item.orderPrice },
+                    }}
+                    style={styles.link}>
+                    <Icon
+                      name={"refresh-outline"}
+                      size={20}
+                      color={Colors.tranparentButtonColor}
+                      mb={10}
+                    />
+                    <Text style={styles.buttonText}>Reorder</Text>
+                  </Link>
+                </View>
+              )}
               {item.status == "Delivered" && (
                 <View
                   style={{
@@ -122,9 +125,32 @@ export default function OrderHistory() {
                   </Link>
                 </View>
               )}
+              {item.status == "Prepared" && (
+                <View
+                  style={{
+                    width: fullwidth - 50,
+                    height: 42,
+                    ...styles.button,
+                  }}>
+                  <Link
+                    href={{
+                      pathname: "/trackOrder",
+                      params: { orderTotal: item.orderPrice },
+                    }}
+                    style={styles.link}>
+                    <Icon
+                      name={"star-outline"}
+                      size={20}
+                      color={Colors.tranparentButtonColor}
+                      mb={10}
+                    />
+                    <Text style={styles.buttonText}> Track Order</Text>
+                  </Link>
+                </View>
+              )}
             </View>
           </View>
-        </Link>
+        </View>
       ))}
     </ScrollView>
   );
@@ -162,7 +188,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 20,
-    height: 35,
+    height: 40,
   },
   button: {
     borderColor: Colors.medium,

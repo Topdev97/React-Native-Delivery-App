@@ -104,7 +104,7 @@ export default function AddressForm() {
             />
           </View>
           <View style={styles.formGroup}>
-            <Text style={styles.inputLabel}>Pincode:</Text>
+            <Text style={styles.inputLabel}>Pincode :</Text>
             <TextInput
               style={styles.input}
               value={formData.pincode}
