@@ -12,7 +12,9 @@ export function Icon(props: {
 }
 
 let fullwidth = Dimensions.get("window").width;
+let fullheight = Dimensions.get("window").height;
 
 export default {
   fullwidth,
+  fullheight,
 };
