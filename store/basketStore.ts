@@ -12,16 +12,19 @@ export interface BasketState {
   products: Array<Product & { quantity: number }>;
   addProduct: (product: Product) => void;
   reduceProduct: (product: Product) => void;
-  clearCart: () => void;
+  setToken: (token:any) => void;
+  clearToken: () => void;
   items: number;
   total: number;
+  token:any
 }
 
 const useBasketStore = create<BasketState>()((set) => ({
   products: [],
   items: 0,
   total: 0,
-  addProduct: (product) => {
+  token:null,
+  addProduct: (product) => { 
     set((state) => {
       state.items += 1;
       state.total += product.price;
@@ -52,6 +55,12 @@ const useBasketStore = create<BasketState>()((set) => ({
     });
   },
   clearCart: () => set({ products: [], items: 0, total: 0 }),
+  setToken:(token:any)=> {
+    set({token})
+  },
+   clearToken:()=> {
+    set({token:null})
+  }
 }));
 
 export default useBasketStore;

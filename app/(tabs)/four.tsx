@@ -1,9 +1,14 @@
-import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
-import Colors from "@/constants/Colors";
-import utils, { Icon } from "@/constants/utils";
-import { Link } from "expo-router";
 import React from "react";
 import { View, Text, FlatList, StyleSheet, Image } from "react-native";
+
+import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+import Colors from "@/constants/Colors";
+
+import utils, { Icon } from "@/constants/utils";
+import { Link } from "expo-router";
+
+import * as SecureStore from "expo-secure-store";
+import useBasketStore from "@/store/basketStore";
 
 export default function Menus() {
   const data = [
@@ -11,9 +16,13 @@ export default function Menus() {
     { title: "Address", icon: "location", nav: "/address" },
     { title: "Profile", icon: "person-circle-outline", nav: "/profile" },
   ];
-
+  const { clearToken } = useBasketStore();
   const handleLogout = () => {
-    alert("logout");
+    async function removeToken() {
+      await SecureStore.deleteItemAsync("token");
+      clearToken();
+    }
+    removeToken();
   };
 
   return (

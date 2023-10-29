@@ -1,11 +1,22 @@
 import Colors from "@/constants/Colors";
-import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import React, { useState } from "react";
+
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { ProgressSteps, ProgressStep } from "react-native-progress-steps";
+
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 import SwipeableRow from "@/components/SwipeableRow";
+
 import { FlatList } from "react-native-gesture-handler";
 import useBasketStore from "@/store/basketStore";
+
+import { AntDesign } from "@expo/vector-icons";
 
 const OrderTrackingScreen = () => {
   const ordersData = [
@@ -13,7 +24,6 @@ const OrderTrackingScreen = () => {
     { orderId: 2, productName: "Product B", status: "Delivered", step: 2 },
     // Add more orders as needed
   ];
-  const { products, total, reduceProduct } = useBasketStore();
 
   const progressStepsobj = {
     activeStepIconBorderColor: Colors.primary,
@@ -23,16 +33,12 @@ const OrderTrackingScreen = () => {
     completedStepIconColor: Colors.primary,
     completedProgressBarColor: Colors.primary,
   };
-  const FEES = {
-    service: 2.99,
-    delivery: 5.99,
-  };
+
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.addressContainer}>
         <Text style={styles.currentAddress}>Delivery Address</Text>
         <Text style={styles.currentAddressText}>
-          {" "}
           87 kutty street Paraniputhure, near rason
           kadai,tenkasi,tamilnadu-600128
         </Text>
@@ -74,55 +80,90 @@ const OrderTrackingScreen = () => {
           <Text style={styles.orderSubtext}>Success </Text>
         </View>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <FlatList
-          data={products}
-          ListHeaderComponent={<Text style={styles.section}>Items</Text>}
-          ItemSeparatorComponent={() => (
-            <View style={{ height: 1, backgroundColor: Colors.grey }} />
-          )}
-          renderItem={({ item }) => (
-            <SwipeableRow onDelete={() => reduceProduct(item)}>
-              <View style={styles.row}>
-                <Text style={{ color: Colors.primary, fontSize: 18 }}>
-                  {item.quantity}x
-                </Text>
-                <Text style={{ flex: 1, fontSize: 18 }}>{item.name}</Text>
-                <Text style={{ fontSize: 18 }}>
-                  ₹{item.price * item.quantity}
-                </Text>
-              </View>
-            </SwipeableRow>
-          )}
-          ListFooterComponent={
-            <View>
-              <View style={{ height: 1, backgroundColor: Colors.grey }}></View>
-              <View style={styles.totalRow}>
-                <Text style={styles.total}>Subtotal</Text>
-                <Text style={{ fontSize: 18 }}>₹{total}</Text>
-              </View>
-
-              <View style={styles.totalRow}>
-                <Text style={styles.total}>Service fee</Text>
-                <Text style={{ fontSize: 18 }}>₹{FEES.service}</Text>
-              </View>
-
-              <View style={styles.totalRow}>
-                <Text style={styles.total}>Delivery fee</Text>
-                <Text style={{ fontSize: 18 }}>₹{FEES.delivery}</Text>
-              </View>
-
-              <View style={styles.totalRow}>
-                <Text style={styles.total}>Order Total</Text>
-                <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-                  ₹{(total + FEES.service + FEES.delivery).toFixed(2)}
-                </Text>
-              </View>
-            </View>
-          }
-        />
+      <Drawer />
+      <View style={{ marginBottom: 20 }}>
         <HalfBottomButton title="Contact" />
-      </ScrollView>
+      </View>
+    </ScrollView>
+  );
+};
+
+const Drawer = () => {
+  const [isContentVisible, setContentVisible] = useState(false);
+  const { products, total, reduceProduct } = useBasketStore();
+
+  const toggleContent = () => {
+    setContentVisible(!isContentVisible);
+  };
+
+  const FEES = {
+    service: 2.99,
+    delivery: 5.99,
+  };
+
+  return (
+    <View>
+      <TouchableOpacity onPress={toggleContent}>
+        <View style={styles.headingContainer}>
+          <Text style={styles.section}>Order Items</Text>
+          <AntDesign
+            name={isContentVisible ? "up" : "down"}
+            size={24}
+            color="black"
+          />
+        </View>
+      </TouchableOpacity>
+      {isContentVisible && (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <FlatList
+            data={products}
+            // ListHeaderComponent={<Text style={styles.section}>Items</Text>}
+            ItemSeparatorComponent={() => (
+              <View style={{ height: 1, backgroundColor: Colors.grey }} />
+            )}
+            renderItem={({ item }) => (
+              <SwipeableRow onDelete={() => reduceProduct(item)}>
+                <View style={styles.row}>
+                  <Text style={{ color: Colors.primary, fontSize: 18 }}>
+                    {item.quantity}x
+                  </Text>
+                  <Text style={{ flex: 1, fontSize: 18 }}>{item.name}</Text>
+                  <Text style={{ fontSize: 18 }}>
+                    ₹{item.price * item.quantity}
+                  </Text>
+                </View>
+              </SwipeableRow>
+            )}
+            ListFooterComponent={
+              <View>
+                <View
+                  style={{ height: 1, backgroundColor: Colors.grey }}></View>
+                <View style={styles.totalRow}>
+                  <Text style={styles.total}>Subtotal</Text>
+                  <Text style={{ fontSize: 18 }}>₹{total}</Text>
+                </View>
+
+                <View style={styles.totalRow}>
+                  <Text style={styles.total}>Service fee</Text>
+                  <Text style={{ fontSize: 18 }}>₹{FEES.service}</Text>
+                </View>
+
+                <View style={styles.totalRow}>
+                  <Text style={styles.total}>Delivery fee</Text>
+                  <Text style={{ fontSize: 18 }}>₹{FEES.delivery}</Text>
+                </View>
+
+                <View style={styles.totalRow}>
+                  <Text style={styles.total}>Order Total</Text>
+                  <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+                    ₹{(total + FEES.service + FEES.delivery).toFixed(2)}
+                  </Text>
+                </View>
+              </View>
+            }
+          />
+        </ScrollView>
+      )}
     </View>
   );
 };
@@ -221,6 +262,20 @@ const styles = StyleSheet.create({
   orderSubtext: {
     fontSize: 16,
     fontWeight: "600",
+  },
+  headingContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "lightgray",
+  },
+  headingText: {
+    fontSize: 18,
+  },
+  contentContainer: {
+    padding: 16,
   },
 });
 

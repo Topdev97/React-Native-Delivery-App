@@ -1,14 +1,21 @@
 import Colors from "@/constants/Colors";
 import { Icon } from "@/constants/utils";
+
 import { FontAwesome } from "@expo/vector-icons";
 import {
   BottomSheetModalProvider,
   TouchableOpacity,
 } from "@gorhom/bottom-sheet";
+
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack, useNavigation } from "expo-router";
-import { useEffect } from "react";
+
+import { useEffect, useState } from "react";
 import { HeaderReview } from "./review";
+
+import * as SecureStore from "expo-secure-store";
+import LoginScreen from "./Login";
+import useBasketStore from "@/store/basketStore";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -28,7 +35,9 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
+  const { token, setToken } = useBasketStore();
 
+  let result;
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
@@ -40,11 +49,22 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
+  useEffect(() => {
+    async function getValueFor() {
+      result = await SecureStore.getItemAsync("token");
+      if (result) {
+        setToken(result);
+      } else {
+        alert("No Token Found");
+      }
+    }
+    getValueFor();
+  }, [result, token]);
   if (!loaded) {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return token ? <RootLayoutNav /> : <LoginScreen />;
 }
 
 function RootLayoutNav() {
@@ -219,6 +239,33 @@ function RootLayoutNav() {
             name="trackOrder"
             options={{
               headerTitle: "Track Order",
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.goBack();
+                  }}>
+                  <Icon name="chevron-back" size={28} color={Colors.primary} />
+                </TouchableOpacity>
+              ),
+            }}
+          />
+        </Stack>
+      </BottomSheetModalProvider>
+    </>
+  );
+}
+
+function AuthLayout() {
+  const navigation = useNavigation();
+
+  return (
+    <>
+      <BottomSheetModalProvider>
+        <Stack>
+          <Stack.Screen
+            name="basket"
+            options={{
+              headerTitle: "Basket",
               headerLeft: () => (
                 <TouchableOpacity
                   onPress={() => {
