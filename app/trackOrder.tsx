@@ -109,7 +109,7 @@ const Drawer = () => {
           <AntDesign
             name={isContentVisible ? "up" : "down"}
             size={24}
-            color="black"
+            color="#9f9aa1"
           />
         </View>
       </TouchableOpacity>
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
   },
   addressContainer: {
     borderColor: "#C7C7C9",
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.8,
   },
   currentAddress: {
     fontSize: 19,
@@ -234,8 +234,6 @@ const styles = StyleSheet.create({
   section: {
     fontSize: 20,
     fontWeight: "bold",
-    marginTop: 16,
-    marginBottom: 12,
   },
   totalRow: {
     flexDirection: "row",
@@ -267,7 +265,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 8,
+    paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: "lightgray",
   },
