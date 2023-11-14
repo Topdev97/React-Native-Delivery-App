@@ -1,7 +1,11 @@
-import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+import React, { useEffect, useState } from "react";
+import * as Location from "expo-location";
+
 import Colors from "@/constants/Colors";
 import { Icon } from "@/constants/utils";
-import React, { useState, useRef } from "react";
+
+import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+
 import {
   View,
   Text,
@@ -9,6 +13,7 @@ import {
   StyleSheet,
   ScrollView,
   Pressable,
+  Linking,
 } from "react-native";
 
 export default function AddressForm() {
@@ -20,13 +25,14 @@ export default function AddressForm() {
     city: "tenkasi",
     state: "tamilnadu",
     pincode: "600128",
+    latitude: "",
+    longitude: "",
   });
 
   const [editMode, setEditMode] = useState(false);
+  const [location, setLocation] = useState<any>();
 
-  const editButtonRef = useRef(null);
-
-  const handleChange = (key, value) => {
+  const handleChange = (key: any, value: any) => {
     setFormData({
       ...formData,
       [key]: value,
@@ -34,14 +40,62 @@ export default function AddressForm() {
   };
 
   const handleSubmit = () => {
-    // Handle form submission, e.g., send data to the server
-    console.log("Form data:", formData);
     setEditMode(false);
   };
 
   const handleEditClick = () => {
     setEditMode(true);
   };
+  const openGoogleMaps = () => {
+    const url = `https://www.google.com/maps?q=${location}`;
+
+    Linking.canOpenURL(url).then((supported) => {
+      if (supported) {
+        Linking.openURL(url);
+      } else {
+        console.log("Google Maps is not available");
+        // You might want to handle this case by, for example, opening a browser with the same URL
+      }
+    });
+  };
+  const openDirectionsInGoogleMaps = () => {
+    const origin = location;
+    const destination = `13.067439,80.237617`;
+    const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
+
+    Linking.canOpenURL(url).then((supported) => {
+      if (supported) {
+        Linking.openURL(url);
+      } else {
+        console.log("Google Maps is not available");
+      }
+    });
+  };
+  useEffect(() => {
+    const fetchGeoData = async (latitude: any, longitude: any) => {
+      setLocation(`${latitude},${longitude}`);
+      handleChange("latitude", latitude);
+      handleChange("longitude", longitude);
+    };
+
+    const getLocation = async () => {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+
+        if (status !== "granted") {
+          console.error("Location permission denied");
+          return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        fetchGeoData(location.coords.latitude, location.coords.longitude);
+      } catch (error) {
+        console.error("Error requesting location permission:", error);
+      }
+    };
+
+    getLocation();
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -109,6 +163,18 @@ export default function AddressForm() {
               style={styles.input}
               value={formData.pincode}
               onChangeText={(text) => handleChange("pincode", text)}
+            />
+          </View>
+          <View style={styles.formGroup}>
+            <Text style={styles.inputLabel}>Geolocation :</Text>
+            <Text style={styles.inputLabel}>{location}</Text>
+            <HalfBottomButton
+              title="Current Location"
+              handleClick={openGoogleMaps}
+            />
+            <HalfBottomButton
+              title="Directional Location"
+              handleClick={openDirectionsInGoogleMaps}
             />
           </View>
         </View>

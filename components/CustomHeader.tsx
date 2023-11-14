@@ -26,14 +26,14 @@ const SearchBar = () => (
         />
         <TextInput
           style={styles.input}
-          placeholder="Restaurants, groceries, dishes"
+          placeholder="Discover the dishes you love !"
         />
       </View>
-      <Link href={"/(modal)/filter"} asChild>
+      {/* <Link href={"/(modal)/filter"} asChild>
         <TouchableOpacity style={styles.optionButton}>
           <Ionicons name="options-outline" size={20} color={Colors.primary} />
         </TouchableOpacity>
-      </Link>
+      </Link> */}
     </View>
   </View>
 );
@@ -48,24 +48,36 @@ const CustomHeader = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <BottomSheet ref={bottomSheetRef} />
-
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => openModal()}>
-          <Image
-            style={styles.bike}
-            source={require("@/assets/images/bike.png")}
-          />
-        </TouchableOpacity>
+        <View style={styles.secondContainer}>
+          <TouchableOpacity
+            onPress={() => openModal()}
+            style={{ marginRight: 16 }}
+          >
+            <Link href="/address" style={{ width: 30, height: 50 }}>
+              <Image
+                style={styles.bike}
+                source={require("@/assets/images/bike.png")}
+              />
+            </Link>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.titleContainer}
-          onPress={() => openModal()}>
-          <Text style={styles.title}>Delivery · Now</Text>
-          <View style={styles.locationName}>
-            <Text style={styles.subtitle}>London</Text>
-            <Ionicons name="chevron-down" size={20} color={Colors.primary} />
-          </View>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={() => openModal()}>
+            <Link href="/address">
+              <View style={styles.titleContainer}>
+                <Text style={styles.title}>Delivery · Now</Text>
+                <View style={styles.locationName}>
+                  <Text style={styles.subtitle}>London</Text>
+                  <Ionicons
+                    name="chevron-down"
+                    size={20}
+                    color={Colors.primary}
+                  />
+                </View>
+              </View>
+            </Link>
+          </TouchableOpacity>
+        </View>
         <Link href={"/menus"} asChild>
           <TouchableOpacity style={styles.profileButton}>
             <Ionicons name="person-outline" size={20} color={Colors.primary} />
@@ -91,6 +103,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 20,
     marginTop: 40,
+  },
+  secondContainer: {
+    flexDirection: "row",
+    backgroundColor: "white",
+    flex: 1,
+    alignItems: "center",
   },
   bike: {
     width: 30,

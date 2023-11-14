@@ -2,14 +2,7 @@ import Colors from "@/constants/Colors";
 import { Icon } from "@/constants/utils";
 import { Link } from "expo-router";
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-  ScrollView,
-} from "react-native";
+import { View, Text, StyleSheet, Dimensions, ScrollView } from "react-native";
 
 export default function OrderHistory() {
   let fullwidth = Dimensions.get("window").width;
@@ -43,14 +36,6 @@ export default function OrderHistory() {
     },
   ];
 
-  const handleRate = (order: any) => {
-    console.log(`Rating order ${order.orderId}`);
-  };
-
-  const handleReorder = (order: any) => {
-    console.log(`Reordering order ${order.orderId}`);
-  };
-
   return (
     <ScrollView style={styles.container}>
       {orders.map((item, i) => (
@@ -72,8 +57,13 @@ export default function OrderHistory() {
                 style={{
                   ...styles.tag,
                   backgroundColor:
-                    item.status == "Delivered" ? Colors.primary : Colors.medium,
-                }}>
+                    item.status == "Delivered"
+                      ? Colors.green
+                      : item.status == "Cancelled"
+                      ? "red"
+                      : Colors.primary,
+                }}
+              >
                 {item.status}
               </Text>
             </View>
@@ -85,13 +75,15 @@ export default function OrderHistory() {
                     width: fullwidth / 2.5,
                     height: 42,
                     ...styles.button,
-                  }}>
+                  }}
+                >
                   <Link
                     href={{
                       pathname: "/razorpay",
                       params: { orderTotal: item.orderPrice },
                     }}
-                    style={styles.link}>
+                    style={styles.link}
+                  >
                     <Icon
                       name={"refresh-outline"}
                       size={20}
@@ -108,13 +100,15 @@ export default function OrderHistory() {
                     width: fullwidth / 2.5,
                     height: 42,
                     ...styles.button,
-                  }}>
+                  }}
+                >
                   <Link
                     href={{
                       pathname: "/review",
                       params: { orderTotal: item.orderPrice },
                     }}
-                    style={styles.link}>
+                    style={styles.link}
+                  >
                     <Icon
                       name={"star-outline"}
                       size={20}
@@ -128,16 +122,18 @@ export default function OrderHistory() {
               {item.status == "Prepared" && (
                 <View
                   style={{
-                    width: fullwidth - 50,
+                    width: fullwidth / 2.5,
                     height: 42,
                     ...styles.button,
-                  }}>
+                  }}
+                >
                   <Link
                     href={{
                       pathname: "/trackOrder",
                       params: { orderTotal: item.orderPrice },
                     }}
-                    style={styles.link}>
+                    style={styles.link}
+                  >
                     <Icon
                       name={"star-outline"}
                       size={20}
@@ -178,7 +174,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   title: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "800",
   },
   subtitle: {
@@ -189,6 +185,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginTop: 20,
     height: 40,
+    alignItems: "center",
   },
   button: {
     borderColor: Colors.medium,

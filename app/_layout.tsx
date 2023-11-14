@@ -54,8 +54,6 @@ export default function RootLayout() {
       result = await SecureStore.getItemAsync("token");
       if (result) {
         setToken(result);
-      } else {
-        alert("No Token Found");
       }
     }
     getValueFor();
@@ -88,7 +86,8 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}>
+                  }}
+                >
                   <Icon name="close-outline" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -103,7 +102,8 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}>
+                  }}
+                >
                   <Icon name="close-outline" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -125,7 +125,8 @@ function RootLayoutNav() {
                   }}
                   onPress={() => {
                     navigation.goBack();
-                  }}>
+                  }}
+                >
                   <Icon name="close-outline" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -139,7 +140,8 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}>
+                  }}
+                >
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -153,7 +155,8 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}>
+                  }}
+                >
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -167,7 +170,8 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}>
+                  }}
+                >
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -181,7 +185,8 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}>
+                  }}
+                >
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -195,7 +200,8 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}>
+                  }}
+                >
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -209,7 +215,8 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}>
+                  }}
+                >
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -223,7 +230,8 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}>
+                  }}
+                >
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -243,7 +251,8 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}>
+                  }}
+                >
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -270,7 +279,8 @@ function AuthLayout() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}>
+                  }}
+                >
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),

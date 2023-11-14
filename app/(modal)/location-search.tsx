@@ -17,46 +17,51 @@ const LocationSearch = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <GooglePlacesAutocomplete
-        placeholder="Search or move the map"
-        fetchDetails={true}
-        onPress={(data, details) => {
-          const point = details?.geometry?.location;
-          if (!point) return;
-          setLocation({
-            ...location,
-            latitude: point.lat,
-            longitude: point.lng,
-          });
-        }}
-        query={{
-          key: process.env.EXPO_PUBLIC_GOOGLE_API_KEY,
-          language: 'en',
-        }}
-        renderLeftButton={() => (
-          <View style={styles.boxIcon}>
-            <Ionicons name="search-outline" size={24} color={Colors.medium} />
-          </View>
-        )}
-        styles={{
-          container: {
-            flex: 0,
-          },
-          textInput: {
-            backgroundColor: Colors.grey,
-            paddingLeft: 35,
-            borderRadius: 10,
-          },
-          textInputContainer: {
-            padding: 8,
-            backgroundColor: '#fff',
-          },
-        }}
-      />
+<GooglePlacesAutocomplete
+  placeholder="Search or move the map"
+  fetchDetails={true}
+  onPress={(data, details) => {
+    const point = details?.geometry?.location;
+    if (!point) {
+      console.error('Location details not found:', data);
+      return;
+    }
+    setLocation({
+      ...location,
+      latitude: point.lat,
+      longitude: point.lng,
+    });
+  }}
+  query={{
+    key: process.env.EXPO_PUBLIC_GOOGLE_API_KEY,
+    language: 'en',
+  }}
+  onFail={(error:any) => console.error('Autocomplete Error:', error)}
+  renderLeftButton={() => (
+    <View style={styles.boxIcon}>
+      <Ionicons name="search-outline" size={24} color={Colors.medium} />
+    </View>
+  )}
+  styles={{
+    container: {
+      flex: 0,
+    },
+    textInput: {
+      backgroundColor: Colors.grey,
+      paddingLeft: 35,
+      borderRadius: 10,
+    },
+    textInputContainer: {
+      padding: 8,
+      backgroundColor: '#fff',
+    },
+  }}
+/>
+
       <MapView showsUserLocation={true} style={styles.map} region={location} />
       <View style={styles.absoluteBox}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-          <Text style={styles.buttonText}>Confirm</Text>
+          <Text style={styles.buttonText}>Confirm{process.env.EXPO_PUBLIC_GOOGLE_API_KEY}</Text>
         </TouchableOpacity>
       </View>
     </View>

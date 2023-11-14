@@ -11,7 +11,8 @@ export default function HalfBottomButton(props: any) {
       {nav ? (
         <Link
           style={{ ...styles.logoutButtonNav, width }}
-          href={{ pathname: nav, params: { orderTotal } }}>
+          href={{ pathname: nav, params: { orderTotal } }}
+        >
           <View style={styles.logoutButtonContentNav}>
             {iconName && <Icon name={iconName} size={26} color={"white"} />}
             <Text style={styles.logoutButtonTextnav}>{title}</Text>

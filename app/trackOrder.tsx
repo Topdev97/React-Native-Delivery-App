@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Linking,
 } from "react-native";
 import { ProgressSteps, ProgressStep } from "react-native-progress-steps";
 
@@ -19,11 +20,11 @@ import useBasketStore from "@/store/basketStore";
 import { AntDesign } from "@expo/vector-icons";
 
 const OrderTrackingScreen = () => {
-  const ordersData = [
-    { orderId: 1, productName: "Product A", status: "Shipped", step: 1 },
-    { orderId: 2, productName: "Product B", status: "Delivered", step: 2 },
-    // Add more orders as needed
-  ];
+  const makePhoneCall = () => {
+    Linking.openURL(`tel:8610593462`).catch((err) =>
+      console.error("Error in initiating the phone call: ", err)
+    );
+  };
 
   const progressStepsobj = {
     activeStepIconBorderColor: Colors.primary,
@@ -82,7 +83,7 @@ const OrderTrackingScreen = () => {
       </View>
       <Drawer />
       <View style={{ marginBottom: 20 }}>
-        <HalfBottomButton title="Contact" />
+        <HalfBottomButton title="Contact" handleClick={makePhoneCall} />
       </View>
     </ScrollView>
   );
@@ -137,7 +138,8 @@ const Drawer = () => {
             ListFooterComponent={
               <View>
                 <View
-                  style={{ height: 1, backgroundColor: Colors.grey }}></View>
+                  style={{ height: 1, backgroundColor: Colors.grey }}
+                ></View>
                 <View style={styles.totalRow}>
                   <Text style={styles.total}>Subtotal</Text>
                   <Text style={{ fontSize: 18 }}>₹{total}</Text>
