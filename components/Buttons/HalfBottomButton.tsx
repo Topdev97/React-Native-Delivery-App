@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
     padding: 15,
+    backgroundColor: "white",
   },
   logoutButton: {
     backgroundColor: Colors.primary,
@@ -55,13 +56,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "",
   },
   logoutButtonContentNav: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "",
   },
   logoutButtonText: {
     fontSize: 18,

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "expo-router";
+
 import * as Location from "expo-location";
-
 import Colors from "@/constants/Colors";
-import { Icon } from "@/constants/utils";
 
+import { Icon } from "@/constants/utils";
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 
 import {
@@ -46,56 +47,59 @@ export default function AddressForm() {
   const handleEditClick = () => {
     setEditMode(true);
   };
-  const openGoogleMaps = () => {
-    const url = `https://www.google.com/maps?q=${location}`;
 
-    Linking.canOpenURL(url).then((supported) => {
-      if (supported) {
-        Linking.openURL(url);
-      } else {
-        console.log("Google Maps is not available");
-        // You might want to handle this case by, for example, opening a browser with the same URL
-      }
-    });
-  };
-  const openDirectionsInGoogleMaps = () => {
-    const origin = location;
-    const destination = `13.067439,80.237617`;
-    const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}`;
+  const onMapPress = () => {
+    if (location) {
+      const url = `https://www.google.com/maps?q=${location}`;
 
-    Linking.canOpenURL(url).then((supported) => {
-      if (supported) {
-        Linking.openURL(url);
-      } else {
-        console.log("Google Maps is not available");
-      }
-    });
-  };
-  useEffect(() => {
-    const fetchGeoData = async (latitude: any, longitude: any) => {
-      setLocation(`${latitude},${longitude}`);
-      handleChange("latitude", latitude);
-      handleChange("longitude", longitude);
-    };
-
-    const getLocation = async () => {
-      try {
-        let { status } = await Location.requestForegroundPermissionsAsync();
-
-        if (status !== "granted") {
-          console.error("Location permission denied");
-          return;
+      Linking.canOpenURL(url).then((supported) => {
+        if (supported) {
+          Linking.openURL(url);
+        } else {
+          console.log("Google Maps is not available");
+          // You might want to handle this case by, for example, opening a browser with the same URL
         }
+      });
+    } else if (!location) {
+      getLocation();
+    }
+  };
 
-        let location = await Location.getCurrentPositionAsync({});
-        fetchGeoData(location.coords.latitude, location.coords.longitude);
-      } catch (error) {
-        console.error("Error requesting location permission:", error);
+  // const openDirectionsInGoogleMaps = () => {
+  //   const destination = `13.067439,80.237617`;
+  //   const url = `https://www.google.com/maps/dir/?api=1&origin=${location}&destination=${destination}`;
+  //   console.log(url);
+
+  //   Linking.canOpenURL(url).then((supported) => {
+  //     if (supported) {
+  //       Linking.openURL(url);
+  //     } else {
+  //       console.log("Google Maps is not available");
+  //     }
+  //   });
+  // };
+
+  const fetchGeoData = async (latitude: any, longitude: any) => {
+    setLocation(`${latitude},${longitude}`);
+    handleChange("latitude", latitude);
+    handleChange("longitude", longitude);
+  };
+
+  const getLocation = async () => {
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        console.error("Location permission denied");
+        return;
       }
-    };
 
-    getLocation();
-  }, []);
+      let location = await Location.getCurrentPositionAsync({});
+      fetchGeoData(location.coords.latitude, location.coords.longitude);
+    } catch (error) {
+      console.error("Error requesting location permission:", error);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -166,16 +170,80 @@ export default function AddressForm() {
             />
           </View>
           <View style={styles.formGroup}>
-            <Text style={styles.inputLabel}>Geolocation :</Text>
-            <Text style={styles.inputLabel}>{location}</Text>
-            <HalfBottomButton
-              title="Current Location"
-              handleClick={openGoogleMaps}
-            />
-            <HalfBottomButton
+            <View
+              style={{
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <View>
+                <Text
+                  style={{
+                    ...styles.inputLabel,
+                    textAlign: "center",
+                    fontWeight: "800",
+                    fontSize: 16,
+                    color: "black",
+                  }}
+                >
+                  Geolocation
+                </Text>
+                <Text
+                  style={{
+                    ...styles.inputLabel,
+                    color: "#0000EE",
+                    marginBottom: 12,
+                    marginTop: 6,
+                  }}
+                  onPress={onMapPress}
+                >
+                  {location ? location : "Not selected"}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+                    borderRightColor: "#979797",
+                    borderRightWidth: 1,
+                    paddingRight: 5,
+                    marginRight: 10,
+                  }}
+                >
+                  <Text
+                    style={{
+                      ...styles.editText,
+                    }}
+                    onPress={getLocation}
+                  >
+                    Use Current Location{" "}
+                  </Text>
+                  <Icon
+                    name="location-sharp"
+                    size={20}
+                    color={Colors.primary}
+                  />
+                </View>
+                <Link href={"/(modal)/location-search"}>
+                  <Text style={{ ...styles.editText }}>Select on Map </Text>
+                  <Icon name="map" size={20} color={Colors.primary} />
+                </Link>
+              </View>
+            </View>
+            {/* <HalfBottomButton
+                title="Select on Map"
+                // handleClick={handleClick}
+                iconName="location"
+              /> */}
+            {/* <HalfBottomButton
               title="Directional Location"
               handleClick={openDirectionsInGoogleMaps}
-            />
+            /> */}
           </View>
         </View>
       )}
@@ -222,6 +290,12 @@ const styles = StyleSheet.create({
   inputLabel: {
     color: "#9796A1",
     fontSize: 15,
+    fontWeight: "500",
+    marginBottom: 5,
+  },
+  editText: {
+    color: "#9796A1",
+    fontSize: 18,
     fontWeight: "500",
     marginBottom: 5,
   },

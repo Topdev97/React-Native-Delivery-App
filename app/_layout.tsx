@@ -258,6 +258,12 @@ function RootLayoutNav() {
               ),
             }}
           />
+          <Stack.Screen
+            name="search-page"
+            options={{
+              headerShown: false,
+            }}
+          />
         </Stack>
       </BottomSheetModalProvider>
     </>

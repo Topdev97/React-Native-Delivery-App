@@ -4,25 +4,32 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  Pressable,
+  Image,
 } from "react-native";
+
+import { Link, useNavigation } from "expo-router";
 import React, { useState } from "react";
-import useBasketStore from "@/store/basketStore";
+
 import Colors from "@/constants/Colors";
+import useBasketStore from "@/store/basketStore";
+
 import ConfettiCannon from "react-native-confetti-cannon";
-import { Link } from "expo-router";
 import SwipeableRow from "@/components/SwipeableRow";
-import BottomButton from "@/components/Buttons/BottomButton";
+
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 
 const Basket = () => {
-  const { products, total, reduceProduct } = useBasketStore();
+  const { products, total, whiteuceProduct } = useBasketStore();
   const [order, setOrder] = useState(false);
-
+  const navigation = useNavigation();
   const FEES = {
     service: 2.99,
     delivery: 5.99,
   };
+
+  function nav() {
+    navigation.goBack();
+  }
 
   return (
     <>
@@ -38,7 +45,8 @@ const Basket = () => {
       {order && (
         <View style={{ marginTop: "50%", padding: 20, alignItems: "center" }}>
           <Text
-            style={{ fontSize: 24, fontWeight: "bold", textAlign: "center" }}>
+            style={{ fontSize: 24, fontWeight: "bold", textAlign: "center" }}
+          >
             Thank you for your order!
           </Text>
           <Link href={"/"} asChild>
@@ -50,59 +58,102 @@ const Basket = () => {
       )}
       {!order && (
         <>
-          <FlatList
-            data={products}
-            ListHeaderComponent={<Text style={styles.section}>Items</Text>}
-            ItemSeparatorComponent={() => (
-              <View style={{ height: 1, backgroundColor: Colors.grey }} />
-            )}
-            renderItem={({ item }) => (
-              <SwipeableRow onDelete={() => reduceProduct(item)}>
-                <View style={styles.row}>
-                  <Text style={{ color: Colors.primary, fontSize: 18 }}>
-                    {item.quantity}x
-                  </Text>
-                  <Text style={{ flex: 1, fontSize: 18 }}>{item.name}</Text>
-                  <Text style={{ fontSize: 18 }}>
-                    ₹{item.price * item.quantity}
-                  </Text>
-                </View>
-              </SwipeableRow>
-            )}
-            ListFooterComponent={
-              <View>
+          {products.length > 0 ? (
+            <FlatList
+              style={{ backgroundColor: "white" }}
+              data={products}
+              ListHeaderComponent={<Text style={styles.section}>Items</Text>}
+              ItemSeparatorComponent={() => (
                 <View
-                  style={{ height: 1, backgroundColor: Colors.grey }}></View>
-                <View style={styles.totalRow}>
-                  <Text style={styles.total}>Subtotal</Text>
-                  <Text style={{ fontSize: 18 }}>₹{total}</Text>
-                </View>
+                  style={{
+                    height: 1,
+                    backgroundColor: "red",
+                  }}
+                />
+              )}
+              renderItem={({ item }) => (
+                <SwipeableRow onDelete={() => whiteuceProduct(item)}>
+                  <View style={styles.row}>
+                    <Text
+                      style={{
+                        color: Colors.primary,
+                        fontSize: 18,
+                        fontWeight: "700",
+                      }}
+                    >
+                      {item.quantity}x
+                    </Text>
+                    <Text style={{ flex: 1, fontSize: 18, fontWeight: "700" }}>
+                      {item.name}
+                    </Text>
+                    <Text style={{ fontSize: 18 }}>
+                      ₹{item.price * item.quantity}
+                    </Text>
+                  </View>
+                </SwipeableRow>
+              )}
+              ListFooterComponent={
+                <View>
+                  <View
+                    style={{ height: 1, backgroundColor: Colors.grey }}
+                  ></View>
+                  <View style={styles.totalRow}>
+                    <Text style={styles.total}>Subtotal</Text>
+                    <Text style={{ fontSize: 18 }}>₹{total}</Text>
+                  </View>
 
-                <View style={styles.totalRow}>
-                  <Text style={styles.total}>Service fee</Text>
-                  <Text style={{ fontSize: 18 }}>₹{FEES.service}</Text>
-                </View>
+                  <View style={styles.totalRow}>
+                    <Text style={styles.total}>Service fee</Text>
+                    <Text style={{ fontSize: 18 }}>₹{FEES.service}</Text>
+                  </View>
 
-                <View style={styles.totalRow}>
-                  <Text style={styles.total}>Delivery fee</Text>
-                  <Text style={{ fontSize: 18 }}>₹{FEES.delivery}</Text>
-                </View>
+                  <View style={styles.totalRow}>
+                    <Text style={styles.total}>Delivery fee</Text>
+                    <Text style={{ fontSize: 18 }}>₹{FEES.delivery}</Text>
+                  </View>
 
-                <View style={styles.totalRow}>
-                  <Text style={styles.total}>Order Total</Text>
-                  <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-                    ₹{(total + FEES.service + FEES.delivery).toFixed(2)}
-                  </Text>
+                  <View style={styles.totalRow}>
+                    <Text style={styles.total}>Order Total</Text>
+                    <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+                      ₹{(total + FEES.service + FEES.delivery).toFixed(2)}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            }
-          />
-          <HalfBottomButton
-            title={"Order-Now"}
-            nav={"/razorpay"}
-            orderTotal={(total + FEES.service + FEES.delivery).toFixed(2)}
-            width={"45%"}
-          />
+              }
+            />
+          ) : (
+            <View style={styles.imageContainer}>
+              <Image
+                style={styles.emptyIllustration}
+                source={require("@/assets/images/empty-basket.png")}
+                resizeMode="contain"
+              />
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  marginTop: 20,
+                }}
+              >
+                Basket is Empty
+              </Text>
+            </View>
+          )}
+          {products.length > 0 ? (
+            <HalfBottomButton
+              title={"Order-Now"}
+              nav={"/razorpay"}
+              orderTotal={(total + FEES.service + FEES.delivery).toFixed(2)}
+              width={"45%"}
+            />
+          ) : (
+            <HalfBottomButton
+              title="Order Now"
+              handleClick={nav}
+              width={"45%"}
+            />
+          )}
         </>
       )}
     </>
@@ -110,7 +161,16 @@ const Basket = () => {
 };
 
 const styles = StyleSheet.create({
-  linkButton: {},
+  imageContainer: {
+    backgroundColor: "white",
+    flex: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyIllustration: {
+    width: 300,
+    height: 300,
+  },
   paymentBtn: {
     flex: 0.15,
     backgroundColor: Colors.primary,
@@ -121,7 +181,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    backgroundColor: "#fff",
+    backgroundColor: "white",
     padding: 10,
     gap: 20,
     alignItems: "center",
@@ -129,17 +189,19 @@ const styles = StyleSheet.create({
   section: {
     fontSize: 20,
     fontWeight: "bold",
-    margin: 16,
+    marginBottom: 16,
+    padding: 10,
+    backgroundColor: Colors.lightGrey,
   },
   totalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 10,
-    backgroundColor: "#fff",
+    backgroundColor: "white",
   },
   total: {
     fontSize: 18,
-    color: Colors.medium,
+    flex: 1,
   },
   linkFooter: {
     flex: 0.3,
@@ -149,7 +211,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: "absolute",
-    backgroundColor: "#fff",
+    backgroundColor: "white",
     bottom: 0,
     left: 0,
     width: "100%",
@@ -172,7 +234,7 @@ const styles = StyleSheet.create({
     height: 50,
   },
   footerText: {
-    color: "#fff",
+    color: "white",
     fontWeight: "bold",
     fontSize: 16,
   },

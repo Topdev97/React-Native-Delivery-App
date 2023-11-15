@@ -10,33 +10,42 @@ import {
 import React, { useRef } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../constants/Colors";
-import { Link } from "expo-router";
+import { Link, useNavigation } from "expo-router";
 import BottomSheet from "./BottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
-const SearchBar = () => (
-  <View style={styles.searchContainer}>
-    <View style={styles.searchSection}>
-      <View style={styles.searchField}>
-        <Ionicons
-          style={styles.searchIcon}
-          name="ios-search"
-          size={20}
-          color={Colors.medium}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Discover the dishes you love !"
-        />
-      </View>
-      {/* <Link href={"/(modal)/filter"} asChild>
+const SearchBar = () => {
+  const navigation = useNavigation();
+  function nav() {
+    navigation.navigate("search-page");
+    navigation.canGoBack(true);
+  }
+
+  return (
+    <TouchableOpacity onPressIn={nav} style={styles.searchContainer}>
+      <View style={styles.searchSection}>
+        <View style={styles.searchField}>
+          <Ionicons
+            style={styles.searchIcon}
+            name="ios-search"
+            size={20}
+            color={Colors.medium}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Discover the dishes you love"
+            editable={false}
+          />
+        </View>
+        {/* <Link href={"/(modal)/filter"} asChild>
         <TouchableOpacity style={styles.optionButton}>
           <Ionicons name="options-outline" size={20} color={Colors.primary} />
         </TouchableOpacity>
       </Link> */}
-    </View>
-  </View>
-);
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 const CustomHeader = () => {
   const bottomSheetRef = useRef<BottomSheetModal>(null);

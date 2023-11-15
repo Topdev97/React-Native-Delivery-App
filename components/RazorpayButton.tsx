@@ -1,8 +1,8 @@
-import React, { useRef } from 'react';
-import { WebView } from 'react-native-webview';
-import { StyleSheet, View } from 'react-native';
-import Colors from '@/constants/Colors';
-import { useLocalSearchParams } from 'expo-router';
+import React, { useRef } from "react";
+import { WebView } from "react-native-webview";
+import { StyleSheet, View } from "react-native";
+import Colors from "@/constants/Colors";
+import { useLocalSearchParams } from "expo-router";
 
 export default function RazorpayButton() {
   const webViewRef = useRef<WebView | any>(null);
@@ -28,6 +28,7 @@ export default function RazorpayButton() {
               font-size: 24px;
               margin-top: 20px;
               text-align: center;
+              display:none;
           }
   
           #rzp-button1 {
@@ -45,6 +46,7 @@ export default function RazorpayButton() {
               margin-bottom: 20px;
               padding: 0px 16px;
               text-align: center;
+              display:none;
           }
   
           /* Apply the specified text styles to the button text */
@@ -75,7 +77,7 @@ export default function RazorpayButton() {
       <script>
           var options = {
               "key": "rzp_test_d4s8KAltmadVnz",
-              "amount": ${Number(orderTotal)*100},
+              "amount": ${Number(orderTotal) * 100},
               "currency": "INR",
               "description": "Acme Corp",
               "image": "https://s3.amazonaws.com/rzp-mobile/images/rzp.jpg",
@@ -101,38 +103,42 @@ export default function RazorpayButton() {
               });
               e.preventDefault();
           }
+          function openRazorpay() {
+            rzp1.open();
+          }
+    
+          openRazorpay();
       </script>
   </body>
   </html>
   `;
-  
+
   return (
     <View style={styles.container}>
-         <WebView
+      <WebView
         ref={webViewRef}
         source={{
           html: customHTML,
         }}
-        originWhitelist={['*']}
+        originWhitelist={["*"]}
         onMessage={(event) => {
           console.log(event.nativeEvent.data);
           const data = JSON.parse(event.nativeEvent.data);
           console.log(data);
           if (data.error) {
-            alert('Payment failed');
+            alert("Payment failed");
           } else {
-            alert('Payment successful');
+            alert("Payment successful");
           }
         }}
       />
-
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-  flex:1
+    flex: 1,
   },
   webview: {
     flex: 1,

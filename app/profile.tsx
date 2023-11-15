@@ -1,6 +1,6 @@
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Image } from "react-native";
+import { View, Text, TextInput, StyleSheet, Image } from "react-native";
 
 export default function Profile() {
   const [name, setName] = useState("John Doe");

@@ -1,17 +1,29 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, SectionList, ListRenderItem, ScrollView } from 'react-native';
-import React, { useLayoutEffect, useRef, useState } from 'react';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import Colors from '@/constants/Colors';
-import { restaurant } from '@/assets/data/restaurant';
-import { Link, useNavigation } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
-import useBasketStore from '@/store/basketStore';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  SectionList,
+  ListRenderItem,
+  ScrollView,
+  ToastAndroid,
+} from "react-native";
+import React, { useLayoutEffect, useRef, useState } from "react";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
+import Colors from "@/constants/Colors";
+import { restaurant } from "@/assets/data/restaurant";
+import { Link, useNavigation } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import useBasketStore from "@/store/basketStore";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Details = () => {
-
   const navigation = useNavigation();
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -29,25 +41,42 @@ const Details = () => {
     index,
   }));
 
-  const { items, total } = useBasketStore();
+  const { items, total, addProduct } = useBasketStore();
+  const addToCart = () => {
+    addProduct({
+      id: 1,
+      img: 4,
+      info: "Includes one garlic bread, one pasta and one soft drink.",
+      name: "Pasta Power ✊",
+      price: 17,
+    });
 
+    ToastAndroid.showWithGravity(
+      "Item Added to Cart",
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER
+    );
+  };
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTransparent: true,
-      headerTitle: '',
+      headerTitle: "",
       headerTintColor: Colors.primary,
       headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.roundButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.roundButton}
+        >
           <Ionicons name="chevron-back" size={24} color={Colors.primary} />
         </TouchableOpacity>
       ),
       headerRight: () => (
         <View style={styles.bar}>
-          <TouchableOpacity style={styles.roundButton}>
+          {/* <TouchableOpacity style={styles.roundButton}>
             <Ionicons name="share-outline" size={24} color={Colors.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.roundButton}>
-            <Ionicons name="search-outline" size={24} color={Colors.primary} />
+          </TouchableOpacity> */}
+          <TouchableOpacity style={styles.roundButton} onPress={addToCart}>
+            <Ionicons name="add" size={26} color={Colors.primary} />
           </TouchableOpacity>
         </View>
       ),
@@ -74,40 +103,72 @@ const Details = () => {
 
   const renderItem: ListRenderItem<any> = ({ item, index }) => (
     <Link<{ pathname: any; params: { id: any } }>
-      href={{ pathname: '/(modal)/dish', params: { id: item.id } }}
+      href={{ pathname: "/(modal)/dish", params: { id: item.id } }}
       asChild
     >
       <TouchableOpacity style={styles.item}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.dish}>{item.name}</Text>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
+            <Text style={styles.dish}>{item.name}</Text>
+            {/* <TouchableOpacity onPress={addToCart}>
+              <Ionicons name="add-circle" size={26} color={Colors.primary} />
+            </TouchableOpacity> */}
+          </View>
           <Text style={styles.dishText}>{item.info}</Text>
           <Text style={styles.dishText}>${item.price}</Text>
         </View>
-        <Image source={item.img} style={styles.dishImage} />
+        <View style={styles.container}>
+          <Image source={item.img} style={styles.dishImage} />
+          <View style={styles.plusIconContainer}>
+            <TouchableOpacity onPress={addToCart}>
+              <Ionicons name="add-circle" size={26} color={Colors.primary} />
+            </TouchableOpacity>
+          </View>
+        </View>
       </TouchableOpacity>
     </Link>
   );
-
 
   return (
     <>
       <ParallaxScrollView
         scrollEvent={onScroll}
-        backgroundColor={'#fff'}
+        backgroundColor={"#fff"}
         style={{ flex: 1 }}
         parallaxHeaderHeight={250}
         stickyHeaderHeight={100}
-        renderBackground={() => <Image source={restaurant.img} style={{ height: 300, width: '100%' }} />}
+        renderBackground={() => (
+          <Image
+            source={restaurant.img}
+            style={{ height: 300, width: "100%" }}
+          />
+        )}
         contentBackgroundColor={Colors.lightGrey}
         renderStickyHeader={() => (
           <View key="sticky-header" style={styles.stickySection}>
             <Text style={styles.stickySectionText}>{restaurant.name}</Text>
           </View>
-        )}>
+        )}
+      >
         <View style={styles.detailsContainer}>
-          <Text style={styles.restaurantName}>{restaurant.name}</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Text style={styles.restaurantName}>{restaurant.name}</Text>
+            <Text style={styles.price}>$50</Text>
+          </View>
           <Text style={styles.restaurantDescription}>
-            {restaurant.delivery} · {restaurant.tags.map((tag, index) => `${tag}${index < restaurant.tags.length - 1 ? ' · ' : ''}`)}
+            {restaurant.delivery} ·{" "}
+            {restaurant.tags.map(
+              (tag, index) =>
+                `${tag}${index < restaurant.tags.length - 1 ? " · " : ""}`
+            )}
           </Text>
           <Text style={styles.restaurantDescription}>{restaurant.about}</Text>
           <SectionList
@@ -116,9 +177,21 @@ const Details = () => {
             scrollEnabled={false}
             sections={DATA}
             renderItem={renderItem}
-            ItemSeparatorComponent={() => <View style={{ marginHorizontal: 16, height: 1, backgroundColor: Colors.grey }} />}
-            SectionSeparatorComponent={() => <View style={{ height: 1, backgroundColor: Colors.grey }} />}
-            renderSectionHeader={({ section: { title, index } }) => <Text style={styles.sectionHeader}>{title}</Text>}
+            ItemSeparatorComponent={() => (
+              <View
+                style={{
+                  marginHorizontal: 16,
+                  height: 1,
+                  backgroundColor: Colors.grey,
+                }}
+              />
+            )}
+            SectionSeparatorComponent={() => (
+              <View style={{ height: 1, backgroundColor: Colors.grey }} />
+            )}
+            renderSectionHeader={({ section: { title, index } }) => (
+              <Text style={styles.sectionHeader}>{title}</Text>
+            )}
           />
         </View>
       </ParallaxScrollView>
@@ -143,7 +216,7 @@ const Details = () => {
       {/* Footer Basket */}
       {items > 0 && (
         <View style={styles.footer}>
-          <SafeAreaView edges={['bottom']} style={{ backgroundColor: '#fff' }}>
+          <SafeAreaView edges={["bottom"]} style={{ backgroundColor: "#fff" }}>
             <Link href="/basket" asChild>
               <TouchableOpacity style={styles.fullButton}>
                 <Text style={styles.basket}>{items}</Text>
@@ -163,23 +236,23 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lightGrey,
   },
   stickySection: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     marginLeft: 70,
     height: 100,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
   roundButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
   },
   bar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 10,
   },
   stickySectionText: {
@@ -190,6 +263,11 @@ const styles = StyleSheet.create({
     fontSize: 30,
     margin: 16,
   },
+  price: {
+    fontSize: 24,
+    margin: 16,
+    fontWeight: "700",
+  },
   restaurantDescription: {
     fontSize: 16,
     margin: 16,
@@ -198,14 +276,14 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     fontSize: 22,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 40,
     margin: 16,
   },
   item: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 16,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   dishImage: {
     height: 80,
@@ -214,7 +292,7 @@ const styles = StyleSheet.create({
   },
   dish: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   dishText: {
     fontSize: 14,
@@ -222,19 +300,19 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   stickySegments: {
-    position: 'absolute',
+    position: "absolute",
     height: 50,
     left: 0,
     right: 0,
     top: 100,
-    backgroundColor: '#fff',
-    overflow: 'hidden',
+    backgroundColor: "#fff",
+    overflow: "hidden",
     paddingBottom: 4,
   },
   segmentsShadow: {
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    shadowColor: '#000',
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 4,
@@ -242,8 +320,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   segmentButton: {
     paddingHorizontal: 16,
@@ -261,25 +339,25 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   segmentTextActive: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 16,
   },
   segmentScrollview: {
     paddingHorizontal: 16,
-    alignItems: 'center',
+    alignItems: "center",
     gap: 20,
     paddingBottom: 4,
   },
   footer: {
-    position: 'absolute',
-    backgroundColor: '#fff',
+    position: "absolute",
+    backgroundColor: "#fff",
     bottom: 0,
     left: 0,
-    width: '100%',
+    width: "100%",
     padding: 10,
     elevation: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: -10 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
@@ -289,28 +367,43 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     paddingHorizontal: 16,
     borderRadius: 8,
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     height: 50,
   },
   footerText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 16,
   },
   basket: {
-    color: '#fff',
-    backgroundColor: '#19AA86',
-    fontWeight: 'bold',
+    color: "#fff",
+    backgroundColor: "#19AA86",
+    fontWeight: "bold",
     padding: 8,
     borderRadius: 2,
   },
   basketTotal: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: "#fff",
+    fontWeight: "bold",
     fontSize: 16,
+  },
+  container: {
+    position: "relative",
+  },
+
+  plusIconContainer: {
+    position: "absolute",
+    top: -4,
+    right: -8,
+    backgroundColor: "white",
+    width: 30,
+    height: 30,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
