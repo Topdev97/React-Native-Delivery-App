@@ -27,14 +27,15 @@ const Review = () => {
   };
 
   return (
-    <ScrollView>
+    <ScrollView style={{ backgroundColor: "white" }}>
       <View
         style={{
           flex: 1,
           marginTop: 240,
           alignItems: "center",
           marginBottom: 50,
-        }}>
+        }}
+      >
         <Text style={styles.hotel}>Hotel Annapoorna</Text>
         <View style={styles.container}>
           <View style={styles.greenDot} />
@@ -104,7 +105,8 @@ export function HeaderReview() {
         justifyContent: "start",
         alignItems: "center",
         paddingTop: 50,
-      }}>
+      }}
+    >
       <Image source={{ uri: randomFoodImage }} style={styles.image} />
       <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
         <View style={styles.iconPosition}>
