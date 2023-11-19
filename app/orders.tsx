@@ -1,8 +1,17 @@
+import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 import Colors from "@/constants/Colors";
 import { Icon } from "@/constants/utils";
+import { useNavigation } from "@react-navigation/native";
 import { Link } from "expo-router";
 import React from "react";
-import { View, Text, StyleSheet, Dimensions, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+  Image,
+} from "react-native";
 
 export default function OrderHistory() {
   let fullwidth = Dimensions.get("window").width;
@@ -37,122 +46,170 @@ export default function OrderHistory() {
   ];
 
   return (
-    <ScrollView style={styles.container}>
-      {orders.map((item, i) => (
-        <View style={{ paddingVertical: 0 }} key={i}>
-          <View style={{ ...styles.orderContainer, width: fullwidth - 20 }}>
-            <View style={styles.flex}>
-              <Text style={styles.title}>{item.title}...</Text>
-              <Text style={styles.title}> ₹{item.orderPrice}</Text>
-            </View>
+    <>
+      {false ? (
+        <ScrollView style={styles.container}>
+          {orders.map((item, i) => (
+            <View style={{ paddingVertical: 0 }} key={i}>
+              <View style={{ ...styles.orderContainer, width: fullwidth - 20 }}>
+                <View style={styles.flex}>
+                  <Text style={styles.title}>{item.title}...</Text>
+                  <Text style={styles.title}> ₹{item.orderPrice}</Text>
+                </View>
 
-            <View style={{ ...styles.flex, paddingTop: 6 }}>
-              <View>
-                <Text>Order {item.orderId}</Text>
-                <Text>
-                  {item.date} at {item.time}
-                </Text>
+                <View style={{ ...styles.flex, paddingTop: 6 }}>
+                  <View>
+                    <Text>Order {item.orderId}</Text>
+                    <Text>
+                      {item.date} at {item.time}
+                    </Text>
+                  </View>
+                  <Text
+                    style={{
+                      ...styles.tag,
+                      backgroundColor:
+                        item.status == "Delivered"
+                          ? Colors.green
+                          : item.status == "Cancelled"
+                          ? "red"
+                          : Colors.primary,
+                    }}>
+                    {item.status}
+                  </Text>
+                </View>
+
+                <View style={styles.buttonContainer}>
+                  {item.status != "Prepared" && (
+                    <View
+                      style={{
+                        width: fullwidth / 2.5,
+                        height: 42,
+                        ...styles.button,
+                      }}>
+                      <Link
+                        href={{
+                          pathname: "/razorpay",
+                          params: { orderTotal: item.orderPrice },
+                        }}
+                        style={styles.link}>
+                        <Icon
+                          name={"refresh-outline"}
+                          size={20}
+                          color={Colors.tranparentButtonColor}
+                          mb={10}
+                        />
+                        <Text style={styles.buttonText}>Reorder</Text>
+                      </Link>
+                    </View>
+                  )}
+                  {item.status == "Delivered" && (
+                    <View
+                      style={{
+                        width: fullwidth / 2.5,
+                        height: 42,
+                        ...styles.button,
+                      }}>
+                      <Link
+                        href={{
+                          pathname: "/review",
+                          params: { orderTotal: item.orderPrice },
+                        }}
+                        style={styles.link}>
+                        <Icon
+                          name={"star-outline"}
+                          size={20}
+                          color={Colors.tranparentButtonColor}
+                          mb={10}
+                        />
+                        <Text style={styles.buttonText}> Rate Order</Text>
+                      </Link>
+                    </View>
+                  )}
+                  {item.status == "Prepared" && (
+                    <View
+                      style={{
+                        width: fullwidth / 2.5,
+                        height: 42,
+                        ...styles.button,
+                      }}>
+                      <Link
+                        href={{
+                          pathname: "/trackOrder",
+                          params: { orderTotal: item.orderPrice },
+                        }}
+                        style={styles.link}>
+                        <Icon
+                          name={"star-outline"}
+                          size={20}
+                          color={Colors.tranparentButtonColor}
+                          mb={10}
+                        />
+                        <Text style={styles.buttonText}> Track Order</Text>
+                      </Link>
+                    </View>
+                  )}
+                </View>
               </View>
-              <Text
-                style={{
-                  ...styles.tag,
-                  backgroundColor:
-                    item.status == "Delivered"
-                      ? Colors.green
-                      : item.status == "Cancelled"
-                      ? "red"
-                      : Colors.primary,
-                }}
-              >
-                {item.status}
-              </Text>
             </View>
-
-            <View style={styles.buttonContainer}>
-              {item.status != "Prepared" && (
-                <View
-                  style={{
-                    width: fullwidth / 2.5,
-                    height: 42,
-                    ...styles.button,
-                  }}
-                >
-                  <Link
-                    href={{
-                      pathname: "/razorpay",
-                      params: { orderTotal: item.orderPrice },
-                    }}
-                    style={styles.link}
-                  >
-                    <Icon
-                      name={"refresh-outline"}
-                      size={20}
-                      color={Colors.tranparentButtonColor}
-                      mb={10}
-                    />
-                    <Text style={styles.buttonText}>Reorder</Text>
-                  </Link>
-                </View>
-              )}
-              {item.status == "Delivered" && (
-                <View
-                  style={{
-                    width: fullwidth / 2.5,
-                    height: 42,
-                    ...styles.button,
-                  }}
-                >
-                  <Link
-                    href={{
-                      pathname: "/review",
-                      params: { orderTotal: item.orderPrice },
-                    }}
-                    style={styles.link}
-                  >
-                    <Icon
-                      name={"star-outline"}
-                      size={20}
-                      color={Colors.tranparentButtonColor}
-                      mb={10}
-                    />
-                    <Text style={styles.buttonText}> Rate Order</Text>
-                  </Link>
-                </View>
-              )}
-              {item.status == "Prepared" && (
-                <View
-                  style={{
-                    width: fullwidth / 2.5,
-                    height: 42,
-                    ...styles.button,
-                  }}
-                >
-                  <Link
-                    href={{
-                      pathname: "/trackOrder",
-                      params: { orderTotal: item.orderPrice },
-                    }}
-                    style={styles.link}
-                  >
-                    <Icon
-                      name={"star-outline"}
-                      size={20}
-                      color={Colors.tranparentButtonColor}
-                      mb={10}
-                    />
-                    <Text style={styles.buttonText}> Track Order</Text>
-                  </Link>
-                </View>
-              )}
-            </View>
-          </View>
-        </View>
-      ))}
-    </ScrollView>
+          ))}
+        </ScrollView>
+      ) : (
+        <EmptyIllustration />
+      )}
+    </>
   );
 }
 
+function EmptyIllustration() {
+  const navigation = useNavigation();
+  function nav() {
+    navigation.goBack();
+    navigation.goBack();
+  }
+  return (
+    <>
+      <View style={styles.emptyContainer}>
+        <View style={styles.imageContainer}>
+          <Image
+            style={styles.emptyIllustration}
+            source={require("@/assets/images/deliveryboy.png")}
+            resizeMode="contain"
+          />
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "bold",
+              textAlign: "center",
+            }}>
+            You don't have any order history
+          </Text>
+        </View>
+        <View style={{ flex: 2, width: "100%" }}>
+          <HalfBottomButton title="Order Now" handleClick={nav} width={"50%"} />
+        </View>
+      </View>
+    </>
+  );
+}
 const styles = StyleSheet.create({
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+    paddingHorizontal: 24,
+  },
+  imageContainer: {
+    backgroundColor: "white",
+    flex: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
+  emptyIllustration: {
+    width: "100%",
+    height: 300,
+  },
   container: {
     flex: 1,
     padding: 10,

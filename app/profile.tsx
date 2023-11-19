@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Image } from "react-native";
 
 export default function Profile() {
-  const [name, setName] = useState("John Doe");
-  const [email, setEmail] = useState("johndoe@example.com");
+  const [name, setName] = useState("Iyappan Kandasamy");
+  const [email, setEmail] = useState("iyappank936@gmail.com");
 
   const handleSave = () => {
     // Implement your logic to save the updated profile details

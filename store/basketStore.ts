@@ -14,16 +14,20 @@ export interface BasketState {
   reduceProduct: (product: Product) => void;
   setToken: (token:any) => void;
   clearToken: () => void;
+  setCurrentLocation: (location:any) => void;
   items: number;
   total: number;
-  token:any
+  token:any;
+  currentLocation:any
 }
+
 
 const useBasketStore = create<BasketState>()((set) => ({
   products: [],
   items: 0,
   total: 0,
   token:null,
+  currentLocation:null,
   addProduct: (product) => { 
     set((state) => {
       state.items += 1;
@@ -60,6 +64,9 @@ const useBasketStore = create<BasketState>()((set) => ({
   },
    clearToken:()=> {
     set({token:null})
+  },
+  setCurrentLocation:(location)=>{
+    set({currentLocation:location})
   }
 }));
 

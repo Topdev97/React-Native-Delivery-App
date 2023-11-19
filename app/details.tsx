@@ -65,16 +65,15 @@ const Details = () => {
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.roundButton}
-        >
+          style={styles.roundButton}>
           <Ionicons name="chevron-back" size={24} color={Colors.primary} />
         </TouchableOpacity>
       ),
       headerRight: () => (
         <View style={styles.bar}>
-          {/* <TouchableOpacity style={styles.roundButton}>
-            <Ionicons name="share-outline" size={24} color={Colors.primary} />
-          </TouchableOpacity> */}
+          <TouchableOpacity style={styles.roundButton}>
+            <Ionicons name="heart-outline" size={24} color={Colors.primary} />
+          </TouchableOpacity>
           <TouchableOpacity style={styles.roundButton} onPress={addToCart}>
             <Ionicons name="add" size={26} color={Colors.primary} />
           </TouchableOpacity>
@@ -104,13 +103,11 @@ const Details = () => {
   const renderItem: ListRenderItem<any> = ({ item, index }) => (
     <Link<{ pathname: any; params: { id: any } }>
       href={{ pathname: "/(modal)/dish", params: { id: item.id } }}
-      asChild
-    >
+      asChild>
       <TouchableOpacity style={styles.item}>
         <View style={{ flex: 1 }}>
           <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
-          >
+            style={{ flexDirection: "row", justifyContent: "space-between" }}>
             <Text style={styles.dish}>{item.name}</Text>
             {/* <TouchableOpacity onPress={addToCart}>
               <Ionicons name="add-circle" size={26} color={Colors.primary} />
@@ -150,16 +147,14 @@ const Details = () => {
           <View key="sticky-header" style={styles.stickySection}>
             <Text style={styles.stickySectionText}>{restaurant.name}</Text>
           </View>
-        )}
-      >
+        )}>
         <View style={styles.detailsContainer}>
           <View
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
               alignItems: "center",
-            }}
-          >
+            }}>
             <Text style={styles.restaurantName}>{restaurant.name}</Text>
             <Text style={styles.price}>$50</Text>
           </View>

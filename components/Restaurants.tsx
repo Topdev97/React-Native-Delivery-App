@@ -1,8 +1,15 @@
-import { View, Text, ScrollView, StyleSheet, Image, Pressable } from 'react-native';
-import React from 'react';
-import { restaurants } from '@/assets/data/home';
-import { Link } from 'expo-router';
-import Colors from '../constants/Colors';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Image,
+  Pressable,
+} from "react-native";
+import React from "react";
+import { restaurants } from "@/assets/data/home";
+import { Link } from "expo-router";
+import Colors from "../constants/Colors";
 
 const Restaurants = () => {
   return (
@@ -13,16 +20,18 @@ const Restaurants = () => {
         padding: 15,
       }}>
       {restaurants.map((restaurant, index) => (
-        <Link href={'/details'} key={index} asChild>
+        <Link href={"/details"} key={index} asChild>
           <Pressable>
             <View style={styles.categoryCard}>
               <Image source={restaurant.img} style={styles.image} />
               <View style={styles.categoryBox}>
                 <Text style={styles.categoryText}>{restaurant.name}</Text>
+                <Text style={{ color: Colors.medium }}>
+                  {restaurant.distance}
+                </Text>
                 <Text style={{ color: Colors.green }}>
                   {restaurant.rating} {restaurant.ratings}
                 </Text>
-                <Text style={{ color: Colors.medium }}>{restaurant.distance}</Text>
               </View>
             </View>
           </Pressable>
@@ -35,10 +44,10 @@ const styles = StyleSheet.create({
   categoryCard: {
     width: 300,
     height: 250,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     marginEnd: 10,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 4,
@@ -49,7 +58,7 @@ const styles = StyleSheet.create({
   categoryText: {
     paddingVertical: 5,
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   image: {
     flex: 5,

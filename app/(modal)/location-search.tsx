@@ -1,19 +1,70 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
-import MapView from "react-native-maps";
 import Colors from "@/constants/Colors";
+import * as Location from "expo-location";
+
 import { useNavigation } from "expo-router";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { Ionicons } from "@expo/vector-icons";
+
+import React, { useEffect, useState } from "react";
+import MapView, { Callout, Marker } from "react-native-maps";
+
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import useBasketStore from "@/store/basketStore";
 
 const LocationSearch = () => {
   const navigation = useNavigation();
-  const [location, setLocation] = useState({
-    latitude: 51.5078788,
-    longitude: -0.0877321,
+  const [location, setLocation] = useState<any>({
+    latitude: 13.0832,
+    longitude: 80.2755,
     latitudeDelta: 0.02,
     longitudeDelta: 0.02,
   });
+
+  const [loading, setLoading] = useState<any>(false);
+  const { setCurrentLocation } = useBasketStore();
+
+  const fetchGeoData = async (latitude: any, longitude: any) => {
+    setLocation({
+      latitude,
+      longitude,
+      latitudeDelta: 0.02,
+      longitudeDelta: 0.02,
+    });
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    const getLocation = async () => {
+      setLoading(true);
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+
+        if (status !== "granted") {
+          console.error("Location permission denied");
+          return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+
+        fetchGeoData(location.coords.latitude, location.coords.longitude);
+      } catch (error) {
+        setLoading(true);
+        console.error("Error requesting location permission:", error);
+      }
+    };
+    getLocation();
+  }, []);
+
+  function onPressConfirm() {
+    setCurrentLocation(`${location.latitude},${location.latitude}`);
+    navigation.goBack();
+  }
 
   return (
     <View style={{ flex: 1 }}>
@@ -58,13 +109,40 @@ const LocationSearch = () => {
         }}
       />
 
-      <MapView showsUserLocation={true} style={styles.map} region={location} />
+      <MapView showsUserLocation={true} style={styles.map} region={location}>
+        <Marker
+          draggable={true}
+          coordinate={location}
+          onDragEnd={(e) => {
+            setLocation({
+              ...location,
+              latitude: e.nativeEvent.coordinate.latitude,
+              longitude: e.nativeEvent.coordinate.longitude,
+            });
+          }}>
+          <Callout>
+            <Text>Long press this marker to change Location</Text>
+          </Callout>
+        </Marker>
+      </MapView>
       <View style={styles.absoluteBox}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.buttonText}>Confirm</Text>
+          disabled={loading}
+          onPress={onPressConfirm}>
+          {loading ? (
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+                alignItems: "center",
+              }}>
+              <Text style={styles.buttonTextLoading}>Loading</Text>
+              <ActivityIndicator size="small" color="white" />
+            </View>
+          ) : (
+            <Text style={styles.buttonText}>Confirm</Text>
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -77,20 +155,29 @@ const styles = StyleSheet.create({
   },
   absoluteBox: {
     position: "absolute",
-    bottom: 20,
+    bottom: 35,
     width: "100%",
+    flexDirection: "row",
+    justifyContent: "center",
   },
   button: {
     backgroundColor: Colors.primary,
     padding: 16,
     margin: 16,
     alignItems: "center",
-    borderRadius: 8,
+    borderRadius: 100,
+    width: "60%",
   },
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  buttonTextLoading: {
+    color: "#fff",
+    fontWeight: "800",
+    fontSize: 16,
+    marginRight: 6,
   },
   boxIcon: {
     position: "absolute",

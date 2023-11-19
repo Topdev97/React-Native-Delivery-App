@@ -45,8 +45,7 @@ const Basket = () => {
       {order && (
         <View style={{ marginTop: "50%", padding: 20, alignItems: "center" }}>
           <Text
-            style={{ fontSize: 24, fontWeight: "bold", textAlign: "center" }}
-          >
+            style={{ fontSize: 24, fontWeight: "bold", textAlign: "center" }}>
             Thank you for your order!
           </Text>
           <Link href={"/"} asChild>
@@ -67,7 +66,7 @@ const Basket = () => {
                 <View
                   style={{
                     height: 1,
-                    backgroundColor: "red",
+                    backgroundColor: Colors.grey,
                   }}
                 />
               )}
@@ -79,8 +78,7 @@ const Basket = () => {
                         color: Colors.primary,
                         fontSize: 18,
                         fontWeight: "700",
-                      }}
-                    >
+                      }}>
                       {item.quantity}x
                     </Text>
                     <Text style={{ flex: 1, fontSize: 18, fontWeight: "700" }}>
@@ -95,8 +93,7 @@ const Basket = () => {
               ListFooterComponent={
                 <View>
                   <View
-                    style={{ height: 1, backgroundColor: Colors.grey }}
-                  ></View>
+                    style={{ height: 1, backgroundColor: Colors.grey }}></View>
                   <View style={styles.totalRow}>
                     <Text style={styles.total}>Subtotal</Text>
                     <Text style={{ fontSize: 18 }}>₹{total}</Text>
@@ -134,8 +131,7 @@ const Basket = () => {
                   fontWeight: "bold",
                   textAlign: "center",
                   marginTop: 20,
-                }}
-              >
+                }}>
                 Basket is Empty
               </Text>
             </View>

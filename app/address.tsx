@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "expo-router";
 
 import * as Location from "expo-location";
@@ -16,6 +16,7 @@ import {
   Pressable,
   Linking,
 } from "react-native";
+import useBasketStore from "@/store/basketStore";
 
 export default function AddressForm() {
   const [formData, setFormData] = useState({
@@ -31,7 +32,8 @@ export default function AddressForm() {
   });
 
   const [editMode, setEditMode] = useState(false);
-  const [location, setLocation] = useState<any>();
+
+  const { currentLocation, setCurrentLocation } = useBasketStore();
 
   const handleChange = (key: any, value: any) => {
     setFormData({
@@ -49,18 +51,17 @@ export default function AddressForm() {
   };
 
   const onMapPress = () => {
-    if (location) {
-      const url = `https://www.google.com/maps?q=${location}`;
+    if (currentLocation) {
+      const url = `https://www.google.com/maps?q=${currentLocation}`;
 
       Linking.canOpenURL(url).then((supported) => {
         if (supported) {
           Linking.openURL(url);
         } else {
           console.log("Google Maps is not available");
-          // You might want to handle this case by, for example, opening a browser with the same URL
         }
       });
-    } else if (!location) {
+    } else if (!currentLocation) {
       getLocation();
     }
   };
@@ -80,7 +81,7 @@ export default function AddressForm() {
   // };
 
   const fetchGeoData = async (latitude: any, longitude: any) => {
-    setLocation(`${latitude},${longitude}`);
+    setCurrentLocation(`${latitude},${longitude}`);
     handleChange("latitude", latitude);
     handleChange("longitude", longitude);
   };
@@ -175,8 +176,7 @@ export default function AddressForm() {
                 flexDirection: "column",
                 justifyContent: "space-between",
                 alignItems: "center",
-              }}
-            >
+              }}>
               <View>
                 <Text
                   style={{
@@ -185,8 +185,7 @@ export default function AddressForm() {
                     fontWeight: "800",
                     fontSize: 16,
                     color: "black",
-                  }}
-                >
+                  }}>
                   Geolocation
                 </Text>
                 <Text
@@ -196,42 +195,43 @@ export default function AddressForm() {
                     marginBottom: 12,
                     marginTop: 6,
                   }}
-                  onPress={onMapPress}
-                >
-                  {location ? location : "Not selected"}
+                  onPress={onMapPress}>
+                  {currentLocation
+                    ? "Click Here To Check Your Location On Gmap"
+                    : "Click Below to Set Your Location"}
                 </Text>
               </View>
               <View
                 style={{
                   flexDirection: "row",
-                }}
-              >
+                }}>
                 <View
                   style={{
                     flexDirection: "row",
-                    borderRightColor: "#979797",
+                    borderColor: "#979797",
                     borderRightWidth: 1,
-                    paddingRight: 5,
+                    borderLeftWidth: 1,
+                    paddingHorizontal: 10,
                     marginRight: 10,
-                  }}
-                >
+                  }}>
                   <Text
-                    style={{
-                      ...styles.editText,
-                    }}
-                    onPress={getLocation}
-                  >
-                    Use Current Location{" "}
+                    style={{ ...styles.editText, marginRight: 2 }}
+                    onPress={getLocation}>
+                    Use Current Location
                   </Text>
-                  <Icon
-                    name="location-sharp"
-                    size={20}
-                    color={Colors.primary}
-                  />
+                  <Icon name="locate" size={20} color={Colors.primary} />
                 </View>
-                <Link href={"/(modal)/location-search"}>
-                  <Text style={{ ...styles.editText }}>Select on Map </Text>
-                  <Icon name="map" size={20} color={Colors.primary} />
+                <Link
+                  href={"/(modal)/location-search"}
+                  style={{
+                    flexDirection: "row",
+                    borderColor: "#979797",
+                    borderRightWidth: 1,
+                    paddingHorizontal: 10,
+                    marginRight: 10,
+                  }}>
+                  <Text style={styles.editText}>Select on Map </Text>
+                  <Icon name="location" size={20} color={Colors.primary} />
                 </Link>
               </View>
             </View>
@@ -295,8 +295,8 @@ const styles = StyleSheet.create({
   },
   editText: {
     color: "#9796A1",
-    fontSize: 18,
-    fontWeight: "500",
+    fontSize: 16,
+    fontWeight: "800",
     marginBottom: 5,
   },
   editButton: {
