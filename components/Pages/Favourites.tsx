@@ -25,7 +25,7 @@ export default function Favourites() {
   }
   return (
     <>
-      {false ? (
+      {true ? (
         <FavouritesCards />
       ) : (
         <View style={styles.container}>

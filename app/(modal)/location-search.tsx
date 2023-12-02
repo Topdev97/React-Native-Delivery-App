@@ -27,7 +27,7 @@ const LocationSearch = () => {
   });
 
   const [loading, setLoading] = useState<any>(false);
-  const { setCurrentLocation } = useBasketStore();
+  const { currentLocation, setCurrentLocation } = useBasketStore();
 
   const fetchGeoData = async (latitude: any, longitude: any) => {
     setLocation({
@@ -62,7 +62,7 @@ const LocationSearch = () => {
   }, []);
 
   function onPressConfirm() {
-    setCurrentLocation(`${location.latitude},${location.latitude}`);
+    setCurrentLocation(location);
     navigation.goBack();
   }
 

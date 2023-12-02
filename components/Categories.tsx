@@ -1,32 +1,38 @@
-import { View, Text, ScrollView, StyleSheet, Image } from 'react-native';
-import React from 'react';
-import { categories } from '@/assets/data/home';
+import { View, Text, StyleSheet, Image } from "react-native";
+import React from "react";
+import { categories } from "@/assets/data/home";
 
 const Categories = () => {
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{
-        padding: 15,
-      }}>
+    <View style={styles.container}>
       {categories.map((category, index) => (
         <View style={styles.categoryCard} key={index}>
-          <Image source={category.img} />
+          <Image source={category.img} style={{ width: "100%" }} />
           <Text style={styles.categoryText}>{category.text}</Text>
         </View>
       ))}
-    </ScrollView>
+    </View>
   );
 };
+
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    padding: 15,
+    paddingBottom: 0,
+  },
   categoryCard: {
-    width: 100,
+    flexBasis: "31%",
     height: 100,
-    backgroundColor: '#fff',
-    marginEnd: 10,
+    marginBottom: 16,
+    backgroundColor: "#fff",
+    display: "flex",
+    alignItems: "center",
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 4,
@@ -37,7 +43,7 @@ const styles = StyleSheet.create({
   categoryText: {
     padding: 6,
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 

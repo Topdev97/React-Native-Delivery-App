@@ -10,12 +10,14 @@ import {
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack, useNavigation } from "expo-router";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { HeaderReview } from "./review";
 
 import * as SecureStore from "expo-secure-store";
 import LoginScreen from "./Login";
+
 import useBasketStore from "@/store/basketStore";
+import QueryClient from "@/core/lib/QueryClient";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -69,7 +71,7 @@ function RootLayoutNav() {
   const navigation = useNavigation();
 
   return (
-    <>
+    <QueryClient>
       <BottomSheetModalProvider>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -86,8 +88,7 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}
-                >
+                  }}>
                   <Icon name="close-outline" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -102,8 +103,7 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}
-                >
+                  }}>
                   <Icon name="close-outline" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -125,8 +125,7 @@ function RootLayoutNav() {
                   }}
                   onPress={() => {
                     navigation.goBack();
-                  }}
-                >
+                  }}>
                   <Icon name="close-outline" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -140,8 +139,7 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}
-                >
+                  }}>
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -155,8 +153,7 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}
-                >
+                  }}>
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -170,8 +167,7 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}
-                >
+                  }}>
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -185,8 +181,7 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}
-                >
+                  }}>
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -200,8 +195,7 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}
-                >
+                  }}>
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -215,8 +209,7 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}
-                >
+                  }}>
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -230,8 +223,7 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}
-                >
+                  }}>
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -251,8 +243,7 @@ function RootLayoutNav() {
                 <TouchableOpacity
                   onPress={() => {
                     navigation.goBack();
-                  }}
-                >
+                  }}>
                   <Icon name="chevron-back" size={28} color={Colors.primary} />
                 </TouchableOpacity>
               ),
@@ -266,34 +257,6 @@ function RootLayoutNav() {
           />
         </Stack>
       </BottomSheetModalProvider>
-    </>
-  );
-}
-
-function AuthLayout() {
-  const navigation = useNavigation();
-
-  return (
-    <>
-      <BottomSheetModalProvider>
-        <Stack>
-          <Stack.Screen
-            name="basket"
-            options={{
-              headerTitle: "Basket",
-              headerLeft: () => (
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.goBack();
-                  }}
-                >
-                  <Icon name="chevron-back" size={28} color={Colors.primary} />
-                </TouchableOpacity>
-              ),
-            }}
-          />
-        </Stack>
-      </BottomSheetModalProvider>
-    </>
+    </QueryClient>
   );
 }

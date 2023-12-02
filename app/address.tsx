@@ -195,17 +195,16 @@ export default function AddressForm() {
                     marginBottom: 12,
                     marginTop: 6,
                   }}
-                  onPress={onMapPress}>
-                  {currentLocation
-                    ? "Click Here To Check Your Location On Gmap"
-                    : "Click Below to Set Your Location"}
+                  onPress={onMapPress}
+                  disabled={true}>
+                  Click Below to Set Your Location
                 </Text>
               </View>
               <View
                 style={{
                   flexDirection: "row",
                 }}>
-                <View
+                {/* <View
                   style={{
                     flexDirection: "row",
                     borderColor: "#979797",
@@ -220,14 +219,12 @@ export default function AddressForm() {
                     Use Current Location
                   </Text>
                   <Icon name="locate" size={20} color={Colors.primary} />
-                </View>
+                </View> */}
                 <Link
                   href={"/(modal)/location-search"}
                   style={{
                     flexDirection: "row",
-                    borderColor: "#979797",
-                    borderRightWidth: 1,
-                    paddingHorizontal: 10,
+                    paddingHorizontal: 20,
                     marginRight: 10,
                   }}>
                   <Text style={styles.editText}>Select on Map </Text>
@@ -295,9 +292,8 @@ const styles = StyleSheet.create({
   },
   editText: {
     color: "#9796A1",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "800",
-    marginBottom: 5,
   },
   editButton: {
     backgroundColor: Colors.primary,
