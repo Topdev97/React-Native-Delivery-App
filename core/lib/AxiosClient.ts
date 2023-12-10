@@ -10,6 +10,8 @@ axiosClient.defaults.timeout = API_CONFIG.timeout
 axiosClient.defaults.headers.Accept = 'application/json'
 axiosClient.defaults.withCredentials = true
 
+const tempToken="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImlhdCI6MTcwMjA1OTI2MiwiZXhwIjoxNzA0NjUxMjYyLCJ0eXBlIjoiYWNjZXNzIn0.rp1Jy3DZMaBpx2FjAJf_QHWeK4rPq-7uteZdzrgMERE"
+
 // const passcode = getPasscode()
 // const orgId = getOrgId()
 
@@ -21,12 +23,8 @@ axiosClient.defaults.withCredentials = true
 //   setOrgHeader(orgId || "kk")
 // }
 
-if (true) {
-  setAuthHeader("jj")
-}
-
-if (true) {
-  setOrgHeader( "kk")
+if (tempToken) {
+  setAuthHeader(tempToken)
 }
 
 // Request Interceptor
@@ -55,7 +53,10 @@ axiosClient.interceptors.response.use(
 )
 
 const AxiosClientRequest = (config: AxiosRequestConfig) =>
-  axiosClient(config).then((res) => res.data)
+  axiosClient(config).then((res) => res.data).catch((error: AxiosError) => {
+    console.error('AxiosClientRequest error:', error);
+    throw error;
+  });
 
 type AxiosRequestConfigType = Omit<AxiosRequestConfig, 'method'>
 

@@ -5,7 +5,7 @@ import Colors from "@/constants/Colors";
 import utils, { Icon } from "@/constants/utils";
 
 import { Link } from "expo-router";
-import { View, Text, FlatList, StyleSheet, Image } from "react-native";
+import { View, Text, FlatList, StyleSheet, Image, Alert } from "react-native";
 
 import * as SecureStore from "expo-secure-store";
 import useBasketStore from "@/store/basketStore";
@@ -17,12 +17,22 @@ export default function Menus() {
     { title: "Profile", icon: "person-circle-outline", nav: "/profile" },
   ];
   const { clearToken } = useBasketStore();
+
   const handleLogout = () => {
-    async function removeToken() {
-      await SecureStore.deleteItemAsync("token");
-      clearToken();
-    }
-    removeToken();
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to log out?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "OK", onPress: () => Logout() },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const Logout = async () => {
+    await SecureStore.deleteItemAsync("token");
+    clearToken();
   };
 
   return (

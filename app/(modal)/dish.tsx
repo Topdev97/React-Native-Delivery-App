@@ -18,13 +18,17 @@ import useBasketStore from "@/store/basketStore";
 import { Ionicons } from "@expo/vector-icons";
 
 const Dish = () => {
-  const { id } = useLocalSearchParams();
-  const item = getDishById(+id)!;
-
   const router = useRouter();
+  const navigation = useNavigation();
+
   const { addProduct } = useBasketStore();
 
-  const navigation = useNavigation();
+  const { id, data } = useLocalSearchParams();
+  const item = getDishById(+id)!;
+
+  const items = JSON.parse(data);
+  console.log(items);
+
   const addToCart = () => {
     addProduct(item);
     ToastAndroid.showWithGravity(
@@ -43,8 +47,7 @@ const Dish = () => {
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.roundButton}
-        >
+          style={styles.roundButton}>
           <Ionicons name="chevron-back" size={24} color={Colors.primary} />
         </TouchableOpacity>
       ),
@@ -63,23 +66,21 @@ const Dish = () => {
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "#fff" }}
-      edges={["bottom"]}
-    >
+      edges={["bottom"]}>
       <View style={styles.container}>
-        <Image source={item?.img} style={styles.image} />
+        <Image source={{ uri: items?.image }} style={styles.image} />
         <View style={{ padding: 20 }}>
           <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
-          >
-            <Text style={styles.dishName}>{item?.name}</Text>
-            <Text style={styles.dishName}>${item?.price}</Text>
+            style={{ flexDirection: "row", justifyContent: "space-between" }}>
+            <Text style={styles.dishName}>{items?.name}</Text>
+            <Text style={styles.dishName}>${items?.price}</Text>
           </View>
-          <Text style={styles.dishInfo}>{item?.info}</Text>
+          <Text style={styles.dishInfo}>{items?.description}</Text>
         </View>
 
         <View style={styles.footer}>
           <TouchableOpacity style={styles.fullButton} onPress={addToCart}>
-            <Text style={styles.footerText}>Add for ${item?.price}</Text>
+            <Text style={styles.footerText}>Add for ${items?.price}</Text>
           </TouchableOpacity>
         </View>
       </View>

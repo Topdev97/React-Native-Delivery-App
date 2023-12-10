@@ -13,6 +13,7 @@ import Colors from "../constants/Colors";
 import { Link, useNavigation } from "expo-router";
 import BottomSheet from "./BottomSheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import useCommonStore from "@/store/commonStore";
 
 const SearchBar = () => {
   const navigation = useNavigation();
@@ -49,6 +50,7 @@ const SearchBar = () => {
 
 const CustomHeader = () => {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const { userInfo } = useCommonStore();
 
   const openModal = () => {
     bottomSheetRef.current?.present();
@@ -61,8 +63,7 @@ const CustomHeader = () => {
         <View style={styles.secondContainer}>
           <TouchableOpacity
             onPress={() => openModal()}
-            style={{ marginRight: 16 }}
-          >
+            style={{ marginRight: 16 }}>
             <Link href="/address" style={{ width: 30, height: 50 }}>
               <Image
                 style={styles.bike}
@@ -76,7 +77,9 @@ const CustomHeader = () => {
               <View style={styles.titleContainer}>
                 <Text style={styles.title}>Delivery · Now</Text>
                 <View style={styles.locationName}>
-                  <Text style={styles.subtitle}>London</Text>
+                  <Text style={styles.subtitle}>
+                    {userInfo?.Address?.[0]?.area || "Select"}{" "}
+                  </Text>
                   <Ionicons
                     name="chevron-down"
                     size={20}

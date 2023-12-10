@@ -1,6 +1,6 @@
 import { ENV } from '@/config/app.config'
 
-export const TOKEN_KEY = 'Passcode'
+export const TOKEN_KEY = 'Bearer'
 export const ORG_KEY = 'OrgId'
 
 export const DRAWER_WIDTH = 488

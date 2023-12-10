@@ -1,15 +1,31 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React from "react";
-import { categories } from "@/assets/data/home";
+import { useNavigation } from "expo-router";
 
-const Categories = () => {
+const Categories = (props: any) => {
+  const { data } = props;
+  const navigation = useNavigation();
+
+  function nav(id: any, name: any) {
+    navigation.navigate("category-menu", { id, name });
+    navigation.canGoBack(true);
+  }
+
   return (
     <View style={styles.container}>
-      {categories.map((category, index) => (
-        <View style={styles.categoryCard} key={index}>
-          <Image source={category.img} style={{ width: "100%" }} />
-          <Text style={styles.categoryText}>{category.text}</Text>
-        </View>
+      {data?.map((category: any, index: any) => (
+        <TouchableOpacity
+          style={styles.categoryCard}
+          key={index}
+          onPress={() => nav(category.id, category.menu_category_name)}>
+          <Image
+            source={{
+              uri: category.image,
+            }}
+            style={styles.image}
+          />
+          <Text style={styles.categoryText}>{category.menu_category_name}</Text>
+        </TouchableOpacity>
       ))}
     </View>
   );
@@ -24,6 +40,7 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingBottom: 0,
   },
+  image: { width: "100%", height: "70%" },
   categoryCard: {
     flexBasis: "31%",
     height: 100,

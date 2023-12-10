@@ -18,11 +18,11 @@ export const QUERY_CONFIG: QueryClientConfig = {
       ...(BASE_URL === 'local'
         ? {
             refetchOnWindowFocus: false,
-            staleTime: 1 * 60 * 1000, // 1 Minute
+            staleTime: 5 * 60 * 1000, // 5 Minute
           }
         : {
             refetchOnWindowFocus: true,
-            staleTime: 0, // 0 Minute
+            staleTime: 5 * 60 * 1000, // 5 Minute
           }),
 
       retry: (_, error: any) => {

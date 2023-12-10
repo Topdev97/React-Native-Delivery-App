@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, FlatList, StyleSheet, Image } from "react-native";
+import { View, Text, FlatList, StyleSheet, Image, Alert } from "react-native";
 
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 import Colors from "@/constants/Colors";
@@ -17,12 +17,22 @@ export default function Menus() {
     { title: "Profile", icon: "person-circle-outline", nav: "/profile" },
   ];
   const { clearToken } = useBasketStore();
+
   const handleLogout = () => {
-    async function removeToken() {
-      await SecureStore.deleteItemAsync("token");
-      clearToken();
-    }
-    removeToken();
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to log out?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "OK", onPress: () => Logout() },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const Logout = async () => {
+    await SecureStore.deleteItemAsync("token");
+    clearToken();
   };
 
   return (

@@ -4,59 +4,48 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  SectionList,
-  ListRenderItem,
-  ScrollView,
   ToastAndroid,
 } from "react-native";
-import React, { useLayoutEffect, useRef, useState } from "react";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
+
+import { useSharedValue, withTiming } from "react-native-reanimated";
+
+import React, { useLayoutEffect } from "react";
+
 import Colors from "@/constants/Colors";
-import { restaurant } from "@/assets/data/restaurant";
-import { Link, useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from "react-native-reanimated";
+
+import { Link, useNavigation } from "expo-router";
 import useBasketStore from "@/store/basketStore";
+
+import { getAllMenus } from "@/core/services/home";
+import { useRoute } from "@react-navigation/native";
+
 import { SafeAreaView } from "react-native-safe-area-context";
+import ParallaxScrollView from "@/components/ParallaxScrollView";
+import useCommonStore from "@/store/commonStore";
 
 const Details = () => {
-  const navigation = useNavigation();
-  const [activeIndex, setActiveIndex] = useState(0);
-
+  const route = useRoute();
   const opacity = useSharedValue(0);
-  const animatedStyles = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
 
-  const scrollRef = useRef<ScrollView>(null);
-  const itemsRef = useRef<TouchableOpacity[]>([]);
-
-  const DATA = restaurant.food.map((item, index) => ({
-    title: item.category,
-    data: item.meals,
-    index,
-  }));
-
+  const navigation = useNavigation();
   const { items, total, addProduct } = useBasketStore();
-  const addToCart = () => {
-    addProduct({
-      id: 1,
-      img: 4,
-      info: "Includes one garlic bread, one pasta and one soft drink.",
-      name: "Pasta Power ✊",
-      price: 17,
-    });
 
+  const data = route?.params?.data;
+  const allMenus = getAllMenus({});
+
+  const { userInfo } = useCommonStore();
+  const isFav = userInfo?.favoriteMenus?.some((obj: any) => obj.id === data.id);
+
+  const addToCart = (data: any) => {
+    addProduct(data);
     ToastAndroid.showWithGravity(
       "Item Added to Cart",
       ToastAndroid.SHORT,
       ToastAndroid.CENTER
     );
   };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTransparent: true,
@@ -72,24 +61,16 @@ const Details = () => {
       headerRight: () => (
         <View style={styles.bar}>
           <TouchableOpacity style={styles.roundButton}>
-            <Ionicons name="heart-outline" size={24} color={Colors.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.roundButton} onPress={addToCart}>
-            <Ionicons name="add" size={26} color={Colors.primary} />
+            {isFav ? (
+              <Ionicons name="heart" size={24} color={Colors.primary} />
+            ) : (
+              <Ionicons name="heart-outline" size={25} color={Colors.primary} />
+            )}
           </TouchableOpacity>
         </View>
       ),
     });
   }, []);
-
-  const selectCategory = (index: number) => {
-    const selected = itemsRef.current[index];
-    setActiveIndex(index);
-
-    selected.measure((x) => {
-      scrollRef.current?.scrollTo({ x: x - 16, y: 0, animated: true });
-    });
-  };
 
   const onScroll = (event: any) => {
     const y = event.nativeEvent.contentOffset.y;
@@ -99,34 +80,6 @@ const Details = () => {
       opacity.value = withTiming(0);
     }
   };
-
-  const renderItem: ListRenderItem<any> = ({ item, index }) => (
-    <Link<{ pathname: any; params: { id: any } }>
-      href={{ pathname: "/(modal)/dish", params: { id: item.id } }}
-      asChild>
-      <TouchableOpacity style={styles.item}>
-        <View style={{ flex: 1 }}>
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}>
-            <Text style={styles.dish}>{item.name}</Text>
-            {/* <TouchableOpacity onPress={addToCart}>
-              <Ionicons name="add-circle" size={26} color={Colors.primary} />
-            </TouchableOpacity> */}
-          </View>
-          <Text style={styles.dishText}>{item.info}</Text>
-          <Text style={styles.dishText}>${item.price}</Text>
-        </View>
-        <View style={styles.container}>
-          <Image source={item.img} style={styles.dishImage} />
-          <View style={styles.plusIconContainer}>
-            <TouchableOpacity onPress={addToCart}>
-              <Ionicons name="add-circle" size={26} color={Colors.primary} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </TouchableOpacity>
-    </Link>
-  );
 
   return (
     <>
@@ -138,14 +91,14 @@ const Details = () => {
         stickyHeaderHeight={100}
         renderBackground={() => (
           <Image
-            source={restaurant.img}
+            source={{ uri: data?.image }}
             style={{ height: 300, width: "100%" }}
           />
         )}
         contentBackgroundColor={Colors.lightGrey}
         renderStickyHeader={() => (
           <View key="sticky-header" style={styles.stickySection}>
-            <Text style={styles.stickySectionText}>{restaurant.name}</Text>
+            <Text style={styles.stickySectionText}>{data?.name}</Text>
           </View>
         )}>
         <View style={styles.detailsContainer}>
@@ -155,60 +108,24 @@ const Details = () => {
               justifyContent: "space-between",
               alignItems: "center",
             }}>
-            <Text style={styles.restaurantName}>{restaurant.name}</Text>
-            <Text style={styles.price}>$50</Text>
+            <Text style={styles.restaurantName}>{data?.name}</Text>
+            <Text style={styles.price}>₹{data?.price}</Text>
           </View>
-          <Text style={styles.restaurantDescription}>
-            {restaurant.delivery} ·{" "}
-            {restaurant.tags.map(
-              (tag, index) =>
-                `${tag}${index < restaurant.tags.length - 1 ? " · " : ""}`
-            )}
-          </Text>
-          <Text style={styles.restaurantDescription}>{restaurant.about}</Text>
-          <SectionList
-            contentContainerStyle={{ paddingBottom: 50 }}
-            keyExtractor={(item, index) => `${item.id + index}`}
-            scrollEnabled={false}
-            sections={DATA}
-            renderItem={renderItem}
-            ItemSeparatorComponent={() => (
-              <View
-                style={{
-                  marginHorizontal: 16,
-                  height: 1,
-                  backgroundColor: Colors.grey,
-                }}
-              />
-            )}
-            SectionSeparatorComponent={() => (
-              <View style={{ height: 1, backgroundColor: Colors.grey }} />
-            )}
-            renderSectionHeader={({ section: { title, index } }) => (
-              <Text style={styles.sectionHeader}>{title}</Text>
-            )}
-          />
+
+          <Text style={styles.restaurantDescription}>{data?.description}</Text>
+          <TouchableOpacity
+            style={{ flex: 1, alignItems: "flex-end", marginHorizontal: 16 }}
+            onPress={() => addToCart(data)}>
+            <Text style={styles.add}>Add</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.sectionHeader}>Recommended for You</Text>
+          {allMenus?.data?.map((obj: any) => (
+            <ShowMenus data={obj} addToCart={addToCart} />
+          ))}
         </View>
       </ParallaxScrollView>
 
-      {/* Sticky segments */}
-      {/* <Animated.View style={[styles.stickySegments, animatedStyles]}>
-        <View style={styles.segmentsShadow}>
-          <ScrollView ref={scrollRef} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.segmentScrollview}>
-            {restaurant.food.map((item, index) => (
-              <TouchableOpacity
-                ref={(ref) => (itemsRef.current[index] = ref!)}
-                key={index}
-                style={activeIndex === index ? styles.segmentButtonActive : styles.segmentButton}
-                onPress={() => selectCategory(index)}>
-                <Text style={activeIndex === index ? styles.segmentTextActive : styles.segmentText}>{item.category}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      </Animated.View> */}
-
-      {/* Footer Basket */}
       {items > 0 && (
         <View style={styles.footer}>
           <SafeAreaView edges={["bottom"]} style={{ backgroundColor: "#fff" }}>
@@ -226,6 +143,41 @@ const Details = () => {
   );
 };
 
+const ShowMenus = (props: any) => {
+  const { data, addToCart } = props;
+  return (
+    <Link<{ pathname: any; params: { id: any; data: any } }>
+      href={{
+        pathname: "/(modal)/dish",
+        params: { id: data.id, data: JSON.stringify(data) },
+      }}
+      asChild>
+      <TouchableOpacity style={styles.item}>
+        <View style={{ flex: 1 }}>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}>
+            <Text style={styles.dish}>{data.name}</Text>
+          </View>
+          <Text style={styles.dishText}>
+            {data.description?.length > 30
+              ? `${data.description?.slice(0, 2 * 40)}..`
+              : data.description}
+          </Text>
+          <Text style={styles.dishText}>${data.price}</Text>
+        </View>
+        <View style={styles.container}>
+          <Image source={{ uri: data.image }} style={styles.dishImage} />
+          <View style={styles.plusIconContainer}>
+            <TouchableOpacity onPress={() => addToCart(data)}>
+              <Ionicons name="add-circle" size={26} color={Colors.primary} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </TouchableOpacity>
+    </Link>
+  );
+};
+
 const styles = StyleSheet.create({
   detailsContainer: {
     backgroundColor: Colors.lightGrey,
@@ -233,8 +185,8 @@ const styles = StyleSheet.create({
   stickySection: {
     backgroundColor: "#fff",
     marginLeft: 70,
-    height: 100,
-    justifyContent: "flex-end",
+    height: 138,
+    justifyContent: "center",
   },
   roundButton: {
     width: 40,
@@ -266,6 +218,7 @@ const styles = StyleSheet.create({
   restaurantDescription: {
     fontSize: 16,
     margin: 16,
+    marginTop: 0,
     lineHeight: 22,
     color: Colors.medium,
   },
@@ -279,6 +232,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 16,
     flexDirection: "row",
+    borderBottomColor: Colors.grey,
+    borderBottomWidth: 1,
   },
   dishImage: {
     height: 80,
@@ -399,6 +354,15 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
+  },
+  add: {
+    fontSize: 16,
+    padding: 8,
+    paddingHorizontal: 16,
+    color: "white",
+    fontWeight: "800",
+    borderRadius: 8,
+    backgroundColor: Colors.primary,
   },
 });
 

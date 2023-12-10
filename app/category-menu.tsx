@@ -7,7 +7,7 @@ import {
   Pressable,
   ToastAndroid,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 
 import Colors from "@/constants/Colors";
 import utils from "@/constants/utils";
@@ -15,49 +15,73 @@ import utils from "@/constants/utils";
 import { useNavigation } from "expo-router";
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 
+import { getCatMenus } from "@/core/services/home";
+import { useRoute } from "@react-navigation/native";
+
+import Loading from "@/components/Pages/Loading";
 import useBasketStore from "@/store/basketStore";
+
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import useCommonStore from "@/store/commonStore";
-
-export default function favourites() {
+export default function CatMenu() {
   const navigation = useNavigation();
+  const route = useRoute();
 
-  const { userInfo } = useCommonStore();
+  const menus = getCatMenus({ enabled: false, retry: false }, route.params.id);
 
   function nav() {
     navigation.goBack();
   }
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: `${route.params.name}`,
+    });
+  }, [route.params]);
+
+  useEffect(() => {
+    if (route.params.id) {
+      menus.refetch();
+    }
+  }, [route.params.id]);
+
   return (
     <>
-      {userInfo.favoriteMenus?.length > 0 ? (
-        <MenuCards data={userInfo.favoriteMenus} />
-      ) : (
-        <View style={styles.container}>
-          <View style={styles.imageContainer}>
-            <Image
-              style={styles.emptyIllustration}
-              source={require("@/assets/images/favourite.png")}
-              resizeMode="contain"
-            />
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "bold",
-                textAlign: "center",
-              }}>
-              No Items found
-            </Text>
-          </View>
-          <View style={{ flex: 2, width: "100%" }}>
-            <HalfBottomButton
-              title="Explore Now"
-              handleClick={nav}
-              width={"50%"}
-            />
-          </View>
+      {menus.isLoading ? (
+        <View style={{ backgroundColor: Colors.lightGrey, flex: 1 }}>
+          <Loading />
         </View>
+      ) : (
+        <>
+          {menus?.data?.length > 0 && menus.isSuccess ? (
+            <MenuCards data={menus.data} />
+          ) : (
+            <View style={styles.container}>
+              <View style={styles.imageContainer}>
+                <Image
+                  style={styles.emptyIllustration}
+                  source={require("@/assets/images/favourite.png")}
+                  resizeMode="contain"
+                />
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    textAlign: "center",
+                  }}>
+                  No Items found
+                </Text>
+              </View>
+              <View style={{ flex: 2, width: "100%" }}>
+                <HalfBottomButton
+                  title="Explore Now"
+                  handleClick={nav}
+                  width={"50%"}
+                />
+              </View>
+            </View>
+          )}
+        </>
       )}
     </>
   );
@@ -68,7 +92,7 @@ const MenuCards = (props: any) => {
   const navigation = useNavigation();
 
   function nav(data: any) {
-    navigation.navigate("details", { data, isFav: true });
+    navigation.navigate("details", { data });
     navigation.canGoBack(true);
   }
   const { addProduct } = useBasketStore();
@@ -87,7 +111,7 @@ const MenuCards = (props: any) => {
         paddingVertical: 24,
         alignItems: "center",
       }}>
-      {data.map((obj: any, index: any) => (
+      {data?.map((obj: any, index: any) => (
         <View key={index}>
           <View>
             <View style={styles.categoryCard}>

@@ -8,13 +8,9 @@ import {
   Animated,
   useWindowDimensions,
 } from "react-native";
-import { categories } from "@/assets/data/home";
 
-const images = new Array(6).fill(
-  "https://images.unsplash.com/photo-1556740749-887f6717d7e4"
-);
-
-export default function Carousel() {
+export default function Carousel(props: any) {
+  const { data } = props;
   const scrollX = useRef(new Animated.Value(0)).current;
 
   const { width: windowWidth } = useWindowDimensions();
@@ -36,12 +32,14 @@ export default function Carousel() {
             },
           ])}
           scrollEventThrottle={1}>
-          {images.map((image, imageIndex) => {
+          {data?.map((data: any, imageIndex: any) => {
             return (
               <View
                 style={{ width: windowWidth, height: 250 }}
                 key={imageIndex}>
-                <ImageBackground source={{ uri: image }} style={styles.card}>
+                <ImageBackground
+                  source={{ uri: data?.image }}
+                  style={styles.card}>
                   {/* <View style={styles.textContainer}>
                     <Text style={styles.infoText}>
                       {"Image - " + imageIndex}
@@ -53,7 +51,7 @@ export default function Carousel() {
           })}
         </ScrollView>
         <View style={styles.indicatorContainer}>
-          {images.map((image, imageIndex) => {
+          {data?.map((image: any, imageIndex: any) => {
             const width = scrollX.interpolate({
               inputRange: [
                 windowWidth * (imageIndex - 1),

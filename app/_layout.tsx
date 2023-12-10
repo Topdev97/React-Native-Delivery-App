@@ -1,7 +1,9 @@
+import React from "react";
 import Colors from "@/constants/Colors";
-import { Icon } from "@/constants/utils";
 
+import { Icon } from "@/constants/utils";
 import { FontAwesome } from "@expo/vector-icons";
+
 import {
   BottomSheetModalProvider,
   TouchableOpacity,
@@ -64,7 +66,13 @@ export default function RootLayout() {
     return null;
   }
 
-  return token ? <RootLayoutNav /> : <LoginScreen />;
+  return token ? (
+    <RootLayoutNav />
+  ) : (
+    <QueryClient>
+      <LoginScreen />;
+    </QueryClient>
+  );
 }
 
 function RootLayoutNav() {
@@ -253,6 +261,20 @@ function RootLayoutNav() {
             name="search-page"
             options={{
               headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="category-menu"
+            options={{
+              headerTitle: "Category Menu",
+              headerLeft: () => (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.goBack();
+                  }}>
+                  <Icon name="chevron-back" size={28} color={Colors.primary} />
+                </TouchableOpacity>
+              ),
             }}
           />
         </Stack>

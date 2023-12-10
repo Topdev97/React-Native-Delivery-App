@@ -17,11 +17,14 @@ import ConfettiCannon from "react-native-confetti-cannon";
 import SwipeableRow from "@/components/SwipeableRow";
 
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+import { Icon } from "@/constants/utils";
 
 const Basket = () => {
-  const { products, total, whiteuceProduct } = useBasketStore();
+  const { products, total, reduceProduct } = useBasketStore();
   const [order, setOrder] = useState(false);
+
   const navigation = useNavigation();
+
   const FEES = {
     service: 2.99,
     delivery: 5.99,
@@ -61,7 +64,23 @@ const Basket = () => {
             <FlatList
               style={{ backgroundColor: "white" }}
               data={products}
-              ListHeaderComponent={<Text style={styles.section}>Items</Text>}
+              ListHeaderComponent={
+                <View style={{ ...styles.flex, ...styles.section }}>
+                  <Text style={styles.items}>Items</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}>
+                    <Icon name="chevron-back" size={24} color={"red"} />
+
+                    <Text style={{ fontWeight: "500" }}>
+                      Swipe Right To Left Reduce
+                    </Text>
+                  </View>
+                </View>
+              }
               ItemSeparatorComponent={() => (
                 <View
                   style={{
@@ -71,20 +90,20 @@ const Basket = () => {
                 />
               )}
               renderItem={({ item }) => (
-                <SwipeableRow onDelete={() => whiteuceProduct(item)}>
+                <SwipeableRow onDelete={() => reduceProduct(item)}>
                   <View style={styles.row}>
                     <Text
                       style={{
                         color: Colors.primary,
                         fontSize: 18,
-                        fontWeight: "700",
+                        fontWeight: "800",
                       }}>
                       {item.quantity}x
                     </Text>
                     <Text style={{ flex: 1, fontSize: 18, fontWeight: "700" }}>
                       {item.name}
                     </Text>
-                    <Text style={{ fontSize: 18 }}>
+                    <Text style={{ fontSize: 18, fontWeight: "600" }}>
                       ₹{item.price * item.quantity}
                     </Text>
                   </View>
@@ -94,7 +113,7 @@ const Basket = () => {
                 <View>
                   <View
                     style={{ height: 1, backgroundColor: Colors.grey }}></View>
-                  <View style={styles.totalRow}>
+                  <View style={{ ...styles.totalRow, marginTop: 16 }}>
                     <Text style={styles.total}>Subtotal</Text>
                     <Text style={{ fontSize: 18 }}>₹{total}</Text>
                   </View>
@@ -110,8 +129,18 @@ const Basket = () => {
                   </View>
 
                   <View style={styles.totalRow}>
-                    <Text style={styles.total}>Order Total</Text>
-                    <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+                    <Text style={{ ...styles.total, fontWeight: "800" }}>
+                      Order Total
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        color: "white",
+                        fontWeight: "800",
+                        backgroundColor: "#60B246",
+                        paddingHorizontal: 20,
+                        paddingVertical: 1,
+                      }}>
                       ₹{(total + FEES.service + FEES.delivery).toFixed(2)}
                     </Text>
                   </View>
@@ -157,6 +186,11 @@ const Basket = () => {
 };
 
 const styles = StyleSheet.create({
+  flex: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  items: { fontSize: 20, fontWeight: "bold" },
   imageContainer: {
     backgroundColor: "white",
     flex: 10,
@@ -183,8 +217,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   section: {
-    fontSize: 20,
-    fontWeight: "bold",
     marginBottom: 16,
     padding: 10,
     backgroundColor: Colors.lightGrey,
