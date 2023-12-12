@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import * as API from "@/core/services/home/home.api";
 import { queries } from "@/core/constants/queryKeys";
 
@@ -37,9 +37,18 @@ export const getUserInfo = (options: any) =>
     ...options,
   });
 
+export const updateFavMenus = (options: any) =>
+  useMutation({ mutationFn: API.upateFav, ...options });
+
+export const updateUser = (options: any) =>
+  useMutation({ mutationFn: API.upateUser, ...options });
+
+export const searchMenus = (options: any) =>
+  useMutation({ mutationFn: API.searchMenus, ...options });
+
 export const test = (options: any) =>
   useQuery({
-    queryKey: queries.home.home_info.queryKey,
+    queryKey: queries.home.mainCategories.queryKey,
     queryFn: API.test,
     ...options,
   });

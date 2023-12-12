@@ -66,13 +66,7 @@ export default function RootLayout() {
     return null;
   }
 
-  return token ? (
-    <RootLayoutNav />
-  ) : (
-    <QueryClient>
-      <LoginScreen />;
-    </QueryClient>
-  );
+  return token ? <RootLayoutNav /> : <LoginScreen />;
 }
 
 function RootLayoutNav() {

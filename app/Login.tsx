@@ -254,8 +254,7 @@ const LoginScreen = () => {
               </Text>
               <TouchableOpacity
                 style={styles.submitButton}
-                onPress={isVerifying ? handleSubmitForCreate : handleSubmit}
-              >
+                onPress={isVerifying ? handleSubmitForCreate : handleSubmit}>
                 <Text style={styles.submitText}>Submit</Text>
               </TouchableOpacity>
               <Text style={styles.createAccountText} onPress={handleBack}>
@@ -267,8 +266,7 @@ const LoginScreen = () => {
             <>
               <TouchableOpacity
                 style={styles.verifyButton}
-                onPress={handleVerify}
-              >
+                onPress={handleVerify}>
                 <Text style={styles.verifyText}>Verify</Text>
               </TouchableOpacity>
               <Text style={styles.createAccountText} onPress={handleBack}>
@@ -302,7 +300,7 @@ const LoginScreen = () => {
             {otpError && <Text style={styles.errorText}>{otpError}</Text>}
           </View>
           <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-            <Text style={styles.signInText}>Sign In</Text>
+            <Text style={styles.signInText}>Sign Inn</Text>
           </TouchableOpacity>
           <Text style={styles.createAccountText} onPress={handleCreateAccount}>
             Don't have an account ?

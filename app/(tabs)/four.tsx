@@ -10,13 +10,17 @@ import { Link } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import useBasketStore from "@/store/basketStore";
 
+import { getUserInfo } from "@/core/services/home";
+
 export default function Menus() {
+  const user = getUserInfo({});
+  const { clearToken } = useBasketStore();
+
   const data = [
     { title: "My Orders", icon: "reorder-three", nav: "/orders" },
     { title: "Address", icon: "location", nav: "/address" },
     { title: "Profile", icon: "person-circle-outline", nav: "/profile" },
   ];
-  const { clearToken } = useBasketStore();
 
   const handleLogout = () => {
     Alert.alert(
@@ -44,7 +48,7 @@ export default function Menus() {
           }}
           style={styles.userProfileImage}
         />
-        <Text style={styles.userProfileText}>Iyappan Kandasamy</Text>
+        <Text style={styles.userProfileText}>{user?.data?.name}</Text>
       </View>
       <FlatList
         data={data}

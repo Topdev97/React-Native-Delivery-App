@@ -9,7 +9,7 @@ import {
 
 import { useSharedValue, withTiming } from "react-native-reanimated";
 
-import React, { useLayoutEffect } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 
 import Colors from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
@@ -17,25 +17,44 @@ import { Ionicons } from "@expo/vector-icons";
 import { Link, useNavigation } from "expo-router";
 import useBasketStore from "@/store/basketStore";
 
-import { getAllMenus } from "@/core/services/home";
+import { getAllMenus, getUserInfo, updateFavMenus } from "@/core/services/home";
 import { useRoute } from "@react-navigation/native";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import useCommonStore from "@/store/commonStore";
+import { useQueryClient } from "@tanstack/react-query";
+import { queries } from "@/core/constants/queryKeys";
 
 const Details = () => {
   const route = useRoute();
   const opacity = useSharedValue(0);
 
   const navigation = useNavigation();
+  const queryClient = useQueryClient();
+
+  const [isFav, setIsFav] = useState();
   const { items, total, addProduct } = useBasketStore();
 
   const data = route?.params?.data;
   const allMenus = getAllMenus({});
 
-  const { userInfo } = useCommonStore();
-  const isFav = userInfo?.favoriteMenus?.some((obj: any) => obj.id === data.id);
+  const user = getUserInfo({ enabled: false });
+  const { setUserInfo, userInfo } = useCommonStore();
+
+  const updateMenu = updateFavMenus({
+    onSuccess: () => {
+      user.refetch();
+      queryClient.invalidateQueries({
+        queryKey: queries.home.userAddress.queryKey,
+      });
+      ToastAndroid.showWithGravity(
+        "Item updated successfully",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
+  });
 
   const addToCart = (data: any) => {
     addProduct(data);
@@ -45,6 +64,18 @@ const Details = () => {
       ToastAndroid.CENTER
     );
   };
+
+  function changeFav() {
+    updateMenu.mutate(data);
+  }
+
+  useEffect(() => {
+    setUserInfo(user.data);
+  }, [user.data]);
+
+  useEffect(() => {
+    setIsFav(userInfo?.favoriteMenus?.some((obj: any) => obj.id === data.id));
+  }, [userInfo]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -60,7 +91,7 @@ const Details = () => {
       ),
       headerRight: () => (
         <View style={styles.bar}>
-          <TouchableOpacity style={styles.roundButton}>
+          <TouchableOpacity style={styles.roundButton} onPress={changeFav}>
             {isFav ? (
               <Ionicons name="heart" size={24} color={Colors.primary} />
             ) : (
@@ -70,7 +101,7 @@ const Details = () => {
         </View>
       ),
     });
-  }, []);
+  }, [isFav]);
 
   const onScroll = (event: any) => {
     const y = event.nativeEvent.contentOffset.y;

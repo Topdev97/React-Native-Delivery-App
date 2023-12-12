@@ -27,7 +27,6 @@ const Dish = () => {
   const item = getDishById(+id)!;
 
   const items = JSON.parse(data);
-  console.log(items);
 
   const addToCart = () => {
     addProduct(item);

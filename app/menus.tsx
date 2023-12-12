@@ -1,22 +1,20 @@
 import React from "react";
-import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+import { Link } from "expo-router";
 
 import Colors from "@/constants/Colors";
 import utils, { Icon } from "@/constants/utils";
 
-import { Link } from "expo-router";
-import { View, Text, FlatList, StyleSheet, Image, Alert } from "react-native";
-
 import * as SecureStore from "expo-secure-store";
 import useBasketStore from "@/store/basketStore";
 
+import { getUserInfo } from "@/core/services/home";
+
+import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+import { View, Text, FlatList, StyleSheet, Image, Alert } from "react-native";
+
 export default function Menus() {
-  const data = [
-    { title: "My Orders", icon: "reorder-three", nav: "/orders" },
-    { title: "Address", icon: "location", nav: "/address" },
-    { title: "Profile", icon: "person-circle-outline", nav: "/profile" },
-  ];
   const { clearToken } = useBasketStore();
+  const user = getUserInfo({});
 
   const handleLogout = () => {
     Alert.alert(
@@ -35,6 +33,12 @@ export default function Menus() {
     clearToken();
   };
 
+  const data = [
+    { title: "My Orders", icon: "reorder-three", nav: "/orders" },
+    { title: "Address", icon: "location", nav: "/address" },
+    { title: "Profile", icon: "person-circle-outline", nav: "/profile" },
+  ];
+
   return (
     <View style={styles.container}>
       <View style={styles.userProfileContainer}>
@@ -44,7 +48,7 @@ export default function Menus() {
           }}
           style={styles.userProfileImage}
         />
-        <Text style={styles.userProfileText}>Iyappan Kandasamy</Text>
+        <Text style={styles.userProfileText}>{user?.data?.name}</Text>
       </View>
       <FlatList
         data={data}

@@ -66,20 +66,6 @@ export default function AddressForm() {
     }
   };
 
-  // const openDirectionsInGoogleMaps = () => {
-  //   const destination = `13.067439,80.237617`;
-  //   const url = `https://www.google.com/maps/dir/?api=1&origin=${location}&destination=${destination}`;
-  //   console.log(url);
-
-  //   Linking.canOpenURL(url).then((supported) => {
-  //     if (supported) {
-  //       Linking.openURL(url);
-  //     } else {
-  //       console.log("Google Maps is not available");
-  //     }
-  //   });
-  // };
-
   const fetchGeoData = async (latitude: any, longitude: any) => {
     setCurrentLocation(`${latitude},${longitude}`);
     handleChange("latitude", latitude);
@@ -204,22 +190,6 @@ export default function AddressForm() {
                 style={{
                   flexDirection: "row",
                 }}>
-                {/* <View
-                  style={{
-                    flexDirection: "row",
-                    borderColor: "#979797",
-                    borderRightWidth: 1,
-                    borderLeftWidth: 1,
-                    paddingHorizontal: 10,
-                    marginRight: 10,
-                  }}>
-                  <Text
-                    style={{ ...styles.editText, marginRight: 2 }}
-                    onPress={getLocation}>
-                    Use Current Location
-                  </Text>
-                  <Icon name="locate" size={20} color={Colors.primary} />
-                </View> */}
                 <Link
                   href={"/(modal)/location-search"}
                   style={{
@@ -232,15 +202,6 @@ export default function AddressForm() {
                 </Link>
               </View>
             </View>
-            {/* <HalfBottomButton
-                title="Select on Map"
-                // handleClick={handleClick}
-                iconName="location"
-              /> */}
-            {/* <HalfBottomButton
-              title="Directional Location"
-              handleClick={openDirectionsInGoogleMaps}
-            /> */}
           </View>
         </View>
       )}

@@ -47,7 +47,7 @@ export default function OrderHistory() {
 
   return (
     <>
-      {false ? (
+      {true ? (
         <ScrollView style={styles.container}>
           {orders.map((item, i) => (
             <View style={{ paddingVertical: 0 }} key={i}>

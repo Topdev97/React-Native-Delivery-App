@@ -7,16 +7,21 @@ import {
   Text,
   FlatList,
   Image,
+  ToastAndroid,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
 import Colors from "@/constants/Colors";
+import { searchMenus } from "@/core/services/home";
+import Loading from "@/components/Pages/Loading";
+import useBasketStore from "@/store/basketStore";
 
 const SearchScreen = () => {
   const searchInputRef = useRef<TextInput>(null);
-
-  const [filteredProducts, setFilteredProducts] = useState<any>([]);
   const [searchText, setSearchText] = useState<any>("");
+
+  const menus = searchMenus({});
+  console.log(menus);
 
   useEffect(() => {
     const focusInput = () => {
@@ -27,63 +32,57 @@ const SearchScreen = () => {
 
     return () => clearTimeout(focusTimeout);
   }, []);
+  useEffect(() => {
+    menus.mutate({ name: "   " });
+  }, []);
 
   const navigation = useNavigation();
+  const { addProduct } = useBasketStore();
 
   function goBack() {
     navigation.goBack();
   }
+  const addToCart = (data: any) => {
+    addProduct(data);
+    ToastAndroid.showWithGravity(
+      "Item Added to Cart",
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER
+    );
+  };
 
-  const products = [
-    {
-      id: 1,
-      name: "Spaghetti Bolognese",
-      rate: 200,
-      image: "https://picsum.photos/id/237/200/300",
-    },
-    {
-      id: 2,
-      name: "Margherita Pizza",
-      rate: 500,
-      image: "https://picsum.photos/id/237/200/300",
-    },
-  ];
-
-  let filterTimeout: any;
+  function nav(data: any) {
+    navigation.navigate("details", { data });
+    navigation.canGoBack(true);
+  }
 
   const handleInputChange = (text: any) => {
     setSearchText(text);
-    clearTimeout(filterTimeout);
-
-    filterTimeout = setTimeout(() => {
-      if (text === "") {
-        setFilteredProducts([]);
-      } else {
-        const filtered = products.filter((product) =>
-          product.name.toLowerCase().includes(text.toLowerCase())
-        );
-        setFilteredProducts(filtered);
-      }
-    }, 1000);
+    console.log(text || "   ");
+    setTimeout(() => menus.mutate({ name: text || "   " }), 1 * 1000);
   };
 
   const renderProductItem = ({ item }) => (
-    <TouchableOpacity style={styles.productItem}>
-      <Image source={{ uri: item.image }} style={styles.productImage} />
-      <View style={styles.productDetails}>
-        <Text style={styles.productName}>{item.name}</Text>
-        <Text style={styles.productRate}>
-          Price: <Text style={{ fontWeight: "700" }}>₹{item.rate}</Text>
-        </Text>
-      </View>
-      <TouchableOpacity style={styles.addButton}>
+    <View style={styles.flex}>
+      <TouchableOpacity style={styles.productItem} onPress={() => nav(item)}>
+        <Image source={{ uri: item.image }} style={styles.productImage} />
+        <View style={styles.productDetails}>
+          <Text style={styles.productName}>{item.name}</Text>
+          <Text style={styles.productRate}>
+            Price: <Text style={{ fontWeight: "700" }}>₹{item.price}</Text>
+          </Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => addToCart(item)}>
         <Text style={styles.addButtonText}>Add</Text>
       </TouchableOpacity>
-    </TouchableOpacity>
+    </View>
   );
 
   return (
-    <>
+    <View style={{ backgroundColor: Colors.lightGrey, flex: 1 }}>
       <View style={styles.searchContainer}>
         <View style={styles.searchSection}>
           <TouchableOpacity onPress={goBack}>
@@ -111,12 +110,16 @@ const SearchScreen = () => {
           </View>
         </View>
       </View>
-      <FlatList
-        data={filteredProducts}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderProductItem}
-      />
-    </>
+      {!menus.isSuccess ? (
+        <Loading />
+      ) : (
+        <FlatList
+          data={menus?.data || []}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderProductItem}
+        />
+      )}
+    </View>
   );
 };
 
@@ -148,12 +151,19 @@ const styles = StyleSheet.create({
   searchIcon: {
     paddingLeft: 10,
   },
+  flex: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderBottomWidth: 3,
+    borderBottomColor: "white",
+    padding: 10,
+  },
   productItem: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.lightGrey,
+    width: "75%",
   },
   productImage: {
     width: 50,
@@ -162,7 +172,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   productDetails: {
-    flex: 1,
+    // flex: 1,
   },
   productName: {
     fontSize: 16,
@@ -178,7 +188,8 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: "#fff",
-    padding: 1,
+    padding: 2,
+    paddingHorizontal: 12,
   },
 });
 

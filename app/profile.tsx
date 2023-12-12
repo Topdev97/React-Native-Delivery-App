@@ -1,15 +1,54 @@
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Image,
+  ToastAndroid,
+} from "react-native";
+
+import React, { useEffect, useState } from "react";
+
+import useCommonStore from "@/store/commonStore";
+import { getUserInfo, updateUser } from "@/core/services/home";
+
+import { queries } from "@/core/constants/queryKeys";
+import { useQueryClient } from "@tanstack/react-query";
+
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
-import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Image } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Profile() {
-  const [name, setName] = useState("Iyappan Kandasamy");
-  const [email, setEmail] = useState("iyappank936@gmail.com");
+  const [name, setName] = useState<any>("");
+  const [email, setEmail] = useState<any>("");
+
+  const queryClient = useQueryClient();
+  const user = getUserInfo({});
+
+  const nav = useNavigation();
+  const updateUserInfo = updateUser({
+    onSuccess: () => {
+      user.refetch();
+      queryClient.invalidateQueries({
+        queryKey: queries.home.userAddress.queryKey,
+      });
+      ToastAndroid.showWithGravity(
+        "Details updated successfully",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+      nav.goBack();
+    },
+  });
 
   const handleSave = () => {
-    // Implement your logic to save the updated profile details
-    alert(`Name: ${name}, Email: ${email}`);
+    updateUserInfo.mutate({ name, email });
   };
+
+  useEffect(() => {
+    setName(user?.data?.name);
+    setEmail(user?.data?.email);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -20,7 +59,7 @@ export default function Profile() {
           }}
           style={styles.userProfileImage}
         />
-        <Text style={styles.userProfileText}>Iyappan Kandasamy</Text>
+        <Text style={styles.userProfileText}>{user?.data?.name}</Text>
       </View>
 
       <View style={styles.formGroup}>

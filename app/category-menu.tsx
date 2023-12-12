@@ -91,11 +91,13 @@ const MenuCards = (props: any) => {
   const { data } = props;
   const navigation = useNavigation();
 
+  const { addProduct } = useBasketStore();
+
   function nav(data: any) {
     navigation.navigate("details", { data });
     navigation.canGoBack(true);
   }
-  const { addProduct } = useBasketStore();
+
   const addToCart = (data: any) => {
     addProduct(data);
     ToastAndroid.showWithGravity(

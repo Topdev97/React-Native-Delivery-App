@@ -1,5 +1,5 @@
 import { ENV } from '@/config/app.config'
-import { GET } from '@/core/lib/AxiosClient'
+import { GET, POST } from '@/core/lib/AxiosClient'
 
 export const getBanners=()=>
   GET({
@@ -26,7 +26,27 @@ GET({
   url: ENV.BASE_URL + 'user',
 })
 
+export const upateFav = (data:any) =>
+  POST({
+    url: ENV.BASE_URL + `favouriteMenus`,
+    data,
+  })
+
+  export const upateUser = (data:any) =>
+  POST({
+    url: ENV.BASE_URL + `user`,
+    data,
+  })
+
+
   export const test=()=>
 GET({
   url: ENV.BASE_URL + 'posts',
 })
+
+
+export const searchMenus = (data:any) =>
+  POST({
+    url: ENV.BASE_URL + `search-menu`,
+    data,
+  })
