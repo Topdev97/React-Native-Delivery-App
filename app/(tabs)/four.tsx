@@ -69,7 +69,8 @@ export default function Menus() {
       <HalfBottomButton
         title={" Log-Out"}
         handleClick={handleLogout}
-        // iconName={"log-out-outline"}
+        width={"45%"}
+        iconName={"log-out-outline"}
       />
     </View>
   );

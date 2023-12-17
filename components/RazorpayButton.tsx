@@ -1,12 +1,44 @@
 import React, { useRef } from "react";
 import { WebView } from "react-native-webview";
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import Colors from "@/constants/Colors";
 import { useLocalSearchParams } from "expo-router";
+import { postOrder } from "@/core/services/home";
+import { useNavigation } from "@react-navigation/native";
+import useBasketStore from "@/store/basketStore";
 
 export default function RazorpayButton() {
   const webViewRef = useRef<WebView | any>(null);
-  const { orderTotal } = useLocalSearchParams();
+  const { orderTotal, data } = useLocalSearchParams();
+  const finalData = JSON.parse(data);
+  const { clearCart } = useBasketStore();
+
+  console.log("razorpay", {
+    ...finalData,
+    payment_type: "online",
+    payment_status: "success",
+  });
+
+  const order = postOrder({
+    onSuccess: () => {
+      Alert.alert(
+        "Succes",
+        "Order Succesfully Placed!",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              navigate.goBack();
+              clearCart();
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+    },
+  });
+  const navigate = useNavigation();
+
   const customHTML = `<!DOCTYPE html>
   <html>
   <head>
@@ -86,7 +118,8 @@ export default function RazorpayButton() {
                   "contact": +919900000000,
               },
               "handler": function (response) {
-                  alert(response);
+                window.ReactNativeWebView.postMessage(JSON.stringify(response));
+                true
               },
               "theme": {
                   "color": "${Colors.primary}",
@@ -105,6 +138,11 @@ export default function RazorpayButton() {
           }
           function openRazorpay() {
             rzp1.open();
+            rzp1.on('payment.failed', function (response) {
+              window.ReactNativeWebView.postMessage(JSON.stringify(response));
+              true
+          });
+          e.preventDefault();
           }
     
           openRazorpay();
@@ -126,9 +164,18 @@ export default function RazorpayButton() {
           const data = JSON.parse(event.nativeEvent.data);
           console.log(data);
           if (data.error) {
-            alert("Payment failed");
+            Alert.alert(
+              "Alert",
+              "Your payment was failed",
+              [{ text: "OK", onPress: () => navigate.goBack() }],
+              { cancelable: false }
+            );
           } else {
-            alert("Payment successful");
+            order.mutate({
+              ...finalData,
+              payment_type: "online",
+              payment_status: "success",
+            });
           }
         }}
       />

@@ -43,8 +43,14 @@ export const updateFavMenus = (options: any) =>
 export const updateUser = (options: any) =>
   useMutation({ mutationFn: API.upateUser, ...options });
 
+export const updateUserAddress = (options: any) =>
+  useMutation({ mutationFn: API.upateUserAddress, ...options });
+
 export const searchMenus = (options: any) =>
   useMutation({ mutationFn: API.searchMenus, ...options });
+
+export const postOrder = (options: any) =>
+  useMutation({ mutationFn: API.postOrders, ...options });
 
 export const test = (options: any) =>
   useQuery({

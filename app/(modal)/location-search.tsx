@@ -1,7 +1,7 @@
 import Colors from "@/constants/Colors";
 import * as Location from "expo-location";
 
-import { useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 import React, { useEffect, useState } from "react";
@@ -13,9 +13,14 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  ToastAndroid,
 } from "react-native";
+
+import { queries } from "@/core/constants/queryKeys";
+import { updateUserAddress } from "@/core/services/home";
+
+import { useQueryClient } from "@tanstack/react-query";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import useBasketStore from "@/store/basketStore";
 
 const LocationSearch = () => {
   const navigation = useNavigation();
@@ -27,7 +32,21 @@ const LocationSearch = () => {
   });
 
   const [loading, setLoading] = useState<any>(false);
-  const { currentLocation, setCurrentLocation } = useBasketStore();
+  const { id } = useLocalSearchParams();
+
+  const queryClient = useQueryClient();
+  const addressMutate = updateUserAddress({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queries.home.userAddress.queryKey,
+      });
+      ToastAndroid.showWithGravity(
+        "Address updated successfully",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
+  });
 
   const fetchGeoData = async (latitude: any, longitude: any) => {
     setLocation({
@@ -62,7 +81,19 @@ const LocationSearch = () => {
   }, []);
 
   function onPressConfirm() {
-    setCurrentLocation(location);
+    console.log({
+      id: Number(id),
+      lat: location.latitude.toString(),
+      lon: location.longitude.toString(),
+    });
+
+    addressMutate.mutate({
+      Address: {
+        id: Number(id),
+        lat: location.latitude.toString(),
+        lon: location.longitude.toString(),
+      },
+    });
     navigation.goBack();
   }
 
@@ -137,7 +168,7 @@ const LocationSearch = () => {
                 justifyContent: "space-evenly",
                 alignItems: "center",
               }}>
-              <Text style={styles.buttonTextLoading}>Loading</Text>
+              {/* <Text style={styles.buttonTextLoading}>Loading</Text> */}
               <ActivityIndicator size="small" color="white" />
             </View>
           ) : (

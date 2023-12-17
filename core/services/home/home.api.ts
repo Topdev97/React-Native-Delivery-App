@@ -32,21 +32,34 @@ export const upateFav = (data:any) =>
     data,
   })
 
-  export const upateUser = (data:any) =>
+  export const postOrders = (data:any) =>
+  POST({
+    url: ENV.BASE_URL + `orders`,
+    data,
+  })
+
+
+export const upateUser = (data:any) =>
   POST({
     url: ENV.BASE_URL + `user`,
     data,
   })
 
+export const upateUserAddress = (data:any) =>
+  POST({
+    url: ENV.BASE_URL + `user/address`,
+    data,
+  })
 
-  export const test=()=>
+
+export const searchMenus = (data:any) =>
+    POST({
+      url: ENV.BASE_URL + `search-menu`,
+      data,
+    })
+
+export const test=()=>
 GET({
   url: ENV.BASE_URL + 'posts',
 })
 
-
-export const searchMenus = (data:any) =>
-  POST({
-    url: ENV.BASE_URL + `search-menu`,
-    data,
-  })

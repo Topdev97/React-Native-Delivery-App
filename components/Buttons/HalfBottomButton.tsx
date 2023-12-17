@@ -5,21 +5,25 @@ import utils, { Icon } from "@/constants/utils";
 import { Link } from "expo-router";
 
 export default function HalfBottomButton(props: any) {
-  const { title, handleClick, iconName, nav, orderTotal, width } = props;
+  const { title, handleClick, iconName, nav, orderTotal, width, data } = props;
   return (
     <View style={styles.bottomButtonContainer}>
       {nav ? (
         <Link
           style={{ ...styles.logoutButtonNav, width }}
-          href={{ pathname: nav, params: { orderTotal } }}
-        >
+          href={{
+            pathname: nav,
+            params: { orderTotal, data: JSON.stringify(data) },
+          }}>
           <View style={styles.logoutButtonContentNav}>
             {iconName && <Icon name={iconName} size={26} color={"white"} />}
             <Text style={styles.logoutButtonTextnav}>{title}</Text>
           </View>
         </Link>
       ) : (
-        <TouchableOpacity style={styles.logoutButton} onPress={handleClick}>
+        <TouchableOpacity
+          style={{ ...styles.logoutButton, width }}
+          onPress={handleClick}>
           <View style={styles.logoutButtonContent}>
             {iconName && <Icon name={iconName} size={26} color={"white"} />}
             <Text style={styles.logoutButtonText}>{title}</Text>
@@ -40,7 +44,7 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     backgroundColor: Colors.primary,
-    width: "50%",
+    // width: "50%",
     padding: 15,
     alignItems: "center",
     borderRadius: 100,
@@ -73,6 +77,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
     textAlign: "right",
-    width: utils.fullwidth / 3.5,
+    width: utils.fullwidth / 3.4,
   },
 });

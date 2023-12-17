@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "expo-router";
 
 import * as Location from "expo-location";
@@ -15,25 +15,35 @@ import {
   ScrollView,
   Pressable,
   Linking,
+  ToastAndroid,
 } from "react-native";
 import useBasketStore from "@/store/basketStore";
+import { getUserInfo, updateUserAddress } from "@/core/services/home";
+import { useQueryClient } from "@tanstack/react-query";
+import { queries } from "@/core/constants/queryKeys";
+import Loading from "@/components/Pages/Loading";
 
 export default function AddressForm() {
-  const [formData, setFormData] = useState({
-    houseNo: "87",
-    street: "kutty streeet",
-    area: "Paniputhure",
-    landmark: "near rason kadai",
-    city: "tenkasi",
-    state: "tamilnadu",
-    pincode: "600128",
-    latitude: "",
-    longitude: "",
-  });
+  const [formData, setFormData] = useState();
 
+  const queryClient = useQueryClient();
   const [editMode, setEditMode] = useState(false);
 
+  const user = getUserInfo({ enabled: false });
   const { currentLocation, setCurrentLocation } = useBasketStore();
+
+  const addressMutate = updateUserAddress({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queries.home.userAddress.queryKey,
+      });
+      ToastAndroid.showWithGravity(
+        "Address updated successfully",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
+  });
 
   const handleChange = (key: any, value: any) => {
     setFormData({
@@ -43,6 +53,14 @@ export default function AddressForm() {
   };
 
   const handleSubmit = () => {
+    const hnumber = Number(formData?.house_no);
+
+    delete formData?.user_id;
+
+    addressMutate.mutate({
+      Address: { house_no: hnumber, ...formData },
+    });
+
     setEditMode(false);
   };
 
@@ -88,135 +106,162 @@ export default function AddressForm() {
     }
   };
 
+  useEffect(() => {
+    if (!formData) setFormData(user?.data?.Address?.[0]);
+  }, [user?.data]);
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.currentAddress}>
-        {editMode ? "Edit Address" : "Delivery Address"}
-      </Text>
-      <Text style={styles.currentAddressText}>
-        {formData.houseNo}, {formData.street}, {formData.area},{" "}
-        {formData.landmark}, {formData.city}, {formData.state} -{" "}
-        {formData.pincode}
-      </Text>
-      {editMode && (
-        <View style={styles.formGroup}>
-          <View style={styles.formGroup}>
-            <Text style={styles.inputLabel}>House No:</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.houseNo}
-              onChangeText={(text) => handleChange("houseNo", text)}
-            />
-          </View>
-          <View style={styles.formGroup}>
-            <Text style={styles.inputLabel}>Street:</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.street}
-              onChangeText={(text) => handleChange("street", text)}
-            />
-          </View>
-          <View style={styles.formGroup}>
-            <Text style={styles.inputLabel}>Area:</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.area}
-              onChangeText={(text) => handleChange("area", text)}
-            />
-          </View>
-          <View style={styles.formGroup}>
-            <Text style={styles.inputLabel}>Landmark:</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.landmark}
-              onChangeText={(text) => handleChange("landmark", text)}
-            />
-          </View>
-          <View style={styles.formGroup}>
-            <Text style={styles.inputLabel}>City:</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.city}
-              onChangeText={(text) => handleChange("city", text)}
-            />
-          </View>
-          <View style={styles.formGroup}>
-            <Text style={styles.inputLabel}>State:</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.state}
-              onChangeText={(text) => handleChange("state", text)}
-            />
-          </View>
-          <View style={styles.formGroup}>
-            <Text style={styles.inputLabel}>Pincode :</Text>
-            <TextInput
-              style={styles.input}
-              value={formData.pincode}
-              onChangeText={(text) => handleChange("pincode", text)}
-            />
-          </View>
-          <View style={styles.formGroup}>
-            <View
-              style={{
-                flexDirection: "column",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}>
-              <View>
-                <Text
-                  style={{
-                    ...styles.inputLabel,
-                    textAlign: "center",
-                    fontWeight: "800",
-                    fontSize: 16,
-                    color: "black",
-                  }}>
-                  Geolocation
-                </Text>
-                <Text
-                  style={{
-                    ...styles.inputLabel,
-                    color: "#0000EE",
-                    marginBottom: 12,
-                    marginTop: 6,
-                  }}
-                  onPress={onMapPress}
-                  disabled={true}>
-                  Click Below to Set Your Location
-                </Text>
+    <View style={{ flex: 1, backgroundColor: Colors.lightGrey }}>
+      {user.isLoading ? (
+        <Loading />
+      ) : (
+        <ScrollView contentContainerStyle={styles.container}>
+          <Text style={styles.currentAddress}>
+            {editMode ? "Edit Address" : "Delivery Address"}
+          </Text>
+          <Text style={styles.currentAddressText}>
+            {user?.data?.Address?.length < 0 ? (
+              "Clikc Add to Add Your Address  👇"
+            ) : (
+              <>
+                {formData?.house_no}, {formData?.street_address},{" "}
+                {formData?.area}, {formData?.landmark}, {formData?.city},{" "}
+                {formData?.state} - {formData?.pincode}
+              </>
+            )}
+          </Text>
+          {editMode && (
+            <View style={styles.formGroup}>
+              <View style={styles.formGroup}>
+                <Text style={styles.inputLabel}>House No:</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData?.house_no?.toString()}
+                  keyboardType="numeric"
+                  onChangeText={(text) =>
+                    handleChange("house_no", Number(text))
+                  }
+                />
               </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                }}>
-                <Link
-                  href={"/(modal)/location-search"}
+              <View style={styles.formGroup}>
+                <Text style={styles.inputLabel}>Street:</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.street_address}
+                  onChangeText={(text) => handleChange("street_address", text)}
+                />
+              </View>
+              <View style={styles.formGroup}>
+                <Text style={styles.inputLabel}>Area:</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.area}
+                  onChangeText={(text) => handleChange("area", text)}
+                />
+              </View>
+              <View style={styles.formGroup}>
+                <Text style={styles.inputLabel}>Landmark:</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.landmark}
+                  onChangeText={(text) => handleChange("landmark", text)}
+                />
+              </View>
+              <View style={styles.formGroup}>
+                <Text style={styles.inputLabel}>City:</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.city}
+                  onChangeText={(text) => handleChange("city", text)}
+                />
+              </View>
+              <View style={styles.formGroup}>
+                <Text style={styles.inputLabel}>State:</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.state}
+                  onChangeText={(text) => handleChange("state", text)}
+                />
+              </View>
+              <View style={styles.formGroup}>
+                <Text style={styles.inputLabel}>Pincode :</Text>
+                <TextInput
+                  style={styles.input}
+                  value={formData.pincode}
+                  onChangeText={(text) => handleChange("pincode", text)}
+                />
+              </View>
+              <View style={styles.formGroup}>
+                <View
                   style={{
-                    flexDirection: "row",
-                    paddingHorizontal: 20,
-                    marginRight: 10,
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                   }}>
-                  <Text style={styles.editText}>Select on Map </Text>
-                  <Icon name="location" size={20} color={Colors.primary} />
-                </Link>
+                  <View>
+                    <Text
+                      style={{
+                        ...styles.inputLabel,
+                        textAlign: "center",
+                        fontWeight: "800",
+                        fontSize: 16,
+                        color: "black",
+                      }}>
+                      Geolocation
+                    </Text>
+                    <Link<{ pathname: any; params: { id: any } }>
+                      href={{
+                        pathname: "/(modal)/location-search",
+                        params: { id: formData?.id },
+                      }}
+                      style={{ marginBottom: 12, marginTop: 6 }}>
+                      <Text
+                        style={{
+                          ...styles.inputLabel,
+                          color: "#0000EE",
+                        }}
+                        onPress={onMapPress}
+                        disabled={true}>
+                        Click Below to Set Your Map Location
+                      </Text>
+                    </Link>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                    }}>
+                    <Link<{ pathname: any; params: { id: any } }>
+                      href={{
+                        pathname: "/(modal)/location-search",
+                        params: { id: formData?.id },
+                      }}
+                      style={{
+                        flexDirection: "row",
+                        paddingHorizontal: 20,
+                        marginRight: 10,
+                      }}>
+                      <Text style={styles.editText}>Select on Map </Text>
+                      <Icon name="location" size={20} color={Colors.primary} />
+                    </Link>
+                  </View>
+                </View>
               </View>
             </View>
-          </View>
-        </View>
-      )}
+          )}
 
-      {editMode ? (
-        <HalfBottomButton title="Save" handleClick={handleSubmit} />
-      ) : (
-        <Pressable style={styles.editButton} onPress={handleEditClick}>
-          <Text style={styles.text}>
-            <Icon name="create-outline" size={20} />
-            Edit
-          </Text>
-        </Pressable>
+          {editMode ? (
+            <HalfBottomButton title="Save" handleClick={handleSubmit} />
+          ) : (
+            <Pressable style={styles.editButton} onPress={handleEditClick}>
+              <Text style={styles.text}>
+                <Icon name="create-outline" size={20} />
+                {user?.data?.Address?.length < 0 ? "Add" : "Edit"}
+              </Text>
+            </Pressable>
+          )}
+        </ScrollView>
       )}
-    </ScrollView>
+    </View>
   );
 }
 

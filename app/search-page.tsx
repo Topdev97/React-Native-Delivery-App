@@ -21,7 +21,6 @@ const SearchScreen = () => {
   const [searchText, setSearchText] = useState<any>("");
 
   const menus = searchMenus({});
-  console.log(menus);
 
   useEffect(() => {
     const focusInput = () => {

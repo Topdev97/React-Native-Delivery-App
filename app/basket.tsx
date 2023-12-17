@@ -5,30 +5,68 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  Pressable,
+  Alert,
 } from "react-native";
 
 import { Link, useNavigation } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import Colors from "@/constants/Colors";
 import useBasketStore from "@/store/basketStore";
 
-import ConfettiCannon from "react-native-confetti-cannon";
 import SwipeableRow from "@/components/SwipeableRow";
+import ConfettiCannon from "react-native-confetti-cannon";
+
+import { Icon } from "@/constants/utils";
+import { getUserInfo } from "@/core/services/home";
 
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
-import { Icon } from "@/constants/utils";
 
 const Basket = () => {
   const { products, total, reduceProduct } = useBasketStore();
-  const [order, setOrder] = useState(false);
-
   const navigation = useNavigation();
+  const userInfo = getUserInfo({});
+
+  const [order, setOrder] = useState(false);
+  const [selectedTab, setSelectedTab] = useState("COD");
 
   const FEES = {
     service: 2.99,
     delivery: 5.99,
   };
+
+  const data = {
+    orderStatus: "new",
+    customer_name: userInfo?.data?.name,
+    bill_total: Number(Math.ceil(total + FEES.service + FEES.delivery)),
+    user_id: userInfo?.data?.id,
+    user_number: userInfo?.data?.phone_number,
+    address: userInfo?.data?.Address?.[0],
+    payment_type: selectedTab.toLowerCase(),
+    Items: products,
+  };
+
+  function alertAddress() {
+    Alert.alert(
+      "Add Address",
+      "You have to add your address to continue !",
+      [
+        { text: "Later", style: "cancel" },
+        { text: "Add Now", onPress: () => goToAdrress() },
+      ],
+      { cancelable: false }
+    );
+  }
+
+  function orderWithCOD() {
+    alert("COD");
+  }
+
+  function goToAdrress() {
+    navigation.navigate("address");
+    navigation.canGoBack(true);
+  }
 
   function nav() {
     navigation.goBack();
@@ -117,7 +155,6 @@ const Basket = () => {
                     <Text style={styles.total}>Subtotal</Text>
                     <Text style={{ fontSize: 18 }}>₹{total}</Text>
                   </View>
-
                   <View style={styles.totalRow}>
                     <Text style={styles.total}>Service fee</Text>
                     <Text style={{ fontSize: 18 }}>₹{FEES.service}</Text>
@@ -144,6 +181,94 @@ const Basket = () => {
                       ₹{(total + FEES.service + FEES.delivery).toFixed(2)}
                     </Text>
                   </View>
+                  <View style={styles.totalRow}>
+                    <Text style={{ ...styles.total, fontWeight: "800" }}>
+                      Payment Method
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        width: "40%",
+                        borderColor: Colors.medium,
+                        borderWidth: 1,
+                        padding: 0.8,
+                        borderRadius: 2,
+                        marginTop: 8,
+                      }}>
+                      <TouchableOpacity
+                        onPress={() => setSelectedTab("COD")}
+                        style={{
+                          width: "50%",
+                          alignItems: "center",
+                          backgroundColor:
+                            selectedTab === "COD" ? Colors.primary : "white",
+                          borderRadius: 2,
+                        }}>
+                        <Text
+                          style={{
+                            fontSize: 17,
+                            color: selectedTab === "COD" ? "white" : "black",
+                            fontWeight: "800",
+                          }}>
+                          COD
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => setSelectedTab("Online")}
+                        style={{
+                          width: "50%",
+                          alignItems: "center",
+                          backgroundColor:
+                            selectedTab === "Online" ? Colors.primary : "white",
+                        }}>
+                        <Text
+                          style={{
+                            fontSize: 17,
+                            color: selectedTab === "Online" ? "white" : "black",
+                            fontWeight: "800",
+                          }}>
+                          Online
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <View style={{ paddingHorizontal: 10 }}>
+                    <Text style={styles.currentAddress}>
+                      Delivery Address :
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "flex-start",
+                        justifyContent: "space-between",
+                      }}>
+                      <Text style={styles.currentAddressText}>
+                        {userInfo?.data?.Address?.length < 0 ? (
+                          "Clikc Add to Add Your Address  👉"
+                        ) : (
+                          <>
+                            {userInfo?.data?.Address?.[0]?.house_no},{" "}
+                            {userInfo?.data?.Address?.[0]?.street_address},{" "}
+                            {userInfo?.data?.Address?.[0]?.area},{" "}
+                            {userInfo?.data?.Address?.[0]?.landmark},{" "}
+                            {userInfo?.data?.Address?.[0]?.city},{" "}
+                            {userInfo?.data?.Address?.[0]?.state}-{" "}
+                            {userInfo?.data?.Address?.[0]?.pincode}
+                          </>
+                        )}
+                      </Text>
+
+                      <Pressable
+                        style={styles.editButton}
+                        onPress={goToAdrress}>
+                        <Text style={styles.text}>
+                          <Icon name="create-outline" size={20} />
+                          {userInfo?.data?.Address?.length < 0 ? "Add" : "Edit"}
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </View>
                 </View>
               }
             />
@@ -166,12 +291,24 @@ const Basket = () => {
             </View>
           )}
           {products.length > 0 ? (
-            <HalfBottomButton
-              title={"Order-Now"}
-              nav={"/razorpay"}
-              orderTotal={(total + FEES.service + FEES.delivery).toFixed(2)}
-              width={"45%"}
-            />
+            <>
+              {userInfo?.data?.Address?.length < 0 ? (
+                <HalfBottomButton
+                  title="Order Now"
+                  handleClick={alertAddress}
+                  width={"45%"}
+                />
+              ) : (
+                <HalfBottomButton
+                  title={"Order Now"}
+                  nav={selectedTab == "Online" && "/razorpay"}
+                  handleClick={orderWithCOD}
+                  data={data}
+                  orderTotal={(total + FEES.service + FEES.delivery).toFixed(2)}
+                  width={"50%"}
+                />
+              )}
+            </>
           ) : (
             <HalfBottomButton
               title="Order Now"
@@ -197,9 +334,31 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  editButton: {
+    backgroundColor: Colors.primary,
+    width: "15%",
+    borderRadius: 2,
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+    padding: 5,
+  },
   emptyIllustration: {
     width: 300,
     height: 300,
+  },
+  currentAddress: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 5,
+    marginTop: 8,
+  },
+  currentAddressText: {
+    fontSize: 16,
+    width: "75%",
   },
   paymentBtn: {
     flex: 0.15,
@@ -224,6 +383,7 @@ const styles = StyleSheet.create({
   totalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     padding: 10,
     backgroundColor: "white",
   },
