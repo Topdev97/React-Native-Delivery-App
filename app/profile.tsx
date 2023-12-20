@@ -70,7 +70,7 @@ export default function Profile() {
         <Text style={styles.inputLabel}>Email</Text>
         <TextInput style={styles.input} value={email} onChangeText={setEmail} />
       </View>
-      <HalfBottomButton title={"Save"} handleClick={handleSave} />
+      <HalfBottomButton title={"Save"} handleClick={handleSave} width={"45%"} />
     </View>
   );
 }

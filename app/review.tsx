@@ -1,7 +1,3 @@
-import Colors from "@/constants/Colors";
-import utils, { Icon } from "@/constants/utils";
-import React, { useState } from "react";
-import { useNavigation } from "expo-router";
 import {
   View,
   Image,
@@ -10,20 +6,88 @@ import {
   Text,
   ScrollView,
 } from "react-native";
+
+import React, { useState } from "react";
+import Colors from "@/constants/Colors";
+
+import { useNavigation } from "expo-router";
+import utils, { Icon } from "@/constants/utils";
+
+import { postReview } from "@/core/services/home";
 import StarRating from "react-native-star-rating";
+
+import { useRoute } from "@react-navigation/native";
 import { TextInput } from "react-native-gesture-handler";
+
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+import { ToastAndroid } from "react-native";
 
 const Review = () => {
-  const [submitted, setSubmitted] = useState(false);
   const [rating, setRating] = useState(0);
+  const [description, setDescription] = useState<any>(false);
+
+  const [reviewType, setReviewType] = useState(0);
+
+  const route = useRoute();
   const navigate = useNavigation();
-  const onSubmit = () => {
-    if (submitted == true) {
+  const data = JSON.parse(route?.params?.data);
+
+  const review = postReview({
+    onSuccess: () => {
+      ToastAndroid.showWithGravity(
+        "Review Placed Successfully",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+      setRating(0);
+      setReviewType(1);
+      setDescription(false);
+    },
+  });
+
+  let title: any;
+  if (rating == 0) {
+    title = "Bad 😞";
+  }
+  if (rating == 1) {
+    title = "Average 😐";
+  }
+  if (rating == 2) {
+    title = "Good 😊";
+  }
+  if (rating == 3) {
+    title = "Very Good 😁";
+  }
+  if (rating == 4) {
+    title = "Excellent 😍";
+  }
+
+  const onSubmitDelivery = () => {
+    const payload = {
+      ReviewType: "Delivery Review",
+      reviewTitle: title,
+      review_description: description,
+      stars: rating,
+      user_id: data?.user_id,
+      order_id: data?.id,
+    };
+    review.mutate(payload);
+    setDescription(false);
+  };
+
+  const onSubmitHotel = () => {
+    const payload = {
+      ReviewType: "Food Review",
+      reviewTitle: title,
+      review_description: description,
+      stars: rating,
+      user_id: data?.user_id,
+      order_id: data?.id,
+    };
+    review.mutate(payload);
+    if (review.isSuccess) {
       navigate.goBack();
     }
-    setSubmitted(true);
-    setRating(0);
   };
 
   return (
@@ -34,15 +98,14 @@ const Review = () => {
           marginTop: 240,
           alignItems: "center",
           marginBottom: 50,
-        }}
-      >
+        }}>
         <Text style={styles.hotel}>Hotel Annapoorna</Text>
         <View style={styles.container}>
           <View style={styles.greenDot} />
           <Text style={styles.greenText}>Order Delivered</Text>
         </View>
         <Text style={styles.rateTitle}>
-          {!submitted
+          {reviewType == 0
             ? "Please Rate Delivery Service"
             : "How was your last order from Annapoorna ?"}
         </Text>
@@ -50,11 +113,17 @@ const Review = () => {
         <TextInput
           style={styles.textArea}
           placeholder="Write review here..."
+          value={description}
+          onChange={(event) => setDescription(event.nativeEvent.text)}
           multiline={true}
           numberOfLines={4}
         />
       </View>
-      <HalfBottomButton title={"Submit"} handleClick={onSubmit} />
+      <HalfBottomButton
+        title={"Submit"}
+        handleClick={reviewType == 0 ? onSubmitDelivery : onSubmitHotel}
+        width={"45%"}
+      />
     </ScrollView>
   );
 };
@@ -105,8 +174,7 @@ export function HeaderReview() {
         justifyContent: "start",
         alignItems: "center",
         paddingTop: 50,
-      }}
-    >
+      }}>
       <Image source={{ uri: randomFoodImage }} style={styles.image} />
       <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
         <View style={styles.iconPosition}>

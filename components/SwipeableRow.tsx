@@ -1,16 +1,35 @@
-import { Ionicons } from '@expo/vector-icons';
-import React, { Component, PropsWithChildren } from 'react';
-import { Animated, StyleSheet, I18nManager, View } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
+import React, { Component, PropsWithChildren } from "react";
+import { Animated, StyleSheet, I18nManager, View, Text } from "react-native";
 
-import { RectButton } from 'react-native-gesture-handler';
+import { RectButton } from "react-native-gesture-handler";
 
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Swipeable from "react-native-gesture-handler/Swipeable";
 
-export default class SwipeableRow extends Component<PropsWithChildren<unknown & { onDelete: () => void }>> {
-  private renderRightActions = (_progress: Animated.AnimatedInterpolation<number>, dragX: Animated.AnimatedInterpolation<number>) => {
+export default class SwipeableRow extends Component<
+  PropsWithChildren<unknown & { onDelete: () => void }>
+> {
+  private renderRightActions = (
+    _progress: Animated.AnimatedInterpolation<number>,
+    dragX: Animated.AnimatedInterpolation<number>
+  ) => {
     return (
       <RectButton style={styles.rightAction} onPress={this.close}>
-        <Ionicons name="trash-outline" size={24} color="white" style={{ marginRight: 10 }} />
+        <Text
+          style={{
+            fontSize: 14,
+            color: "white",
+            fontWeight: "800",
+            marginRight: 2,
+          }}>
+          Click Here
+        </Text>
+        <Ionicons
+          name="trash-outline"
+          size={24}
+          color="white"
+          style={{ marginRight: 10 }}
+        />
       </RectButton>
     );
   };
@@ -28,7 +47,13 @@ export default class SwipeableRow extends Component<PropsWithChildren<unknown & 
   render() {
     const { children } = this.props;
     return (
-      <Swipeable ref={this.updateRef} friction={2} leftThreshold={80} enableTrackpadTwoFingerGesture rightThreshold={40} renderRightActions={this.renderRightActions}>
+      <Swipeable
+        ref={this.updateRef}
+        friction={2}
+        leftThreshold={80}
+        enableTrackpadTwoFingerGesture
+        rightThreshold={40}
+        renderRightActions={this.renderRightActions}>
         {children}
       </Swipeable>
     );
@@ -37,10 +62,10 @@ export default class SwipeableRow extends Component<PropsWithChildren<unknown & 
 
 const styles = StyleSheet.create({
   rightAction: {
-    alignItems: 'center',
-    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
-    backgroundColor: '#dd2c00',
+    alignItems: "center",
+    flexDirection: I18nManager.isRTL ? "row-reverse" : "row",
+    backgroundColor: "#dd2c00",
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: "flex-end",
   },
 });

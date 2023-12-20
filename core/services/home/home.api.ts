@@ -51,12 +51,22 @@ export const upateUserAddress = (data:any) =>
     data,
   })
 
-
 export const searchMenus = (data:any) =>
     POST({
       url: ENV.BASE_URL + `search-menu`,
       data,
     })
+
+export const getUsersOrders=()=>
+    GET({
+      url: ENV.BASE_URL + 'orders?page=1&pageSize=7',
+})
+
+export const postReviews = (data:any) =>
+  POST({
+    url: ENV.BASE_URL + `review`,
+    data,
+  })    
 
 export const test=()=>
 GET({

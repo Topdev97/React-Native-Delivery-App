@@ -1,6 +1,3 @@
-import Colors from "@/constants/Colors";
-import React, { useState } from "react";
-
 import {
   View,
   Text,
@@ -9,17 +6,25 @@ import {
   TouchableOpacity,
   Linking,
 } from "react-native";
-import { ProgressSteps, ProgressStep } from "react-native-progress-steps";
+import React, { useEffect, useState } from "react";
 
-import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
-import SwipeableRow from "@/components/SwipeableRow";
-
-import { FlatList } from "react-native-gesture-handler";
-import useBasketStore from "@/store/basketStore";
+import moment from "moment";
+import Colors from "@/constants/Colors";
 
 import { AntDesign } from "@expo/vector-icons";
+import useBasketStore from "@/store/basketStore";
+
+import { FlatList } from "react-native-gesture-handler";
+import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+
+import { ProgressSteps, ProgressStep } from "react-native-progress-steps";
+import { useLocalSearchParams } from "expo-router";
 
 const OrderTrackingScreen = () => {
+  const { data } = useLocalSearchParams();
+  const [step, setStep] = useState<any>(0);
+  const item = JSON.parse(data);
+
   const makePhoneCall = () => {
     Linking.openURL(`tel:8610593462`).catch((err) =>
       console.error("Error in initiating the phone call: ", err)
@@ -27,69 +32,131 @@ const OrderTrackingScreen = () => {
   };
 
   const progressStepsobj = {
-    activeStepIconBorderColor: Colors.primary,
-    activeLabelColor: Colors.primary,
-    activeStep: 1,
-    completedLabelColor: Colors.dark,
+    activeStepIconBorderColor:
+      item?.orderStatus == "cancelled" ? "red" : Colors.primary,
+    activeLabelColor: item?.orderStatus == "cancelled" ? "red" : Colors.primary,
+    activeStep: step,
+    completedLabelColor: Colors.primary,
     completedStepIconColor: Colors.primary,
     completedProgressBarColor: Colors.primary,
   };
+
+  const orderTime = moment
+    .utc(item?.created_at)
+    .utcOffset("+05:30")
+    .format("MMMM D YYYY hh:mm A");
+
+  useEffect(() => {
+    if (item?.orderStatus == "new") {
+      setStep(0);
+    }
+    if (item?.orderStatus == "preparing" || item?.orderStatus == "ready") {
+      setStep(1);
+    }
+    if (item?.orderStatus == "picked") {
+      setStep(2);
+    }
+    if (item?.orderStatus == "delivered" || item?.orderStatus == "cancelled") {
+      setStep(3);
+    }
+  }, [item]);
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.addressContainer}>
         <Text style={styles.currentAddress}>Delivery Address</Text>
         <Text style={styles.currentAddressText}>
-          87 kutty street Paraniputhure, near rason
-          kadai,tenkasi,tamilnadu-600128
+          {item?.address?.house_no}, {item?.address?.street_address},{" "}
+          {item?.address?.area}, {item?.address?.landmark},{" "}
+          {item?.address?.city}, {item?.address?.state} -{" "}
+          {item?.address?.pincode}
         </Text>
       </View>
       <View style={styles.orderStatusContainer}>
-        <Text style={styles.orderStatus}>
+        <Text style={{ ...styles.orderStatus, fontWeight: "700" }}>
           Order status :
-          <Text style={styles.orderStatusSubText}> Preparing</Text>
+          <Text style={styles.orderStatusSubText}>
+            {" "}
+            {item?.orderStatus == "new"
+              ? "Accepted"
+              : item?.orderStatus.charAt(0).toUpperCase() +
+                item?.orderStatus.slice(1)}
+          </Text>
         </Text>
-        <Text style={styles.orderStatus}>
+        {/* <Text style={styles.orderStatus}>
           ETA:
           <Text style={styles.orderStatusSubText}> 25 Min</Text>
-        </Text>
+        </Text> */}
       </View>
       <View style={{ height: 125 }}>
         <ProgressSteps {...progressStepsobj}>
+          <ProgressStep label="Accepted" nextBtnText="" previousBtnText="" />
           <ProgressStep
-            label="Accepted"
-            nextBtnTextStyle={{}}
+            label={
+              item?.orderStatus.charAt(0).toUpperCase() +
+              item?.orderStatus.slice(1)
+            }
+            nextBtnText=""
             previousBtnText=""
           />
-          <ProgressStep label="Preparing" nextBtnText="" previousBtnText="" />
           <ProgressStep label="On the way" nextBtnText="" previousBtnText="" />
-          <ProgressStep label="Delivered" nextBtnText="" previousBtnText="" />
+          <ProgressStep
+            label={
+              item?.orderStatus.charAt(0).toUpperCase() +
+              item?.orderStatus.slice(1)
+            }
+            previousBtnText=""
+            finishBtnText=""
+          />
         </ProgressSteps>
       </View>
 
       <View style={styles.orderDetailContainer}>
         <View style={styles.justBetween}>
           <Text style={styles.orderStatus}>Order Id</Text>
-          <Text style={styles.orderSubtext}>#1212121212</Text>
+          <Text style={styles.orderSubtext}>#000{item?.id}</Text>
         </View>
         <View style={styles.justBetween}>
-          <Text style={styles.orderStatus}>Date</Text>
-          <Text style={styles.orderSubtext}>July 2 2023 02:00 Am </Text>
+          <Text style={styles.orderStatus}>Order Date</Text>
+          <Text style={styles.orderSubtext}>{orderTime} </Text>
+        </View>
+        <View style={styles.justBetween}>
+          <Text style={styles.orderStatus}>Payment Method</Text>
+          <Text style={styles.orderSubtext}>
+            {item?.payment_type?.toUpperCase()}
+          </Text>
         </View>
         <View style={styles.justBetween}>
           <Text style={styles.orderStatus}>Payment Status</Text>
-          <Text style={styles.orderSubtext}>Success </Text>
+          <Text style={styles.orderSubtext}>
+            {item?.payment_status == "true" ? "Success" : "Not Yet "}
+          </Text>
         </View>
+        {item?.orderStatus == "cancelled" && (
+          <>
+            <View style={styles.justBetween}>
+              <Text style={styles.orderStatus}>Cancelled Reason:</Text>
+              <Text style={styles.orderSubtext}>{!item?.reason && `-`}</Text>
+            </View>
+            <Text style={styles.orderSubtext}>
+              {item?.reason && `# ${item?.reason}`}
+            </Text>
+          </>
+        )}
       </View>
-      <Drawer />
-      <View style={{ marginBottom: 20 }}>
-        <HalfBottomButton title="Contact" handleClick={makePhoneCall} />
+      <Drawer item={item} />
+      <View style={{ marginVertical: 20 }}>
+        <HalfBottomButton
+          title="Contact"
+          handleClick={makePhoneCall}
+          width={"45%"}
+        />
       </View>
     </ScrollView>
   );
 };
 
-const Drawer = () => {
+const Drawer = ({ item }) => {
   const [isContentVisible, setContentVisible] = useState(false);
   const { products, total, reduceProduct } = useBasketStore();
 
@@ -117,30 +184,27 @@ const Drawer = () => {
       {isContentVisible && (
         <ScrollView showsVerticalScrollIndicator={false}>
           <FlatList
-            data={products}
+            data={item?.Items}
             // ListHeaderComponent={<Text style={styles.section}>Items</Text>}
             ItemSeparatorComponent={() => (
               <View style={{ height: 1, backgroundColor: Colors.grey }} />
             )}
             renderItem={({ item }) => (
-              <SwipeableRow onDelete={() => reduceProduct(item)}>
-                <View style={styles.row}>
-                  <Text style={{ color: Colors.primary, fontSize: 18 }}>
-                    {item.quantity}x
-                  </Text>
-                  <Text style={{ flex: 1, fontSize: 18 }}>{item.name}</Text>
-                  <Text style={{ fontSize: 18 }}>
-                    ₹{item.price * item.quantity}
-                  </Text>
-                </View>
-              </SwipeableRow>
+              <View style={styles.row}>
+                <Text style={{ color: Colors.primary, fontSize: 18 }}>
+                  {item.quantity}x
+                </Text>
+                <Text style={{ flex: 1, fontSize: 18 }}>{item.name}</Text>
+                <Text style={{ fontSize: 18 }}>
+                  ₹{item.price * item.quantity}
+                </Text>
+              </View>
             )}
             ListFooterComponent={
               <View>
                 <View
-                  style={{ height: 1, backgroundColor: Colors.grey }}
-                ></View>
-                <View style={styles.totalRow}>
+                  style={{ height: 1, backgroundColor: Colors.grey }}></View>
+                {/* <View style={styles.totalRow}>
                   <Text style={styles.total}>Subtotal</Text>
                   <Text style={{ fontSize: 18 }}>₹{total}</Text>
                 </View>
@@ -153,12 +217,12 @@ const Drawer = () => {
                 <View style={styles.totalRow}>
                   <Text style={styles.total}>Delivery fee</Text>
                   <Text style={{ fontSize: 18 }}>₹{FEES.delivery}</Text>
-                </View>
+                </View> */}
 
                 <View style={styles.totalRow}>
-                  <Text style={styles.total}>Order Total</Text>
+                  <Text style={styles.total}>Total Amount with charges</Text>
                   <Text style={{ fontSize: 18, fontWeight: "bold" }}>
-                    ₹{(total + FEES.service + FEES.delivery).toFixed(2)}
+                    ₹{item?.bill_total}
                   </Text>
                 </View>
               </View>
@@ -202,7 +266,7 @@ const styles = StyleSheet.create({
   },
   orderStatus: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "800",
   },
   orderStatusSubText: {
     fontSize: 16,
@@ -223,7 +287,8 @@ const styles = StyleSheet.create({
   justBetween: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 10,
+    alignItems: "center",
+    marginBottom: 12,
   },
 
   row: {

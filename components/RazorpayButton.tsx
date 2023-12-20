@@ -6,38 +6,28 @@ import { useLocalSearchParams } from "expo-router";
 import { postOrder } from "@/core/services/home";
 import { useNavigation } from "@react-navigation/native";
 import useBasketStore from "@/store/basketStore";
+import { ToastAndroid } from "react-native";
 
 export default function RazorpayButton() {
   const webViewRef = useRef<WebView | any>(null);
   const { orderTotal, data } = useLocalSearchParams();
-  const finalData = JSON.parse(data);
-  const { clearCart } = useBasketStore();
 
-  console.log("razorpay", {
-    ...finalData,
-    payment_type: "online",
-    payment_status: "success",
-  });
+  const navigate = useNavigation();
+  const finalData = JSON.parse(data);
+
+  const { clearCart } = useBasketStore();
 
   const order = postOrder({
     onSuccess: () => {
-      Alert.alert(
-        "Succes",
-        "Order Succesfully Placed!",
-        [
-          {
-            text: "OK",
-            onPress: () => {
-              navigate.goBack();
-              clearCart();
-            },
-          },
-        ],
-        { cancelable: false }
+      ToastAndroid.showWithGravity(
+        "Order Placed Successfully",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
       );
+      clearCart();
+      navigate.goBack();
     },
   });
-  const navigate = useNavigation();
 
   const customHTML = `<!DOCTYPE html>
   <html>
@@ -174,7 +164,7 @@ export default function RazorpayButton() {
             order.mutate({
               ...finalData,
               payment_type: "online",
-              payment_status: "success",
+              payment_status: "true",
             });
           }
         }}

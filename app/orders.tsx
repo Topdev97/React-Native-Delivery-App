@@ -1,8 +1,3 @@
-import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
-import Colors from "@/constants/Colors";
-import { Icon } from "@/constants/utils";
-import { useNavigation } from "@react-navigation/native";
-import { Link } from "expo-router";
 import React from "react";
 import {
   View,
@@ -11,150 +6,167 @@ import {
   Dimensions,
   ScrollView,
   Image,
+  Pressable,
 } from "react-native";
 
+import moment from "moment";
+import { Link } from "expo-router";
+
+import Colors from "@/constants/Colors";
+import { useNavigation } from "@react-navigation/native";
+
+import { getUserSpecifiedOrders } from "@/core/services/home";
+import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+
 export default function OrderHistory() {
+  const navigation = useNavigation();
   let fullwidth = Dimensions.get("window").width;
-  const orders = [
-    {
-      orderId: "#686876",
-      status: "Prepared",
-      date: "2023-10-15",
-      time: "15:30",
-      orderPrice: 50.0,
-      title: "Briyani with 65",
-      items: ["Item 1", "Item 2", "Item 3"],
-    },
-    {
-      orderId: 2,
-      status: "Cancelled",
-      date: "2023-10-10",
-      time: "12:45",
-      orderPrice: 25.0,
-      title: "Veg Briyani with 65",
-      items: ["Item 4", "Item 5"],
-    },
-    {
-      orderId: 3,
-      status: "Delivered",
-      date: "2023-10-5",
-      time: "18:15",
-      orderPrice: 70.0,
-      title: "Paroda",
-      items: ["Item 6", "Item 7", "Item 8"],
-    },
-  ];
+
+  const userOrders = getUserSpecifiedOrders({});
 
   return (
     <>
-      {true ? (
+      {userOrders?.data?.orders?.length < 0 ? (
+        <EmptyIllustration />
+      ) : (
         <ScrollView style={styles.container}>
-          {orders.map((item, i) => (
-            <View style={{ paddingVertical: 0 }} key={i}>
-              <View style={{ ...styles.orderContainer, width: fullwidth - 20 }}>
-                <View style={styles.flex}>
-                  <Text style={styles.title}>{item.title}...</Text>
-                  <Text style={styles.title}> ₹{item.orderPrice}</Text>
-                </View>
+          {userOrders?.data?.orders?.map((item, i) => {
+            const indianDateTime = moment
+              .utc(item?.created_at)
+              .utcOffset("+05:30");
+            const date = indianDateTime.format("YYYY-MM-DD");
+            const time = indianDateTime.format("hh:mm A");
+            return (
+              <View style={{ paddingVertical: 0 }} key={i}>
+                <View
+                  style={{ ...styles.orderContainer, width: fullwidth - 20 }}>
+                  <View style={styles.flex}>
+                    <Text style={styles.title}>
+                      {item?.Items.length > 1
+                        ? `${item?.Items?.[0]?.name} + ${
+                            item?.Items.length - 1
+                          } Items`
+                        : item?.Items?.[0]?.name}
+                    </Text>
+                    <Text style={styles.title}> ₹{item?.bill_total}</Text>
+                  </View>
 
-                <View style={{ ...styles.flex, paddingTop: 6 }}>
-                  <View>
-                    <Text>Order {item.orderId}</Text>
-                    <Text>
-                      {item.date} at {item.time}
+                  <View style={{ ...styles.flex, paddingTop: 6 }}>
+                    <View>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          fontWeight: "800",
+                          color: "#666",
+                        }}>
+                        Order ID #000{item?.id}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          fontWeight: "800",
+                          color: "#666",
+                        }}>
+                        {date} at {time}
+                      </Text>
+                    </View>
+                    <Text
+                      style={{
+                        ...styles.tag,
+                        backgroundColor:
+                          item.orderStatus == "delivered"
+                            ? Colors.green
+                            : item.orderStatus == "cancelled"
+                            ? "red"
+                            : Colors.primary,
+                      }}>
+                      {item?.orderStatus == "new"
+                        ? "Accepted"
+                        : item?.orderStatus.charAt(0).toUpperCase() +
+                          item?.orderStatus.slice(1)}
                     </Text>
                   </View>
-                  <Text
-                    style={{
-                      ...styles.tag,
-                      backgroundColor:
-                        item.status == "Delivered"
-                          ? Colors.green
-                          : item.status == "Cancelled"
-                          ? "red"
-                          : Colors.primary,
-                    }}>
-                    {item.status}
-                  </Text>
-                </View>
 
-                <View style={styles.buttonContainer}>
-                  {item.status != "Prepared" && (
-                    <View
-                      style={{
-                        width: fullwidth / 2.5,
-                        height: 42,
-                        ...styles.button,
-                      }}>
-                      <Link
-                        href={{
-                          pathname: "/razorpay",
-                          params: { orderTotal: item.orderPrice },
-                        }}
-                        style={styles.link}>
-                        <Icon
-                          name={"refresh-outline"}
-                          size={20}
-                          color={Colors.tranparentButtonColor}
-                          mb={10}
-                        />
-                        <Text style={styles.buttonText}>Reorder</Text>
-                      </Link>
-                    </View>
-                  )}
-                  {item.status == "Delivered" && (
-                    <View
-                      style={{
-                        width: fullwidth / 2.5,
-                        height: 42,
-                        ...styles.button,
-                      }}>
-                      <Link
-                        href={{
-                          pathname: "/review",
-                          params: { orderTotal: item.orderPrice },
-                        }}
-                        style={styles.link}>
-                        <Icon
-                          name={"star-outline"}
-                          size={20}
-                          color={Colors.tranparentButtonColor}
-                          mb={10}
-                        />
-                        <Text style={styles.buttonText}> Rate Order</Text>
-                      </Link>
-                    </View>
-                  )}
-                  {item.status == "Prepared" && (
-                    <View
-                      style={{
-                        width: fullwidth / 2.5,
-                        height: 42,
-                        ...styles.button,
-                      }}>
-                      <Link
-                        href={{
-                          pathname: "/trackOrder",
-                          params: { orderTotal: item.orderPrice },
-                        }}
-                        style={styles.link}>
-                        <Icon
-                          name={"star-outline"}
-                          size={20}
-                          color={Colors.tranparentButtonColor}
-                          mb={10}
-                        />
-                        <Text style={styles.buttonText}> Track Order</Text>
-                      </Link>
-                    </View>
-                  )}
+                  <View style={styles.buttonContainer}>
+                    {/* {item.orderStatus === "cancelled" && (
+                      <View
+                        style={{
+                          width: fullwidth / 2.5,
+                          height: 42,
+                          ...styles.button,
+                        }}>
+                        <Link
+                          href={{
+                            pathname: "/razorpay",
+                            params: { orderTotal: item?.bill_total },
+                          }}
+                          style={styles.link}>
+                          <Icon
+                            name={"refresh-outline"}
+                            size={20}
+                            color={Colors.tranparentButtonColor}
+                            mb={10}
+                          />
+                          <Text style={styles.buttonText}>Reorder</Text>
+                        </Link>
+                      </View>
+                    )} */}
+                    {item.orderStatus === "delivered" && (
+                      <>
+                        <View
+                          style={{
+                            width: "100%",
+                            height: 42,
+                            ...styles.button,
+                          }}>
+                          <Pressable
+                            onPress={() => {
+                              navigation.navigate("review", {
+                                data: JSON.stringify(item),
+                              });
+                              navigation.canGoBack(true);
+                            }}
+                            style={styles.link}>
+                            <Text style={styles.buttonText}>Rate Order</Text>
+                          </Pressable>
+                        </View>
+                      </>
+                    )}
+                    {(item.orderStatus === "preparing" ||
+                      item.orderStatus === "new" ||
+                      item.orderStatus === "ready" ||
+                      item.orderStatus === "picked" ||
+                      item.orderStatus === "cancelled") && (
+                      <View
+                        style={{
+                          width: "100%",
+                          height: 42,
+                          ...styles.button,
+                        }}>
+                        <Pressable
+                          onPress={() => {
+                            navigation.navigate("trackOrder", {
+                              data: JSON.stringify(item),
+                            });
+                            navigation.canGoBack(true);
+                          }}
+                          style={styles.link}>
+                          <Text style={styles.buttonText}>
+                            {" "}
+                            {item.orderStatus === "cancelled"
+                              ? "View"
+                              : "Track"}{" "}
+                            Order
+                          </Text>
+                        </Pressable>
+                      </View>
+                    )}
+                  </View>
                 </View>
               </View>
-            </View>
-          ))}
+            );
+          })}
         </ScrollView>
-      ) : (
-        <EmptyIllustration />
       )}
     </>
   );
@@ -214,6 +226,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: "#f5f6f7",
+    marginBottom: 10,
   },
   flex: {
     display: "flex",
@@ -252,17 +265,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    padding: 4,
   },
   link: {
-    height: 24,
+    width: "100%",
+    alignItems: "center",
+    textAlign: "center",
   },
   buttonText: {
-    padding: 5,
     color: Colors.tranparentButtonColor,
     borderRadius: 5,
     textAlign: "center",
-    fontSize: 14,
+    alignItems: "center",
+    fontSize: 15,
     fontWeight: "800",
   },
   price: { fontSize: 14, fontWeight: "600", paddingBottom: 10 },

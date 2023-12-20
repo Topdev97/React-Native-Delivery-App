@@ -37,6 +37,13 @@ export const getUserInfo = (options: any) =>
     ...options,
   });
 
+export const getUserSpecifiedOrders = (options: any) =>
+  useQuery({
+    queryKey: queries.home.userOrders.queryKey,
+    queryFn: API.getUsersOrders,
+    ...options,
+  });
+
 export const updateFavMenus = (options: any) =>
   useMutation({ mutationFn: API.upateFav, ...options });
 
@@ -51,6 +58,9 @@ export const searchMenus = (options: any) =>
 
 export const postOrder = (options: any) =>
   useMutation({ mutationFn: API.postOrders, ...options });
+
+export const postReview = (options: any) =>
+  useMutation({ mutationFn: API.postReviews, ...options });
 
 export const test = (options: any) =>
   useQuery({

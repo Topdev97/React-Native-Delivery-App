@@ -7,6 +7,7 @@ import {
   Image,
   Pressable,
   Alert,
+  ToastAndroid,
 } from "react-native";
 
 import { Link, useNavigation } from "expo-router";
@@ -19,33 +20,47 @@ import SwipeableRow from "@/components/SwipeableRow";
 import ConfettiCannon from "react-native-confetti-cannon";
 
 import { Icon } from "@/constants/utils";
-import { getUserInfo } from "@/core/services/home";
+import { getUserInfo, postOrder } from "@/core/services/home";
 
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 
 const Basket = () => {
-  const { products, total, reduceProduct } = useBasketStore();
-  const navigation = useNavigation();
   const userInfo = getUserInfo({});
-
   const [order, setOrder] = useState(false);
+
+  const navigation = useNavigation();
+  const { clearCart } = useBasketStore();
+
   const [selectedTab, setSelectedTab] = useState("COD");
+  const { products, total, reduceProduct } = useBasketStore();
 
   const FEES = {
     service: 2.99,
     delivery: 5.99,
   };
 
-  const data = {
+  const orderDetails: any = {
     orderStatus: "new",
     customer_name: userInfo?.data?.name,
     bill_total: Number(Math.ceil(total + FEES.service + FEES.delivery)),
     user_id: userInfo?.data?.id,
     user_number: userInfo?.data?.phone_number,
     address: userInfo?.data?.Address?.[0],
-    payment_type: selectedTab.toLowerCase(),
     Items: products,
+    payment_type: selectedTab.toLowerCase(),
+    payment_status: "false",
   };
+
+  const postNewOrder = postOrder({
+    onSuccess: () => {
+      ToastAndroid.showWithGravity(
+        "Order Placed Successfully",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+      clearCart();
+    },
+  });
 
   function alertAddress() {
     Alert.alert(
@@ -60,7 +75,15 @@ const Basket = () => {
   }
 
   function orderWithCOD() {
-    alert("COD");
+    Alert.alert(
+      "Alert",
+      "Are you sure you want to place the order ?",
+      [
+        { text: "Later", style: "cancel" },
+        { text: "Add Now", onPress: () => postNewOrder.mutate(orderDetails) },
+      ],
+      { cancelable: false }
+    );
   }
 
   function goToAdrress() {
@@ -202,7 +225,7 @@ const Basket = () => {
                           width: "50%",
                           alignItems: "center",
                           backgroundColor:
-                            selectedTab === "COD" ? Colors.primary : "white",
+                            selectedTab === "COD" ? "red" : "white",
                           borderRadius: 2,
                         }}>
                         <Text
@@ -220,7 +243,7 @@ const Basket = () => {
                           width: "50%",
                           alignItems: "center",
                           backgroundColor:
-                            selectedTab === "Online" ? Colors.primary : "white",
+                            selectedTab === "Online" ? "#60B246" : "white",
                         }}>
                         <Text
                           style={{
@@ -263,8 +286,8 @@ const Basket = () => {
                         style={styles.editButton}
                         onPress={goToAdrress}>
                         <Text style={styles.text}>
-                          <Icon name="create-outline" size={20} />
-                          {userInfo?.data?.Address?.length < 0 ? "Add" : "Edit"}
+                          <Icon name="create-outline" size={22} />
+                          {userInfo?.data?.Address?.length < 0 ? "Add" : ""}
                         </Text>
                       </Pressable>
                     </View>
@@ -303,7 +326,7 @@ const Basket = () => {
                   title={"Order Now"}
                   nav={selectedTab == "Online" && "/razorpay"}
                   handleClick={orderWithCOD}
-                  data={data}
+                  data={orderDetails}
                   orderTotal={(total + FEES.service + FEES.delivery).toFixed(2)}
                   width={"50%"}
                 />
@@ -335,9 +358,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   editButton: {
-    backgroundColor: Colors.primary,
+    backgroundColor: "#37a7ed",
     width: "15%",
-    borderRadius: 2,
+    borderRadius: 4,
   },
   text: {
     fontSize: 18,

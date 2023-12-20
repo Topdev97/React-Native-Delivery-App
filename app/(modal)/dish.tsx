@@ -6,30 +6,28 @@ import {
   Image,
   ToastAndroid,
 } from "react-native";
+
 import React, { useLayoutEffect } from "react";
 
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import { getDishById } from "@/assets/data/restaurant";
-
 import Colors from "@/constants/Colors";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 
 import useBasketStore from "@/store/basketStore";
-import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 
 const Dish = () => {
   const router = useRouter();
   const navigation = useNavigation();
 
   const { addProduct } = useBasketStore();
-
-  const { id, data } = useLocalSearchParams();
-  const item = getDishById(+id)!;
+  const { data } = useLocalSearchParams();
 
   const items = JSON.parse(data);
 
   const addToCart = () => {
-    addProduct(item);
+    addProduct(items);
     ToastAndroid.showWithGravity(
       "Item Added to Cart",
       ToastAndroid.SHORT,

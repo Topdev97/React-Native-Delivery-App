@@ -250,7 +250,11 @@ export default function AddressForm() {
           )}
 
           {editMode ? (
-            <HalfBottomButton title="Save" handleClick={handleSubmit} />
+            <HalfBottomButton
+              title="Save"
+              handleClick={handleSubmit}
+              width={"45%"}
+            />
           ) : (
             <Pressable style={styles.editButton} onPress={handleEditClick}>
               <Text style={styles.text}>
