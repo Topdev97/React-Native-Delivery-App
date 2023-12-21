@@ -7,6 +7,8 @@ import { postOrder } from "@/core/services/home";
 import { useNavigation } from "@react-navigation/native";
 import useBasketStore from "@/store/basketStore";
 import { ToastAndroid } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
+import { queries } from "@/core/constants/queryKeys";
 
 export default function RazorpayButton() {
   const webViewRef = useRef<WebView | any>(null);
@@ -16,6 +18,7 @@ export default function RazorpayButton() {
   const finalData = JSON.parse(data);
 
   const { clearCart } = useBasketStore();
+  const queryClient = useQueryClient();
 
   const order = postOrder({
     onSuccess: () => {
@@ -24,6 +27,9 @@ export default function RazorpayButton() {
         ToastAndroid.SHORT,
         ToastAndroid.CENTER
       );
+      queryClient.invalidateQueries({
+        queryKey: queries.home.userOrders.queryKey,
+      });
       clearCart();
       navigate.goBack();
     },

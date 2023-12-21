@@ -31,8 +31,8 @@ export default function favourites() {
 
   return (
     <>
-      {userInfo.favoriteMenus?.length > 0 ? (
-        <MenuCards data={userInfo.favoriteMenus} />
+      {userInfo?.favoriteMenus?.length > 0 ? (
+        <MenuCards data={userInfo?.favoriteMenus} />
       ) : (
         <View style={styles.container}>
           <View style={styles.imageContainer}>
@@ -47,7 +47,7 @@ export default function favourites() {
                 fontWeight: "bold",
                 textAlign: "center",
               }}>
-              No Items found
+              No Items Found
             </Text>
           </View>
           <View style={{ flex: 2, width: "100%" }}>

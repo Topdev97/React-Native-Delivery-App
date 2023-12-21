@@ -20,6 +20,7 @@ import LoginScreen from "./Login";
 
 import useBasketStore from "@/store/basketStore";
 import QueryClient from "@/core/lib/QueryClient";
+import { setAuthHeader } from "@/core/lib/AxiosClient";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -58,6 +59,7 @@ export default function RootLayout() {
       result = await SecureStore.getItemAsync("token");
       if (result) {
         setToken(result);
+        setAuthHeader(result);
       }
     }
     getValueFor();
@@ -66,12 +68,11 @@ export default function RootLayout() {
     return null;
   }
 
-  return token ? <RootLayoutNav /> : <LoginScreen />;
+  return token ? <RootLayoutNav /> : <LoginScreenWithQueryClient />;
 }
 
 function RootLayoutNav() {
   const navigation = useNavigation();
-
   return (
     <QueryClient>
       <BottomSheetModalProvider>
@@ -164,7 +165,7 @@ function RootLayoutNav() {
           <Stack.Screen
             name="menus"
             options={{
-              headerTitle: "Settings",
+              headerTitle: "Account",
               headerLeft: () => (
                 <TouchableOpacity
                   onPress={() => {
@@ -273,6 +274,14 @@ function RootLayoutNav() {
           />
         </Stack>
       </BottomSheetModalProvider>
+    </QueryClient>
+  );
+}
+
+function LoginScreenWithQueryClient() {
+  return (
+    <QueryClient>
+      <LoginScreen />
     </QueryClient>
   );
 }

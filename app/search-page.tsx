@@ -57,7 +57,6 @@ const SearchScreen = () => {
 
   const handleInputChange = (text: any) => {
     setSearchText(text);
-    console.log(text || "   ");
     setTimeout(() => menus.mutate({ name: text || "   " }), 1 * 1000);
   };
 

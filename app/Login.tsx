@@ -7,9 +7,12 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  ToastAndroid,
+  ActivityIndicator,
 } from "react-native";
 import useBasketStore from "@/store/basketStore";
-import utils, { Icon } from "@/constants/utils";
+import utils from "@/constants/utils";
+import { otpGenerate, verifyOTP } from "@/core/services/home";
 
 const LoginScreen = () => {
   const [name, setName] = useState("");
@@ -28,12 +31,14 @@ const LoginScreen = () => {
   const [isVerifying, setIsVerifying] = useState(false);
 
   const [verificationCode, setVerificationCode] = useState("");
+  const [enableOtp, setEnableOtp] = useState(false);
+
   const [verificationCodeError, setVerificationCodeError] = useState("");
-  const { setToken } = useBasketStore();
+  const { setToken, token } = useBasketStore();
 
   const checkName = !/^[A-Za-z\s]+$/.test(name);
   const checkEmail = !/^\S+@\S+\.\S+$/.test(email);
-  const checkPhoneNumber = !/^\d+$/.test(phoneNumber);
+  const checkPhoneNumber = !/^\d{10}$/.test(phoneNumber);
   const checkOtp = !/^\d+$/.test(otp);
   const checkVerification = !/^\d+$/.test(verificationCode);
 
@@ -44,35 +49,27 @@ const LoginScreen = () => {
     setOtpError("");
 
     if (checkName) {
-      setNameError("Invalid name");
+      setNameError("Invalid Name");
     }
 
     if (checkEmail) {
-      setEmailError("Invalid email address");
+      setEmailError("Invalid Email Address");
     }
 
     if (checkPhoneNumber) {
-      setPhoneNumberError("Invalid phone number");
+      setPhoneNumberError("Invalid Phone Number");
     }
 
     if (checkOtp) {
       setOtpError("Invalid OTP");
       return;
     }
-
-    async function save() {
-      await SecureStore.setItemAsync("token", "token");
+    if (!checkOtp && !checkPhoneNumber) {
+      otpVerify.mutate({
+        phoneNumber: phoneNumber.toString(),
+        otp: otp.toString(),
+      });
     }
-    if (!checkPhoneNumber && !checkOtp) {
-      save();
-    }
-    async function getValueFor() {
-      let result = await SecureStore.getItemAsync("token");
-      if (result) {
-        setToken(result);
-      }
-    }
-    getValueFor();
   };
 
   const handleSubmit = () => {
@@ -86,33 +83,18 @@ const LoginScreen = () => {
     }
 
     if (checkEmail) {
-      setEmailError("Invalid email address");
+      setEmailError("Invalid Email Address");
     }
 
     if (checkPhoneNumber) {
-      setPhoneNumberError("Invalid phone number");
+      setPhoneNumberError("Invalid Phone Number");
     }
 
     if (checkVerification) {
       setVerificationCodeError("Verification code is required");
     }
-
-    if (!checkName && !checkEmail && !checkPhoneNumber && !checkOtp) {
-      save();
-    }
-
-    async function save() {
-      await SecureStore.setItemAsync("token", otp);
-    }
-
-    async function getValueFor() {
-      let result = await SecureStore.getItemAsync("token");
-      if (result) {
-        setToken(result);
-      }
-    }
-    getValueFor();
   };
+
   const handleSubmitForCreate = () => {
     setNameError("");
     setEmailError("");
@@ -121,36 +103,36 @@ const LoginScreen = () => {
     setVerificationCodeError("");
 
     if (checkName) {
-      setNameError("Invalid name");
+      setNameError("Invalid Name");
     }
 
     if (checkEmail) {
-      setEmailError("Invalid email address");
+      setEmailError("Invalid Email Address");
     }
 
     if (checkPhoneNumber) {
-      setPhoneNumberError("Invalid phone number");
+      setPhoneNumberError("Invalid Phone Number");
     }
 
     if (checkVerification) {
       setVerificationCodeError("Verification code is required");
     }
 
-    if (!checkName && !checkEmail && !checkPhoneNumber && !checkVerification) {
-      save();
-    }
+    // if (!checkName && !checkEmail && !checkPhoneNumber && !checkVerification) {
+    //   save();
+    // }
 
-    async function save() {
-      await SecureStore.setItemAsync("token", "token");
-    }
+    // async function save() {
+    //   await SecureStore.setItemAsync("token", "token");
+    // }
 
-    async function getValueFor() {
-      let result = await SecureStore.getItemAsync("token");
-      if (result) {
-        setToken(result);
-      }
-    }
-    getValueFor();
+    // async function getValueFor() {
+    //   let result = await SecureStore.getItemAsync("token");
+    //   if (result) {
+    //     setToken(result);
+    //   }
+    // }
+    // getValueFor();
   };
 
   const handleCreateAccount = () => {
@@ -167,20 +149,32 @@ const LoginScreen = () => {
     setPhoneNumberError("");
     setVerificationCode("");
     if (checkName) {
-      setNameError("Invalid name");
+      setNameError("Invalid Name");
     }
 
     if (checkEmail) {
-      setEmailError("Invalid email address");
+      setEmailError("Invalid Email Address");
     }
 
     if (checkPhoneNumber) {
-      setPhoneNumberError("Invalid phone number");
+      setPhoneNumberError("Invalid Phone Number");
     }
 
     if (!checkName && !checkEmail && !checkPhoneNumber) {
       setIsVerifying(true);
       setIsRegistering(true);
+    }
+  };
+
+  const handleOTP = () => {
+    setOtpError("");
+    setPhoneNumberError("");
+
+    if (checkPhoneNumber) {
+      setPhoneNumberError("Invalid Phone Number");
+    } else {
+      setEnableOtp(true);
+      generateOTP.mutate({ phoneNumber: phoneNumber.toString() });
     }
   };
 
@@ -195,16 +189,37 @@ const LoginScreen = () => {
     setName("");
   };
 
+  const generateOTP = otpGenerate({
+    onSuccess: () => {
+      ToastAndroid.showWithGravity(
+        "OTP has been sent successfully.",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
+  });
+
+  const otpVerify = verifyOTP({
+    onSuccess: async (data: any) => {
+      await SecureStore.setItemAsync("token", data?.token?.access?.token);
+      let result = await SecureStore.getItemAsync("token");
+      if (result) {
+        setToken(result);
+      }
+
+      ToastAndroid.showWithGravity(
+        "OTP has been Verified successfully.",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
+  });
+
   return (
     <View style={styles.container}>
       {isRegistering ? (
         // Registration Section
         <View>
-          {isRegistering ? (
-            <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-              <Icon name="chevron-back" size={28} color="black" mb={-2} />
-            </TouchableOpacity>
-          ) : null}
           <Text style={styles.title}>Create Account:</Text>
           <TextInput
             style={styles.input}
@@ -226,7 +241,10 @@ const LoginScreen = () => {
             style={styles.input}
             placeholder="Phone Number"
             value={phoneNumber}
-            onChangeText={(text) => setPhoneNumber(text)}
+            onChangeText={(text) => {
+              setPhoneNumberError("");
+              setPhoneNumber(text);
+            }}
           />
           {phoneNumberError && (
             <Text style={styles.errorText}>{phoneNumberError}</Text>
@@ -237,7 +255,7 @@ const LoginScreen = () => {
               <Text style={styles.title}>Verification Code:</Text>
               <Text style={styles.subTitle}>
                 Please type the verification code sent to{" "}
-                <Text style={{ fontWeight: "800" }}>9876543210</Text>
+                <Text style={{ fontWeight: "800" }}>+91{phoneNumber}</Text>
               </Text>
               <TextInput
                 style={styles.verifyInput}
@@ -285,23 +303,66 @@ const LoginScreen = () => {
               style={styles.input}
               placeholder="Phone Number"
               value={phoneNumber}
-              onChangeText={(text) => setPhoneNumber(text)}
+              onChangeText={(text) => {
+                setPhoneNumberError("");
+                setPhoneNumber(text);
+              }}
             />
             {phoneNumberError && (
               <Text style={styles.errorText}>{phoneNumberError}</Text>
             )}
 
-            <TextInput
-              style={styles.input}
-              placeholder="OTP"
-              value={otp}
-              onChangeText={(text) => setOtp(text)}
-            />
+            {enableOtp && (
+              <TextInput
+                style={styles.input}
+                placeholder="Verification Code"
+                value={otp}
+                onChangeText={(text) => setOtp(text)}
+              />
+            )}
             {otpError && <Text style={styles.errorText}>{otpError}</Text>}
+            <Text style={styles.subTitle}>
+              Click Here to{" "}
+              <Text
+                onPress={handleOTP}
+                style={{ fontWeight: "800", fontSize: 14 }}>
+                Resend OTP !
+              </Text>
+            </Text>
           </View>
-          <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-            <Text style={styles.signInText}>Sign Inn</Text>
-          </TouchableOpacity>
+          {enableOtp ? (
+            <TouchableOpacity
+              style={styles.signInButton}
+              onPress={handleSignIn}>
+              {otpVerify.isPending ? (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-evenly",
+                    alignItems: "center",
+                  }}>
+                  <ActivityIndicator size="small" color="white" />
+                </View>
+              ) : (
+                <Text style={styles.signInText}>Sign In</Text>
+              )}
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={styles.signInButton} onPress={handleOTP}>
+              {generateOTP.isPending ? (
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-evenly",
+                    alignItems: "center",
+                  }}>
+                  <ActivityIndicator size="small" color="white" />
+                </View>
+              ) : (
+                <Text style={styles.signInText}>Get OTP</Text>
+              )}
+            </TouchableOpacity>
+          )}
           <Text style={styles.createAccountText} onPress={handleCreateAccount}>
             Don't have an account ?
             <Text style={{ fontWeight: "800" }}> Create One</Text>

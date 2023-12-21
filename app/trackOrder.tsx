@@ -220,7 +220,7 @@ const Drawer = ({ item }) => {
                 </View> */}
 
                 <View style={styles.totalRow}>
-                  <Text style={styles.total}>Total Amount with charges</Text>
+                  <Text style={styles.total}>Total Amount with Charges</Text>
                   <Text style={{ fontSize: 18, fontWeight: "bold" }}>
                     ₹{item?.bill_total}
                   </Text>

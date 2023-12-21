@@ -76,7 +76,7 @@ export default function CatMenu() {
                     fontWeight: "bold",
                     textAlign: "center",
                   }}>
-                  No Items found
+                  No Items Found
                 </Text>
               </View>
               <View style={{ flex: 2, width: "100%" }}>

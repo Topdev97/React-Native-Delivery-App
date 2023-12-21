@@ -23,15 +23,19 @@ import { Icon } from "@/constants/utils";
 import { getUserInfo, postOrder } from "@/core/services/home";
 
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+import { useQueryClient } from "@tanstack/react-query";
+import { queries } from "@/core/constants/queryKeys";
 
 const Basket = () => {
   const userInfo = getUserInfo({});
   const [order, setOrder] = useState(false);
 
   const navigation = useNavigation();
-  const { clearCart } = useBasketStore();
+  const queryClient = useQueryClient();
 
+  const { clearCart } = useBasketStore();
   const [selectedTab, setSelectedTab] = useState("COD");
+
   const { products, total, reduceProduct } = useBasketStore();
 
   const FEES = {
@@ -58,6 +62,9 @@ const Basket = () => {
         ToastAndroid.SHORT,
         ToastAndroid.CENTER
       );
+      queryClient.invalidateQueries({
+        queryKey: queries.home.userOrders.queryKey,
+      });
       clearCart();
     },
   });

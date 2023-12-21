@@ -1,9 +1,9 @@
 import { QueryClientConfig } from '@tanstack/react-query'
-import {BASE_URL,RAZOR_PAY_ID,EXPO_PUBLIC_GOOGLE_API_KEY} from "@env"
+import {BASE_URL,RAZOR_PAY_ID,EXPO_PUBLIC_GOOGLE_API_KEY,AUTH_BASE_URL} from "@env"
 
 
 export const ENV = {
-  BASE_URL,
+  BASE_URL,AUTH_BASE_URL,
   RAZOR_PAY_ID,EXPO_PUBLIC_GOOGLE_API_KEY
 }
 

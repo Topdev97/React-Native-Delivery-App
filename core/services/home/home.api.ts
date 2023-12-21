@@ -68,6 +68,18 @@ export const postReviews = (data:any) =>
     data,
   })    
 
+  export const generateOTP = (data:any) =>
+  POST({
+    url: ENV.AUTH_BASE_URL + `auth/generateotp`,
+    data,
+  })    
+
+  export const otpVerify = (data:any) =>
+  POST({
+    url: ENV.AUTH_BASE_URL + `auth/verifyotp`,
+    data,
+  })  
+
 export const test=()=>
 GET({
   url: ENV.BASE_URL + 'posts',

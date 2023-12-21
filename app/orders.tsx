@@ -10,13 +10,13 @@ import {
 } from "react-native";
 
 import moment from "moment";
-import { Link } from "expo-router";
-
 import Colors from "@/constants/Colors";
-import { useNavigation } from "@react-navigation/native";
 
+import { useNavigation } from "@react-navigation/native";
 import { getUserSpecifiedOrders } from "@/core/services/home";
+
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+import Loading from "@/components/Pages/Loading";
 
 export default function OrderHistory() {
   const navigation = useNavigation();
@@ -26,69 +26,76 @@ export default function OrderHistory() {
 
   return (
     <>
-      {userOrders?.data?.orders?.length < 0 ? (
-        <EmptyIllustration />
+      {userOrders.isLoading ? (
+        <Loading />
       ) : (
-        <ScrollView style={styles.container}>
-          {userOrders?.data?.orders?.map((item, i) => {
-            const indianDateTime = moment
-              .utc(item?.created_at)
-              .utcOffset("+05:30");
-            const date = indianDateTime.format("YYYY-MM-DD");
-            const time = indianDateTime.format("hh:mm A");
-            return (
-              <View style={{ paddingVertical: 0 }} key={i}>
-                <View
-                  style={{ ...styles.orderContainer, width: fullwidth - 20 }}>
-                  <View style={styles.flex}>
-                    <Text style={styles.title}>
-                      {item?.Items.length > 1
-                        ? `${item?.Items?.[0]?.name} + ${
-                            item?.Items.length - 1
-                          } Items`
-                        : item?.Items?.[0]?.name}
-                    </Text>
-                    <Text style={styles.title}> ₹{item?.bill_total}</Text>
-                  </View>
-
-                  <View style={{ ...styles.flex, paddingTop: 6 }}>
-                    <View>
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          fontWeight: "800",
-                          color: "#666",
-                        }}>
-                        Order ID #000{item?.id}
-                      </Text>
-                      <Text
-                        style={{
-                          fontSize: 14,
-                          fontWeight: "800",
-                          color: "#666",
-                        }}>
-                        {date} at {time}
-                      </Text>
-                    </View>
-                    <Text
+        <>
+          {userOrders?.data?.orders?.length < 0 ? (
+            <EmptyIllustration />
+          ) : (
+            <ScrollView style={styles.container}>
+              {userOrders?.data?.orders?.map((item, i) => {
+                const indianDateTime = moment
+                  .utc(item?.created_at)
+                  .utcOffset("+05:30");
+                const date = indianDateTime.format("YYYY-MM-DD");
+                const time = indianDateTime.format("hh:mm A");
+                return (
+                  <View style={{ paddingVertical: 0 }} key={i}>
+                    <View
                       style={{
-                        ...styles.tag,
-                        backgroundColor:
-                          item.orderStatus == "delivered"
-                            ? Colors.green
-                            : item.orderStatus == "cancelled"
-                            ? "red"
-                            : Colors.primary,
+                        ...styles.orderContainer,
+                        width: fullwidth - 20,
                       }}>
-                      {item?.orderStatus == "new"
-                        ? "Accepted"
-                        : item?.orderStatus.charAt(0).toUpperCase() +
-                          item?.orderStatus.slice(1)}
-                    </Text>
-                  </View>
+                      <View style={styles.flex}>
+                        <Text style={styles.title}>
+                          {item?.Items.length > 1
+                            ? `${item?.Items?.[0]?.name} + ${
+                                item?.Items.length - 1
+                              } Items`
+                            : item?.Items?.[0]?.name}
+                        </Text>
+                        <Text style={styles.title}> ₹{item?.bill_total}</Text>
+                      </View>
 
-                  <View style={styles.buttonContainer}>
-                    {/* {item.orderStatus === "cancelled" && (
+                      <View style={{ ...styles.flex, paddingTop: 6 }}>
+                        <View>
+                          <Text
+                            style={{
+                              fontSize: 14,
+                              fontWeight: "800",
+                              color: "#666",
+                            }}>
+                            Order ID #000{item?.id}
+                          </Text>
+                          <Text
+                            style={{
+                              fontSize: 14,
+                              fontWeight: "800",
+                              color: "#666",
+                            }}>
+                            {date} at {time}
+                          </Text>
+                        </View>
+                        <Text
+                          style={{
+                            ...styles.tag,
+                            backgroundColor:
+                              item.orderStatus == "delivered"
+                                ? Colors.green
+                                : item.orderStatus == "cancelled"
+                                ? "red"
+                                : Colors.primary,
+                          }}>
+                          {item?.orderStatus == "new"
+                            ? "Accepted"
+                            : item?.orderStatus.charAt(0).toUpperCase() +
+                              item?.orderStatus.slice(1)}
+                        </Text>
+                      </View>
+
+                      <View style={styles.buttonContainer}>
+                        {/* {item.orderStatus === "cancelled" && (
                       <View
                         style={{
                           width: fullwidth / 2.5,
@@ -111,62 +118,66 @@ export default function OrderHistory() {
                         </Link>
                       </View>
                     )} */}
-                    {item.orderStatus === "delivered" && (
-                      <>
-                        <View
-                          style={{
-                            width: "100%",
-                            height: 42,
-                            ...styles.button,
-                          }}>
-                          <Pressable
-                            onPress={() => {
-                              navigation.navigate("review", {
-                                data: JSON.stringify(item),
-                              });
-                              navigation.canGoBack(true);
-                            }}
-                            style={styles.link}>
-                            <Text style={styles.buttonText}>Rate Order</Text>
-                          </Pressable>
-                        </View>
-                      </>
-                    )}
-                    {(item.orderStatus === "preparing" ||
-                      item.orderStatus === "new" ||
-                      item.orderStatus === "ready" ||
-                      item.orderStatus === "picked" ||
-                      item.orderStatus === "cancelled") && (
-                      <View
-                        style={{
-                          width: "100%",
-                          height: 42,
-                          ...styles.button,
-                        }}>
-                        <Pressable
-                          onPress={() => {
-                            navigation.navigate("trackOrder", {
-                              data: JSON.stringify(item),
-                            });
-                            navigation.canGoBack(true);
-                          }}
-                          style={styles.link}>
-                          <Text style={styles.buttonText}>
-                            {" "}
-                            {item.orderStatus === "cancelled"
-                              ? "View"
-                              : "Track"}{" "}
-                            Order
-                          </Text>
-                        </Pressable>
+                        {item.orderStatus === "delivered" && (
+                          <>
+                            <View
+                              style={{
+                                width: "100%",
+                                height: 42,
+                                ...styles.button,
+                              }}>
+                              <Pressable
+                                onPress={() => {
+                                  navigation.navigate("review", {
+                                    data: JSON.stringify(item),
+                                  });
+                                  navigation.canGoBack(true);
+                                }}
+                                style={styles.link}>
+                                <Text style={styles.buttonText}>
+                                  Rate Order
+                                </Text>
+                              </Pressable>
+                            </View>
+                          </>
+                        )}
+                        {(item.orderStatus === "preparing" ||
+                          item.orderStatus === "new" ||
+                          item.orderStatus === "ready" ||
+                          item.orderStatus === "picked" ||
+                          item.orderStatus === "cancelled") && (
+                          <View
+                            style={{
+                              width: "100%",
+                              height: 42,
+                              ...styles.button,
+                            }}>
+                            <Pressable
+                              onPress={() => {
+                                navigation.navigate("trackOrder", {
+                                  data: JSON.stringify(item),
+                                });
+                                navigation.canGoBack(true);
+                              }}
+                              style={styles.link}>
+                              <Text style={styles.buttonText}>
+                                {" "}
+                                {item.orderStatus === "cancelled"
+                                  ? "View"
+                                  : "Track"}{" "}
+                                Order
+                              </Text>
+                            </Pressable>
+                          </View>
+                        )}
                       </View>
-                    )}
+                    </View>
                   </View>
-                </View>
-              </View>
-            );
-          })}
-        </ScrollView>
+                );
+              })}
+            </ScrollView>
+          )}
+        </>
       )}
     </>
   );

@@ -3,6 +3,7 @@ import { API_CONFIG } from '@/config/app.config'
 import { TOKEN_KEY } from '@/core/constants/index'
 
 
+
 const axiosClient = axios.create()
 
 axiosClient.defaults.baseURL = API_CONFIG.baseURL
@@ -10,22 +11,6 @@ axiosClient.defaults.timeout = API_CONFIG.timeout
 axiosClient.defaults.headers.Accept = 'application/json'
 axiosClient.defaults.withCredentials = true
 
-const tempToken="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImlhdCI6MTcwMjA1OTI2MiwiZXhwIjoxNzA0NjUxMjYyLCJ0eXBlIjoiYWNjZXNzIn0.rp1Jy3DZMaBpx2FjAJf_QHWeK4rPq-7uteZdzrgMERE"
-
-// const passcode = getPasscode()
-// const orgId = getOrgId()
-
-// if (passcode) {
-//   setAuthHeader(passcode || "jj")
-// }
-
-// if (orgId) {
-//   setOrgHeader(orgId || "kk")
-// }
-
-if (tempToken) {
-  setAuthHeader(tempToken)
-}
 
 // Request Interceptor
 axiosClient.interceptors.request.use(

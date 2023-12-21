@@ -168,7 +168,6 @@ const LocationSearch = () => {
                 justifyContent: "space-evenly",
                 alignItems: "center",
               }}>
-              {/* <Text style={styles.buttonTextLoading}>Loading</Text> */}
               <ActivityIndicator size="small" color="white" />
             </View>
           ) : (

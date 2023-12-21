@@ -62,6 +62,12 @@ export const postOrder = (options: any) =>
 export const postReview = (options: any) =>
   useMutation({ mutationFn: API.postReviews, ...options });
 
+export const otpGenerate = (options: any) =>
+  useMutation({ mutationFn: API.generateOTP, ...options });
+
+export const verifyOTP = (options: any) =>
+  useMutation({ mutationFn: API.otpVerify, ...options });
+
 export const test = (options: any) =>
   useQuery({
     queryKey: queries.home.mainCategories.queryKey,
