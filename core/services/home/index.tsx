@@ -68,6 +68,12 @@ export const otpGenerate = (options: any) =>
 export const verifyOTP = (options: any) =>
   useMutation({ mutationFn: API.otpVerify, ...options });
 
+export const createUser = (options: any) =>
+  useMutation({ mutationFn: API.userCreate, ...options });
+
+export const createAddress = (options: any) =>
+  useMutation({ mutationFn: API.createAddress, ...options });
+
 export const test = (options: any) =>
   useQuery({
     queryKey: queries.home.mainCategories.queryKey,

@@ -15,8 +15,8 @@ import Colors from "@/constants/Colors";
 import { useNavigation } from "@react-navigation/native";
 import { getUserSpecifiedOrders } from "@/core/services/home";
 
-import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 import Loading from "@/components/Pages/Loading";
+import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 
 export default function OrderHistory() {
   const navigation = useNavigation();
@@ -30,7 +30,7 @@ export default function OrderHistory() {
         <Loading />
       ) : (
         <>
-          {userOrders?.data?.orders?.length < 0 ? (
+          {userOrders?.data?.orders?.length <= 0 ? (
             <EmptyIllustration />
           ) : (
             <ScrollView style={styles.container}>

@@ -16,12 +16,18 @@ import {
   Pressable,
   Linking,
   ToastAndroid,
+  Alert,
 } from "react-native";
 import useBasketStore from "@/store/basketStore";
-import { getUserInfo, updateUserAddress } from "@/core/services/home";
+import {
+  createAddress,
+  getUserInfo,
+  updateUserAddress,
+} from "@/core/services/home";
 import { useQueryClient } from "@tanstack/react-query";
 import { queries } from "@/core/constants/queryKeys";
 import Loading from "@/components/Pages/Loading";
+import useCommonStore from "@/store/commonStore";
 
 export default function AddressForm() {
   const [formData, setFormData] = useState();
@@ -29,8 +35,10 @@ export default function AddressForm() {
   const queryClient = useQueryClient();
   const [editMode, setEditMode] = useState(false);
 
-  const user = getUserInfo({ enabled: false });
+  const user = getUserInfo({});
   const { currentLocation, setCurrentLocation } = useBasketStore();
+
+  const { geoPoint } = useCommonStore();
 
   const addressMutate = updateUserAddress({
     onSuccess: () => {
@@ -39,6 +47,20 @@ export default function AddressForm() {
       });
       ToastAndroid.showWithGravity(
         "Address updated successfully",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
+  });
+
+  const newAddress = createAddress({
+    onSuccess: (data: any) => {
+      setFormData(data);
+      queryClient.invalidateQueries({
+        queryKey: queries.home.userAddress.queryKey,
+      });
+      ToastAndroid.showWithGravity(
+        "Address added successfully",
         ToastAndroid.SHORT,
         ToastAndroid.CENTER
       );
@@ -54,13 +76,32 @@ export default function AddressForm() {
 
   const handleSubmit = () => {
     const hnumber = Number(formData?.house_no);
+    if (!geoPoint.lat && !geoPoint.lon) {
+      Alert.alert(
+        "Alert",
+        `Please choose your Geo Location by clicking the "Select on Map"`,
+        [{ text: "Ok", style: "cancel" }],
+        { cancelable: false }
+      );
+    } else {
+      newAddress.mutate({
+        house_no: hnumber,
+        user_id: user?.data?.id,
+        address_type: "Home",
+        ...geoPoint,
+        ...formData,
+      });
+      setEditMode(false);
+    }
+  };
 
+  const handleUpdate = () => {
+    const hnumber = Number(formData?.house_no);
     delete formData?.user_id;
 
     addressMutate.mutate({
       Address: { house_no: hnumber, ...formData },
     });
-
     setEditMode(false);
   };
 
@@ -120,13 +161,17 @@ export default function AddressForm() {
             {editMode ? "Edit Address" : "Delivery Address"}
           </Text>
           <Text style={styles.currentAddressText}>
-            {user?.data?.Address?.length < 0 ? (
-              "Clikc Add to Add Your Address  👇"
+            {user?.data?.Address?.length <= 0 ? (
+              editMode ? (
+                "Add Your Address"
+              ) : (
+                "Click Here to Add Your Address 👇"
+              )
             ) : (
               <>
-                {formData?.house_no}, {formData?.street_address},{" "}
-                {formData?.area}, {formData?.landmark}, {formData?.city},{" "}
-                {formData?.state} - {formData?.pincode}
+                {formData?.house_no}, {formData?.street_address},
+                {formData?.area},{formData?.landmark},{formData?.city},
+                {formData?.state}-{formData?.pincode}.
               </>
             )}
           </Text>
@@ -136,8 +181,8 @@ export default function AddressForm() {
                 <Text style={styles.inputLabel}>House No:</Text>
                 <TextInput
                   style={styles.input}
-                  value={formData?.house_no?.toString()}
                   keyboardType="numeric"
+                  value={formData?.house_no?.toString() || ""}
                   onChangeText={(text) =>
                     handleChange("house_no", Number(text))
                   }
@@ -147,7 +192,7 @@ export default function AddressForm() {
                 <Text style={styles.inputLabel}>Street:</Text>
                 <TextInput
                   style={styles.input}
-                  value={formData.street_address}
+                  value={formData?.street_address || ""}
                   onChangeText={(text) => handleChange("street_address", text)}
                 />
               </View>
@@ -155,7 +200,7 @@ export default function AddressForm() {
                 <Text style={styles.inputLabel}>Area:</Text>
                 <TextInput
                   style={styles.input}
-                  value={formData.area}
+                  value={formData?.area || ""}
                   onChangeText={(text) => handleChange("area", text)}
                 />
               </View>
@@ -163,7 +208,7 @@ export default function AddressForm() {
                 <Text style={styles.inputLabel}>Landmark:</Text>
                 <TextInput
                   style={styles.input}
-                  value={formData.landmark}
+                  value={formData?.landmark || ""}
                   onChangeText={(text) => handleChange("landmark", text)}
                 />
               </View>
@@ -171,7 +216,7 @@ export default function AddressForm() {
                 <Text style={styles.inputLabel}>City:</Text>
                 <TextInput
                   style={styles.input}
-                  value={formData.city}
+                  value={formData?.city || ""}
                   onChangeText={(text) => handleChange("city", text)}
                 />
               </View>
@@ -179,7 +224,7 @@ export default function AddressForm() {
                 <Text style={styles.inputLabel}>State:</Text>
                 <TextInput
                   style={styles.input}
-                  value={formData.state}
+                  value={formData?.state || ""}
                   onChangeText={(text) => handleChange("state", text)}
                 />
               </View>
@@ -187,10 +232,11 @@ export default function AddressForm() {
                 <Text style={styles.inputLabel}>Pincode :</Text>
                 <TextInput
                   style={styles.input}
-                  value={formData.pincode}
+                  value={formData?.pincode || ""}
                   onChangeText={(text) => handleChange("pincode", text)}
                 />
               </View>
+              {/* GEO LOCATION */}
               <View style={styles.formGroup}>
                 <View
                   style={{
@@ -212,7 +258,7 @@ export default function AddressForm() {
                     <Link<{ pathname: any; params: { id: any } }>
                       href={{
                         pathname: "/(modal)/location-search",
-                        params: { id: formData?.id },
+                        params: { id: formData?.id || "" },
                       }}
                       style={{ marginBottom: 12, marginTop: 6 }}>
                       <Text
@@ -233,7 +279,7 @@ export default function AddressForm() {
                     <Link<{ pathname: any; params: { id: any } }>
                       href={{
                         pathname: "/(modal)/location-search",
-                        params: { id: formData?.id },
+                        params: { id: formData?.id || "" },
                       }}
                       style={{
                         flexDirection: "row",
@@ -251,8 +297,10 @@ export default function AddressForm() {
 
           {editMode ? (
             <HalfBottomButton
-              title="Save"
-              handleClick={handleSubmit}
+              title={user?.data?.Address?.length <= 0 ? "Submit" : "Update"}
+              handleClick={
+                user?.data?.Address?.length <= 0 ? handleSubmit : handleUpdate
+              }
               width={"45%"}
             />
           ) : (

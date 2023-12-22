@@ -21,6 +21,7 @@ import { updateUserAddress } from "@/core/services/home";
 
 import { useQueryClient } from "@tanstack/react-query";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import useCommonStore from "@/store/commonStore";
 
 const LocationSearch = () => {
   const navigation = useNavigation();
@@ -35,13 +36,15 @@ const LocationSearch = () => {
   const { id } = useLocalSearchParams();
 
   const queryClient = useQueryClient();
+  const { setGeoPoint } = useCommonStore();
+
   const addressMutate = updateUserAddress({
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queries.home.userAddress.queryKey,
       });
       ToastAndroid.showWithGravity(
-        "Address updated successfully",
+        "Geo location updated successfully",
         ToastAndroid.SHORT,
         ToastAndroid.CENTER
       );
@@ -81,19 +84,20 @@ const LocationSearch = () => {
   }, []);
 
   function onPressConfirm() {
-    console.log({
-      id: Number(id),
-      lat: location.latitude.toString(),
-      lon: location.longitude.toString(),
-    });
-
-    addressMutate.mutate({
-      Address: {
-        id: Number(id),
+    if (id) {
+      addressMutate.mutate({
+        Address: {
+          id: Number(id),
+          lat: location.latitude.toString(),
+          lon: location.longitude.toString(),
+        },
+      });
+    } else {
+      setGeoPoint({
         lat: location.latitude.toString(),
         lon: location.longitude.toString(),
-      },
-    });
+      });
+    }
     navigation.goBack();
   }
 

@@ -19,7 +19,7 @@ export default function Menus() {
   const handleLogout = () => {
     Alert.alert(
       "Logout",
-      "Are you sure you want to log out?",
+      "Are you sure want to logout?",
       [
         { text: "Cancel", style: "cancel" },
         { text: "OK", onPress: () => Logout() },
@@ -44,7 +44,7 @@ export default function Menus() {
       <View style={styles.userProfileContainer}>
         <Image
           source={{
-            uri: "https://www.themoviedb.org/t/p/w500/upKrdABAMK7jZevWAoPYI24iKlR.jpg",
+            uri: user?.data?.image,
           }}
           style={styles.userProfileImage}
         />

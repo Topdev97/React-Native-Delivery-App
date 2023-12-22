@@ -274,7 +274,7 @@ const Basket = () => {
                         justifyContent: "space-between",
                       }}>
                       <Text style={styles.currentAddressText}>
-                        {userInfo?.data?.Address?.length < 0 ? (
+                        {userInfo?.data?.Address?.length <= 0 ? (
                           "Clikc Add to Add Your Address  👉"
                         ) : (
                           <>
@@ -293,8 +293,10 @@ const Basket = () => {
                         style={styles.editButton}
                         onPress={goToAdrress}>
                         <Text style={styles.text}>
+                          {userInfo?.data?.Address?.length < 0
+                            ? "Add "
+                            : "Edit "}
                           <Icon name="create-outline" size={22} />
-                          {userInfo?.data?.Address?.length < 0 ? "Add" : ""}
                         </Text>
                       </Pressable>
                     </View>
@@ -322,7 +324,7 @@ const Basket = () => {
           )}
           {products.length > 0 ? (
             <>
-              {userInfo?.data?.Address?.length < 0 ? (
+              {userInfo?.data?.Address?.length <= 0 ? (
                 <HalfBottomButton
                   title="Order Now"
                   handleClick={alertAddress}
@@ -366,7 +368,7 @@ const styles = StyleSheet.create({
   },
   editButton: {
     backgroundColor: "#37a7ed",
-    width: "15%",
+    width: "25%",
     borderRadius: 4,
   },
   text: {

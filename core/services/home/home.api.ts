@@ -80,6 +80,18 @@ export const postReviews = (data:any) =>
     data,
   })  
 
+  export const userCreate = (data:any) =>
+  POST({
+    url: ENV.AUTH_BASE_URL + `dashboard/user/staffs`,
+    data,
+  })   
+
+  export const createAddress = (data:any) =>
+  POST({
+    url: ENV.BASE_URL + `address`,
+    data,
+  })   
+
 export const test=()=>
 GET({
   url: ENV.BASE_URL + 'posts',

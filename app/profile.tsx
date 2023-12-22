@@ -8,15 +8,13 @@ import {
 } from "react-native";
 
 import React, { useEffect, useState } from "react";
-
-import useCommonStore from "@/store/commonStore";
-import { getUserInfo, updateUser } from "@/core/services/home";
-
 import { queries } from "@/core/constants/queryKeys";
-import { useQueryClient } from "@tanstack/react-query";
 
-import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigation } from "@react-navigation/native";
+
+import { getUserInfo, updateUser } from "@/core/services/home";
+import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 
 export default function Profile() {
   const [name, setName] = useState<any>("");
@@ -55,7 +53,7 @@ export default function Profile() {
       <View style={styles.userProfileContainer}>
         <Image
           source={{
-            uri: "https://www.themoviedb.org/t/p/w500/upKrdABAMK7jZevWAoPYI24iKlR.jpg",
+            uri: user?.data?.image,
           }}
           style={styles.userProfileImage}
         />
