@@ -14,7 +14,7 @@ const useCommonStore = create<BasketState>()((set) => ({
     setUserInfo:(userInfo:any)=> {
     set({userInfo})
   },
-  geoPoint:{ lat: "", lon:""},
+  geoPoint:{ lat:0, lon:0},
   setGeoPoint:(geoPoint:any)=>{
     set({geoPoint})
   }

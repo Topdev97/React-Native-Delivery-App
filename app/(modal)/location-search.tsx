@@ -4,7 +4,7 @@ import * as Location from "expo-location";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import MapView, { Callout, Marker } from "react-native-maps";
 
 import {
@@ -14,10 +14,11 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ToastAndroid,
+  Image,
 } from "react-native";
 
 import { queries } from "@/core/constants/queryKeys";
-import { updateUserAddress } from "@/core/services/home";
+import { getUserInfo, updateUserAddress } from "@/core/services/home";
 
 import { useQueryClient } from "@tanstack/react-query";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
@@ -36,13 +37,21 @@ const LocationSearch = () => {
   const { id } = useLocalSearchParams();
 
   const queryClient = useQueryClient();
-  const { setGeoPoint } = useCommonStore();
+  const user = getUserInfo({});
+
+  const { setGeoPoint, geoPoint } = useCommonStore();
 
   const addressMutate = updateUserAddress({
-    onSuccess: () => {
+    onSuccess: (data: any) => {
+      setGeoPoint({
+        lat: Number(data?.Address?.[0]?.lat),
+        lon: Number(data?.Address?.[0]?.lon),
+      });
+
       queryClient.invalidateQueries({
         queryKey: queries.home.userAddress.queryKey,
       });
+
       ToastAndroid.showWithGravity(
         "Geo location updated successfully",
         ToastAndroid.SHORT,
@@ -66,22 +75,41 @@ const LocationSearch = () => {
       setLoading(true);
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
-
         if (status !== "granted") {
           console.error("Location permission denied");
           return;
         }
 
-        let location = await Location.getCurrentPositionAsync({});
-
-        fetchGeoData(location.coords.latitude, location.coords.longitude);
+        if (geoPoint.lat) {
+          fetchGeoData(Number(geoPoint.lat), Number(geoPoint.lon));
+        } else {
+          let location = await Location.getCurrentPositionAsync({});
+          fetchGeoData(location.coords.latitude, location.coords.longitude);
+        }
       } catch (error) {
         setLoading(true);
         console.error("Error requesting location permission:", error);
       }
     };
     getLocation();
-  }, []);
+  }, [geoPoint]);
+
+  useEffect(() => {
+    if (user?.data?.Address?.[0]?.lat && user?.data?.Address?.[0]?.lon) {
+      setGeoPoint({
+        lat: Number(user?.data?.Address?.[0]?.lat),
+        lon: Number(user?.data?.Address?.[0]?.lon),
+      });
+    }
+  }, [user?.data]);
+
+  const markerRef = useRef(null);
+
+  const onRegionChangeComplete = () => {
+    if (markerRef && markerRef.current && markerRef.current.showCallout) {
+      markerRef.current.showCallout();
+    }
+  };
 
   function onPressConfirm() {
     if (id) {
@@ -144,10 +172,17 @@ const LocationSearch = () => {
         }}
       />
 
-      <MapView showsUserLocation={true} style={styles.map} region={location}>
+      <MapView
+        showsUserLocation={true}
+        style={styles.map}
+        region={location}
+        onRegionChangeComplete={onRegionChangeComplete}>
         <Marker
           draggable={true}
+          title="Long Press"
+          description="Long Press this marker to change Location"
           coordinate={location}
+          ref={markerRef}
           onDragEnd={(e) => {
             setLocation({
               ...location,
@@ -155,8 +190,17 @@ const LocationSearch = () => {
               longitude: e.nativeEvent.coordinate.longitude,
             });
           }}>
-          <Callout>
-            <Text>Long press this marker to change Location</Text>
+          <Image
+            source={require("@/assets/data/map-pin.png")}
+            style={{ width: 30, height: 42 }}
+            resizeMode="contain"
+          />
+
+          <Callout style={{ width: 250 }}>
+            <Text
+              style={{ fontSize: 13, fontWeight: "800", textAlign: "center" }}>
+              Press and hold the marker to update your location.
+            </Text>
           </Callout>
         </Marker>
       </MapView>

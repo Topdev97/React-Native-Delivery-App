@@ -8,11 +8,16 @@ import {
   Image,
 } from "react-native";
 import React, { useRef } from "react";
-import { Ionicons } from "@expo/vector-icons";
-import Colors from "../constants/Colors";
-import { Link, useNavigation } from "expo-router";
+
 import BottomSheet from "./BottomSheet";
+import Colors from "../constants/Colors";
+
+import { Ionicons } from "@expo/vector-icons";
+import { Link, useNavigation } from "expo-router";
+
+import { getUserInfo } from "@/core/services/home";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+
 import useCommonStore from "@/store/commonStore";
 
 const SearchBar = () => {
@@ -50,7 +55,7 @@ const SearchBar = () => {
 
 const CustomHeader = () => {
   const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const { userInfo } = useCommonStore();
+  const user = getUserInfo({});
 
   const openModal = () => {
     bottomSheetRef.current?.present();
@@ -78,7 +83,7 @@ const CustomHeader = () => {
                 <Text style={styles.title}>Delivery · Now</Text>
                 <View style={styles.locationName}>
                   <Text style={styles.subtitle}>
-                    {userInfo?.Address?.[0]?.area || "Select"}{" "}
+                    {user?.data?.Address?.[0]?.area || "Select"}{" "}
                   </Text>
                   <Ionicons
                     name="chevron-down"
