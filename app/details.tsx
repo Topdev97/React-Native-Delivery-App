@@ -54,6 +54,13 @@ const Details = () => {
         ToastAndroid.CENTER
       );
     },
+    onError: () => {
+      ToastAndroid.showWithGravity(
+        "Something Went Wrong",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
   });
 
   const addToCart = (data: any) => {

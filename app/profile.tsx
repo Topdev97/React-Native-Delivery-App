@@ -37,6 +37,13 @@ export default function Profile() {
       );
       nav.goBack();
     },
+    onError: () => {
+      ToastAndroid.showWithGravity(
+        "Something Went Wrong",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
   });
 
   const handleSave = () => {

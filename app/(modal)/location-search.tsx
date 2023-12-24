@@ -58,6 +58,13 @@ const LocationSearch = () => {
         ToastAndroid.CENTER
       );
     },
+    onError: () => {
+      ToastAndroid.showWithGravity(
+        "Something Went Wrong",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
   });
 
   const fetchGeoData = async (latitude: any, longitude: any) => {

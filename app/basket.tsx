@@ -67,6 +67,16 @@ const Basket = () => {
       });
       clearCart();
     },
+    onError: () => {
+      ToastAndroid.showWithGravity(
+        "Something Went Wrong",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+      queryClient.invalidateQueries({
+        queryKey: queries.home.userOrders.queryKey,
+      });
+    },
   });
 
   function alertAddress() {

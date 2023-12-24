@@ -165,6 +165,13 @@ const LoginScreen = () => {
         ToastAndroid.CENTER
       );
     },
+    onError: () => {
+      ToastAndroid.showWithGravity(
+        "Something Went Wrong",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
   });
 
   const otpVerify = verifyOTP({
@@ -191,6 +198,13 @@ const LoginScreen = () => {
         );
       }
     },
+    onError: () => {
+      ToastAndroid.showWithGravity(
+        "Something Went Wrong",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
   });
 
   const otpVerifyToCreate = verifyOTP({
@@ -209,11 +223,18 @@ const LoginScreen = () => {
         } else setVerificationCodeError("Entered OTP is Invalid.");
       } else {
         ToastAndroid.showWithGravity(
-          "You have already created an account, Please proceed to login",
+          "You have already created an account, Please proceed to Sign In",
           ToastAndroid.SHORT,
           ToastAndroid.CENTER
         );
       }
+    },
+    onError: () => {
+      ToastAndroid.showWithGravity(
+        "Something Went Wrong",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
     },
   });
 

@@ -51,6 +51,13 @@ export default function AddressForm() {
         ToastAndroid.CENTER
       );
     },
+    onError: () => {
+      ToastAndroid.showWithGravity(
+        "Something Went Wrong",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
   });
 
   const newAddress = createAddress({
@@ -61,6 +68,13 @@ export default function AddressForm() {
       });
       ToastAndroid.showWithGravity(
         "Address added successfully",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
+    onError: () => {
+      ToastAndroid.showWithGravity(
+        "Something Went Wrong",
         ToastAndroid.SHORT,
         ToastAndroid.CENTER
       );

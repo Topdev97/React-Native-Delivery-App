@@ -46,6 +46,13 @@ const Review = () => {
       setReviewType(1);
       setDescription(false);
     },
+    onError: () => {
+      ToastAndroid.showWithGravity(
+        "Something Went Wrong",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
   });
 
   useEffect(() => {

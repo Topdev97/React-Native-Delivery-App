@@ -33,6 +33,13 @@ export default function RazorpayButton() {
       clearCart();
       navigate.goBack();
     },
+    onError: () => {
+      ToastAndroid.showWithGravity(
+        "Something Went Wrong",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    },
   });
 
   const customHTML = `<!DOCTYPE html>
