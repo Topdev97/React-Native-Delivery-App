@@ -84,8 +84,6 @@ const Review = () => {
     };
     if (description) {
       review.mutate(payload);
-      console.log("delivery_payload", payload);
-
       setDescription(false);
     } else {
       ToastAndroid.showWithGravity(
@@ -107,8 +105,6 @@ const Review = () => {
     };
     if (description) {
       review.mutate(payload);
-      console.log("delivery_payload", payload);
-
       setDescription(false);
     } else {
       ToastAndroid.showWithGravity(

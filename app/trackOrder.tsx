@@ -26,7 +26,6 @@ const OrderTrackingScreen = () => {
 
   const item = JSON.parse(data);
   const restaurent = getRestaurentDetails({});
-  console.log(item);
 
   const makePhoneCall = () => {
     Linking.openURL(

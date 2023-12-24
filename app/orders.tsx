@@ -39,8 +39,6 @@ export default function OrderHistory() {
     setCurrentPage(currentPage + 1);
   };
 
-  console.log("currentPage", currentPage);
-
   return (
     <>
       {userOrders.isLoading ? (

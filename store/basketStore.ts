@@ -15,6 +15,7 @@ export interface BasketState {
   clearCart:() => void;
   setToken: (token:any) => void;
   clearToken: () => void;
+  setProducts:(data:any)=>void,
   setCurrentLocation: (location:any) => void;
   items: number;
   total: number;
@@ -60,6 +61,7 @@ const useBasketStore = create<BasketState>()((set) => ({
     });
   },
   clearCart: () => set({ products: [], items: 0, total: 0 }),
+  setProducts:(data)=>set({ products: data }),
   setToken:(token:any)=> {
     set({token})
   },

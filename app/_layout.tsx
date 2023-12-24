@@ -40,7 +40,7 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
-  const { token, setToken } = useBasketStore();
+  const { token, setToken, products, setProducts } = useBasketStore();
 
   let result;
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
@@ -64,6 +64,29 @@ export default function RootLayout() {
     }
     getValueFor();
   }, [result, token]);
+
+  // Set Initial Basket
+  useEffect(() => {
+    async function basketSet() {
+      result = await SecureStore.getItemAsync("basket");
+      if (result) {
+        const data = JSON.parse(result);
+        setProducts(data);
+      }
+    }
+    basketSet();
+  }, []);
+
+  // Set Basket
+  useEffect(() => {
+    async function basketSet(products: any) {
+      const data = JSON.stringify(products);
+      await SecureStore.setItemAsync("basket", data);
+    }
+
+    basketSet(products);
+  }, [products]);
+
   if (!loaded) {
     return null;
   }
