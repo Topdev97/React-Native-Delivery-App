@@ -37,10 +37,11 @@ export const getUserInfo = (options: any) =>
     ...options,
   });
 
-export const getUserSpecifiedOrders = (options: any) =>
+export const getUserSpecifiedOrders = (options: any, page: any) =>
   useQuery({
     queryKey: queries.home.userOrders.queryKey,
     queryFn: API.getUsersOrders,
+    meta: { page },
     ...options,
   });
 

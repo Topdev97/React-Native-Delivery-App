@@ -67,10 +67,11 @@ export const searchMenus = (data:any) =>
       data,
     })
 
-export const getUsersOrders=()=>
-    GET({
-      url: ENV.BASE_URL + 'orders?page=1&pageSize=7',
+export const getUsersOrders=(data:any)=>
+ GET({
+  url: ENV.BASE_URL + `orders?page=${data.meta.page}&pageSize=5`,
 })
+
 
 export const postReviews = (data:any) =>
   POST({

@@ -49,7 +49,7 @@ const Details = () => {
         queryKey: queries.home.userAddress.queryKey,
       });
       ToastAndroid.showWithGravity(
-        "Item updated successfully",
+        "Favourites updated successfully",
         ToastAndroid.SHORT,
         ToastAndroid.CENTER
       );

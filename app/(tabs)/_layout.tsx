@@ -6,6 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Icon } from "@/constants/utils";
 import { View } from "react-native";
+import useBasketStore from "@/store/basketStore";
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof Ionicons>["name"];
@@ -16,12 +17,13 @@ function TabBarIcon(props: {
 
 export default function TabLayout() {
   const navigation = useNavigation();
+  const { products } = useBasketStore();
+
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors.primary,
-      }}
-    >
+      }}>
       <Tabs.Screen
         name="index"
         options={{
@@ -36,13 +38,13 @@ export default function TabLayout() {
         name="two"
         options={{
           title: "Basket",
+          tabBarBadge: products.length > 0 ? products.length : null,
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => {
                 navigation.goBack();
               }}
-              style={{ paddingLeft: 10 }}
-            >
+              style={{ paddingLeft: 10 }}>
               <Icon name="chevron-back" size={28} color={Colors.primary} />
             </TouchableOpacity>
           ),
@@ -60,8 +62,7 @@ export default function TabLayout() {
               onPress={() => {
                 navigation.goBack();
               }}
-              style={{ paddingLeft: 10 }}
-            >
+              style={{ paddingLeft: 10 }}>
               <Icon name="chevron-back" size={28} color={Colors.primary} />
             </TouchableOpacity>
           ),
