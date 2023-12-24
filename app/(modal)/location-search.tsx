@@ -76,8 +76,12 @@ const LocationSearch = () => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
-          console.error("Location permission denied");
-          return;
+          ToastAndroid.showWithGravity(
+            "Location Permission has been Declined !",
+            ToastAndroid.SHORT,
+            ToastAndroid.CENTER
+          );
+          navigation.goBack();
         }
 
         if (geoPoint.lat) {
@@ -88,7 +92,13 @@ const LocationSearch = () => {
         }
       } catch (error) {
         setLoading(true);
-        console.error("Error requesting location permission:", error);
+        ToastAndroid.showWithGravity(
+          "Location Permission Has Been Declined !",
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
+        navigation.goBack();
+        // console.error("Error requesting location permission:", error);
       }
     };
     getLocation();

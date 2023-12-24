@@ -12,21 +12,30 @@ import moment from "moment";
 import Colors from "@/constants/Colors";
 
 import { AntDesign } from "@expo/vector-icons";
-import useBasketStore from "@/store/basketStore";
-
 import { FlatList } from "react-native-gesture-handler";
-import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 
-import { ProgressSteps, ProgressStep } from "react-native-progress-steps";
 import { useLocalSearchParams } from "expo-router";
+import { getRestaurentDetails } from "@/core/services/home";
+
+import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+import { ProgressSteps, ProgressStep } from "react-native-progress-steps";
 
 const OrderTrackingScreen = () => {
   const { data } = useLocalSearchParams();
   const [step, setStep] = useState<any>(0);
+
   const item = JSON.parse(data);
+  const restaurent = getRestaurentDetails({});
+  console.log(item);
 
   const makePhoneCall = () => {
-    Linking.openURL(`tel:8610593462`).catch((err) =>
+    Linking.openURL(
+      `tel:${
+        item?.orderStatus == "picked"
+          ? item?.rider_number
+          : restaurent?.data?.phone_number
+      }`
+    ).catch((err) =>
       console.error("Error in initiating the phone call: ", err)
     );
   };
@@ -147,7 +156,7 @@ const OrderTrackingScreen = () => {
       <Drawer item={item} />
       <View style={{ marginVertical: 20 }}>
         <HalfBottomButton
-          title="Contact"
+          title={item?.orderStatus == "picked" ? "Contact Rider" : "Contact"}
           handleClick={makePhoneCall}
           width={"45%"}
         />
@@ -158,7 +167,6 @@ const OrderTrackingScreen = () => {
 
 const Drawer = ({ item }) => {
   const [isContentVisible, setContentVisible] = useState(false);
-  const { products, total, reduceProduct } = useBasketStore();
 
   const toggleContent = () => {
     setContentVisible(!isContentVisible);

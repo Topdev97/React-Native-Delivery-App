@@ -169,8 +169,8 @@ export default function AddressForm() {
               )
             ) : (
               <>
-                {formData?.house_no}, {formData?.street_address},
-                {formData?.area},{formData?.landmark},{formData?.city},
+                {formData?.house_no}, {formData?.street_address},{" "}
+                {formData?.area}, {formData?.landmark}, {formData?.city},
                 {formData?.state}-{formData?.pincode}.
               </>
             )}
@@ -260,11 +260,13 @@ export default function AddressForm() {
                         pathname: "/(modal)/location-search",
                         params: { id: formData?.id || "" },
                       }}
-                      style={{ marginBottom: 12, marginTop: 6 }}>
+                      style={{ marginBottom: 4, marginTop: 6 }}>
                       <Text
                         style={{
                           ...styles.inputLabel,
                           color: "#0000EE",
+                          fontWeight: "800",
+                          fontSize: 16,
                         }}
                         onPress={onMapPress}
                         disabled={true}>
@@ -349,7 +351,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   editText: {
-    color: "#9796A1",
+    color: "#000",
     fontSize: 18,
     fontWeight: "800",
   },
