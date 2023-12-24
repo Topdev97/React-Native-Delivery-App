@@ -117,7 +117,7 @@ export default function AddressForm() {
         if (supported) {
           Linking.openURL(url);
         } else {
-          console.log("Google Maps is not available");
+          null;
         }
       });
     } else if (!currentLocation) {

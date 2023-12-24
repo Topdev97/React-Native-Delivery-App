@@ -4,7 +4,12 @@ import Colors from "@/constants/Colors";
 import Carousel from "@/components/Carousel";
 import Categories from "@/components/Categories";
 
-import { getBanners, getCategories, getUserInfo } from "@/core/services/home";
+import {
+  getBanners,
+  getCategories,
+  getTopPicks,
+  getUserInfo,
+} from "@/core/services/home";
 import Loading from "@/components/Pages/Loading";
 
 import Restaurants from "@/components/Restaurants";
@@ -18,10 +23,15 @@ const Page = () => {
   const categories = getCategories({});
 
   const user = getUserInfo({});
+  const topMenus = getTopPicks({});
+
   const { setUserInfo, userInfo } = useCommonStore();
 
   const dataLoading =
-    banners.isLoading || categories.isLoading || user.isLoading;
+    banners.isLoading ||
+    categories.isLoading ||
+    user.isLoading ||
+    topMenus.isLoading;
 
   useEffect(() => {
     if (user.data && !userInfo) {
@@ -46,8 +56,13 @@ const Page = () => {
                 <Categories data={categories?.data} />
               </>
             )}
-            <Text style={styles.header}>Top picks in your neighbourhood</Text>
-            <Restaurants />
+
+            {topMenus?.data?.length > 0 && (
+              <>
+                <Text style={styles.header}>Top Picks in Our Restaurent</Text>
+                <Restaurants data={topMenus.data} />
+              </>
+            )}
           </ScrollView>
         </SafeAreaView>
       )}
@@ -57,6 +72,7 @@ const Page = () => {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     top: 50,
     backgroundColor: Colors.lightGrey,
   },

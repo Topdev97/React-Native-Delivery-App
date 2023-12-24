@@ -5,46 +5,93 @@ import {
   StyleSheet,
   Image,
   Pressable,
+  ToastAndroid,
 } from "react-native";
+
 import React from "react";
-import { restaurants } from "@/assets/data/home";
-import { Link } from "expo-router";
 import Colors from "../constants/Colors";
 
-const Restaurants = () => {
+import { useNavigation } from "expo-router";
+import useBasketStore from "@/store/basketStore";
+
+import { TouchableOpacity } from "react-native-gesture-handler";
+
+const Restaurants = (props: any) => {
+  const { data } = props;
+
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{
         padding: 15,
-      }}>
-      {restaurants.map((restaurant, index) => (
-        <Link href={"/details"} key={index} asChild>
-          <Pressable>
-            <View style={styles.categoryCard}>
-              <Image source={restaurant.img} style={styles.image} />
-              <View style={styles.categoryBox}>
-                <Text style={styles.categoryText}>{restaurant.name}</Text>
-                <Text style={{ color: Colors.medium }}>
-                  {restaurant.distance}
-                </Text>
-                <Text style={{ color: Colors.green }}>
-                  {restaurant.rating} {restaurant.ratings}
-                </Text>
-              </View>
-            </View>
-          </Pressable>
-        </Link>
-      ))}
+        marginBottom: 16,
+      }}
+      style={styles.container}>
+      <MenuCards data={data} />
     </ScrollView>
   );
 };
+
+const MenuCards = (props: any) => {
+  const { data } = props;
+
+  const navigation = useNavigation();
+  const { addProduct } = useBasketStore();
+
+  function nav(data: any) {
+    navigation.navigate("details", { data });
+    navigation.canGoBack(true);
+  }
+
+  const addToCart = (data: any) => {
+    addProduct(data);
+    ToastAndroid.showWithGravity(
+      "Item Added to Cart",
+      ToastAndroid.SHORT,
+      ToastAndroid.CENTER
+    );
+  };
+  return (
+    <>
+      {data?.map((obj: any, index: any) => (
+        <View key={index}>
+          <View>
+            <View style={styles.categoryCard}>
+              <Pressable style={styles.image} onPress={() => nav(obj)}>
+                <Image source={{ uri: obj.image }} style={styles.image} />
+              </Pressable>
+              <View style={styles.categoryBox}>
+                <Pressable onPress={() => nav(obj)} style={{ width: "70%" }}>
+                  <Text style={styles.categoryText}>{obj.name}</Text>
+                  <Text style={styles.price}>Starts from ₹{obj?.price}</Text>
+                  <Text style={styles.des}>
+                    {obj.description?.length > 40
+                      ? `${obj.description?.slice(0, 50)}...`
+                      : obj.description}
+                  </Text>
+                </Pressable>
+                <TouchableOpacity onPress={() => addToCart(obj)}>
+                  <Text style={styles.add}>Add</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      ))}
+    </>
+  );
+};
+
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   categoryCard: {
     width: 300,
-    height: 250,
+    height: 290,
     backgroundColor: "#fff",
+    marginRight: 12,
     marginEnd: 10,
     elevation: 2,
     shadowColor: "#000",
@@ -53,22 +100,39 @@ const styles = StyleSheet.create({
       height: 4,
     },
     shadowOpacity: 0.06,
-    borderRadius: 4,
+    borderRadius: 8,
   },
   categoryText: {
-    paddingVertical: 5,
-    fontSize: 14,
-    fontWeight: "bold",
+    paddingVertical: 0,
+    fontSize: 16,
+    fontWeight: "800",
   },
   image: {
     flex: 5,
-    width: undefined,
-    height: undefined,
+    width: "100%",
+    height: 100,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
   },
   categoryBox: {
     flex: 2,
     padding: 10,
+    paddingBottom: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
+  add: {
+    fontSize: 16,
+    padding: 8,
+    paddingHorizontal: 16,
+    color: "white",
+    fontWeight: "800",
+    borderRadius: 8,
+    backgroundColor: Colors.primary,
+  },
+  des: { color: Colors.medium, fontSize: 14, fontWeight: "500" },
+  price: { fontSize: 14, fontWeight: "500", paddingVertical: 4 },
 });
 
 export default Restaurants;

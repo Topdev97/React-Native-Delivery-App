@@ -20,7 +20,6 @@ export const login = async (requestData: any) => {
     }
 
     const data = await response.json();
-    console.log("Response data:", data);
     return data;
   } catch (error) {
     console.error("Fetch error:", error);

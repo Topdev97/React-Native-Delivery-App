@@ -40,7 +40,12 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingBottom: 0,
   },
-  image: { width: "100%", height: "70%" },
+  image: {
+    width: "100%",
+    height: "70%",
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
+  },
   categoryCard: {
     flexBasis: "31%",
     height: 100,
@@ -55,12 +60,12 @@ const styles = StyleSheet.create({
       height: 4,
     },
     shadowOpacity: 0.06,
-    borderRadius: 4,
+    borderRadius: 6,
   },
   categoryText: {
     padding: 6,
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: "700",
   },
 });
 

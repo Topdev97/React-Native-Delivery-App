@@ -44,6 +44,20 @@ export const getUserSpecifiedOrders = (options: any) =>
     ...options,
   });
 
+export const getTopPicks = (options: any) =>
+  useQuery({
+    queryKey: queries.home.topPicks.queryKey,
+    queryFn: API.getTopickMenus,
+    ...options,
+  });
+
+export const getRestaurentDetails = (options: any) =>
+  useQuery({
+    queryKey: queries.home.restaurent.queryKey,
+    queryFn: API.getRestaurent,
+    ...options,
+  });
+
 export const updateFavMenus = (options: any) =>
   useMutation({ mutationFn: API.upateFav, ...options });
 

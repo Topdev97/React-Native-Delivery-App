@@ -6,5 +6,7 @@ export const homeQueries = createQueryKeys('home', {
   userAddress:null,
   catMenus:null,
   allMenus:null,
-  userOrders:null
+  userOrders:null,
+  topPicks:null,
+  restaurent:null
 })

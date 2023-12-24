@@ -16,9 +16,19 @@ GET({
   url: ENV.BASE_URL + `menu-category/menus/${id}`,
 })
 
+export const getTopickMenus=()=>
+GET({
+  url: ENV.BASE_URL + `top-picks`,
+})
+
 export const getAllMenus=()=>
 GET({
   url: ENV.BASE_URL + `menu-category/menus`,
+})
+
+export const getRestaurent=()=>
+GET({
+  url: ENV.BASE_URL + `restaurent`,
 })
 
 export const getAddress=()=>

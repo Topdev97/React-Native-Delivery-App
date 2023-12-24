@@ -156,9 +156,7 @@ export default function RazorpayButton() {
         }}
         originWhitelist={["*"]}
         onMessage={(event) => {
-          console.log(event.nativeEvent.data);
           const data = JSON.parse(event.nativeEvent.data);
-          console.log(data);
           if (data.error) {
             Alert.alert(
               "Alert",

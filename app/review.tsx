@@ -13,7 +13,7 @@ import Colors from "@/constants/Colors";
 import { useNavigation } from "expo-router";
 import utils, { Icon } from "@/constants/utils";
 
-import { postReview } from "@/core/services/home";
+import { getRestaurentDetails, postReview } from "@/core/services/home";
 import StarRating from "react-native-star-rating";
 
 import { useRoute } from "@react-navigation/native";
@@ -30,6 +30,8 @@ const Review = () => {
 
   const route = useRoute();
   const navigate = useNavigation();
+
+  const restaurent = getRestaurentDetails({});
   const data = JSON.parse(route?.params?.data);
 
   const review = postReview({
@@ -112,7 +114,7 @@ const Review = () => {
         <StarRatingComponent rating={rating} setRating={setRating} />
         <TextInput
           style={styles.textArea}
-          placeholder="Write review here..."
+          placeholder="Write review"
           value={description}
           onChange={(event) => setDescription(event.nativeEvent.text)}
           multiline={true}

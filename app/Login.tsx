@@ -195,8 +195,6 @@ const LoginScreen = () => {
 
   const otpVerifyToCreate = verifyOTP({
     onSuccess: async (data: any) => {
-      console.log(data);
-
       if (!data?.isRegistered) {
         if (data?.otpVerfied) {
           user.mutate({
