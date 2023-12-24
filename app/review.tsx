@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Colors from "@/constants/Colors";
 
 import { useNavigation } from "expo-router";
@@ -27,6 +27,7 @@ const Review = () => {
   const [description, setDescription] = useState<any>(false);
 
   const [reviewType, setReviewType] = useState(0);
+  const [title, setTitle] = useState<any>("Bad 😞");
 
   const route = useRoute();
   const navigate = useNavigation();
@@ -47,22 +48,23 @@ const Review = () => {
     },
   });
 
-  let title: any;
-  if (rating == 0) {
-    title = "Bad 😞";
-  }
-  if (rating == 1) {
-    title = "Average 😐";
-  }
-  if (rating == 2) {
-    title = "Good 😊";
-  }
-  if (rating == 3) {
-    title = "Very Good 😁";
-  }
-  if (rating == 4) {
-    title = "Excellent 😍";
-  }
+  useEffect(() => {
+    if (rating == 0) {
+      setTitle("Bad 😞");
+    }
+    if (rating == 1) {
+      setTitle("Average 😐");
+    }
+    if (rating == 2) {
+      setTitle("Good 😊");
+    }
+    if (rating == 3) {
+      setTitle("Very Good 😁");
+    }
+    if (rating == 4) {
+      setTitle("Excellent 😍");
+    }
+  }, [rating]);
 
   const onSubmitDelivery = () => {
     const payload = {
@@ -73,8 +75,18 @@ const Review = () => {
       user_id: data?.user_id,
       order_id: data?.id,
     };
-    review.mutate(payload);
-    setDescription(false);
+    if (description) {
+      review.mutate(payload);
+      console.log("delivery_payload", payload);
+
+      setDescription(false);
+    } else {
+      ToastAndroid.showWithGravity(
+        "Please write a review",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    }
   };
 
   const onSubmitHotel = () => {
@@ -86,7 +98,18 @@ const Review = () => {
       user_id: data?.user_id,
       order_id: data?.id,
     };
-    review.mutate(payload);
+    if (description) {
+      review.mutate(payload);
+      console.log("delivery_payload", payload);
+
+      setDescription(false);
+    } else {
+      ToastAndroid.showWithGravity(
+        "Please write a review",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    }
     if (review.isSuccess) {
       navigate.goBack();
     }
@@ -101,7 +124,7 @@ const Review = () => {
           alignItems: "center",
           marginBottom: 50,
         }}>
-        <Text style={styles.hotel}>Hotel Annapoorna</Text>
+        <Text style={styles.hotel}>Hotel {restaurent?.data?.name}</Text>
         <View style={styles.container}>
           <View style={styles.greenDot} />
           <Text style={styles.greenText}>Order Delivered</Text>
@@ -109,7 +132,7 @@ const Review = () => {
         <Text style={styles.rateTitle}>
           {reviewType == 0
             ? "Please Rate Delivery Service"
-            : "How was your last order from Annapoorna ?"}
+            : `How was your last order from ${restaurent?.data?.name} ?`}
         </Text>
         <StarRatingComponent rating={rating} setRating={setRating} />
         <TextInput
@@ -164,8 +187,9 @@ const StarRatingComponent = (props: any) => {
 };
 
 export function HeaderReview() {
-  const randomFoodImage = "https://picsum.photos/200/300";
   const navigate = useNavigation();
+  const restaurent = getRestaurentDetails({});
+
   const handleBackPress = () => {
     navigate.goBack();
   };
@@ -177,7 +201,7 @@ export function HeaderReview() {
         alignItems: "center",
         paddingTop: 50,
       }}>
-      <Image source={{ uri: randomFoodImage }} style={styles.image} />
+      <Image source={{ uri: restaurent?.data?.banner }} style={styles.image} />
       <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
         <View style={styles.iconPosition}>
           <Icon name="chevron-back" size={30} color={Colors.primary} />
@@ -186,7 +210,7 @@ export function HeaderReview() {
       <View style={styles.userProfileContainer}>
         <Image
           source={{
-            uri: "https://www.themoviedb.org/t/p/w500/upKrdABAMK7jZevWAoPYI24iKlR.jpg",
+            uri: restaurent?.data?.icon,
           }}
           style={styles.userProfileImage}
         />
@@ -262,6 +286,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 24,
     textAlign: "center",
+    width: "75%",
   },
   flex: {
     display: "flex",
