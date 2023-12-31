@@ -143,7 +143,12 @@ const Basket = () => {
               style={{ backgroundColor: "white" }}
               data={products}
               ListHeaderComponent={
-                <View style={{ ...styles.flex, ...styles.section }}>
+                <View
+                  style={{
+                    ...styles.flex,
+                    ...styles.section,
+                    marginHorizontal: 8,
+                  }}>
                   <Text style={styles.items}>Items</Text>
                   <View
                     style={{
@@ -168,7 +173,9 @@ const Basket = () => {
                 />
               )}
               renderItem={({ item }) => (
-                <SwipeableRow onDelete={() => reduceProduct(item)}>
+                <SwipeableRow
+                  onDelete={() => reduceProduct(item)}
+                  style={{ marginHorizontal: 8 }}>
                   <View style={styles.row}>
                     <Text
                       style={{
@@ -188,7 +195,7 @@ const Basket = () => {
                 </SwipeableRow>
               )}
               ListFooterComponent={
-                <View>
+                <View style={{ marginHorizontal: 8 }}>
                   <View
                     style={{ height: 1, backgroundColor: Colors.grey }}></View>
                   <View style={{ ...styles.totalRow, marginTop: 16 }}>
@@ -242,7 +249,7 @@ const Basket = () => {
                           width: "50%",
                           alignItems: "center",
                           backgroundColor:
-                            selectedTab === "COD" ? "red" : "white",
+                            selectedTab === "COD" ? "#60B246" : "white",
                           borderRadius: 2,
                         }}>
                         <Text
@@ -416,6 +423,7 @@ const styles = StyleSheet.create({
     padding: 10,
     gap: 20,
     alignItems: "center",
+    marginHorizontal: 8,
   },
   section: {
     marginBottom: 16,

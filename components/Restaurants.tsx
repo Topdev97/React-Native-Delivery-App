@@ -15,6 +15,7 @@ import { useNavigation } from "expo-router";
 import useBasketStore from "@/store/basketStore";
 
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { Ionicons } from "@expo/vector-icons";
 
 const Restaurants = (props: any) => {
   const { data } = props;
@@ -37,7 +38,7 @@ const MenuCards = (props: any) => {
   const { data } = props;
 
   const navigation = useNavigation();
-  const { addProduct } = useBasketStore();
+  const { addProduct, products } = useBasketStore();
 
   function nav(data: any) {
     navigation.navigate("details", { data });
@@ -62,18 +63,26 @@ const MenuCards = (props: any) => {
                 <Image source={{ uri: obj.image }} style={styles.image} />
               </Pressable>
               <View style={styles.categoryBox}>
-                <Pressable onPress={() => nav(obj)} style={{ width: "70%" }}>
+                <Pressable onPress={() => nav(obj)} style={{ width: "65%" }}>
                   <Text style={styles.categoryText}>{obj.name}</Text>
                   <Text style={styles.price}>Starts from ₹{obj?.price}</Text>
                   <Text style={styles.des}>
                     {obj.description?.length > 40
-                      ? `${obj.description?.slice(0, 50)}...`
+                      ? `${obj.description?.slice(0, 45)}...`
                       : obj.description}
                   </Text>
                 </Pressable>
-                <TouchableOpacity onPress={() => addToCart(obj)}>
-                  <Text style={styles.add}>Add</Text>
-                </TouchableOpacity>
+                {products.length > 0 ? (
+                  <View style={styles.addBg}>
+                    <Ionicons name="add" color="white" size={25} />
+                    <Text style={styles.add}>1 </Text>
+                    <Ionicons name="remove" color="white" size={25} />
+                  </View>
+                ) : (
+                  <TouchableOpacity onPress={() => addToCart(obj)}>
+                    <Text style={styles.add}> Add</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           </View>
@@ -125,11 +134,20 @@ const styles = StyleSheet.create({
   add: {
     fontSize: 16,
     padding: 8,
-    paddingHorizontal: 16,
     color: "white",
     fontWeight: "800",
     borderRadius: 8,
     backgroundColor: Colors.primary,
+  },
+  addBg: {
+    width: "35%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: Colors.primary,
+    padding: 4,
+    paddingHorizontal: 16,
+    borderRadius: 8,
   },
   des: { color: Colors.medium, fontSize: 14, fontWeight: "500" },
   price: { fontSize: 14, fontWeight: "500", paddingVertical: 4 },
