@@ -50,7 +50,9 @@
     "react-native-star-rating": "^1.1.0",
     "react-native-web": "~0.19.6",
     "react-native-webview": "13.2.2",
-    "zustand": "^4.4.1"
+    "zustand": "^4.4.1",
+    "expo-notifications": "~0.20.1",
+    "expo-device": "~5.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
