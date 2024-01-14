@@ -161,6 +161,7 @@ const MenuCards = (props: any) => {
           </View>
         </View>
       ))}
+      <View style={{ height: 66 }} />
     </ScrollView>
   );
 };
