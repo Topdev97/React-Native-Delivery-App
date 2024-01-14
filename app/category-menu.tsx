@@ -134,6 +134,7 @@ const MenuCards = (props: any) => {
       contentContainerStyle={{
         paddingVertical: 24,
         alignItems: "center",
+        backgroundColor: Colors.primaryBg,
       }}>
       {data?.map((obj: any, index: any) => (
         <View key={index}>
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "white",
+    backgroundColor: Colors.primaryBg,
     paddingHorizontal: 24,
   },
   imageContainer: {

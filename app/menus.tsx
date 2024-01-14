@@ -79,7 +79,7 @@ export default function Menus() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: Colors.primaryBg,
   },
   menuMain: {
     display: "flex",

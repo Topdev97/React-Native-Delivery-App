@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 
 import { getUserInfo, updateUser } from "@/core/services/home";
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+import Colors from "@/constants/Colors";
 
 export default function Profile() {
   const [name, setName] = useState<any>("");
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "white",
+    backgroundColor: Colors.primaryBg,
   },
   heading: {
     fontSize: 20,

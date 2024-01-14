@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     top: 50,
-    backgroundColor: Colors.lightGrey,
+    backgroundColor: Colors.primaryBg,
   },
   header: {
     fontSize: 18,

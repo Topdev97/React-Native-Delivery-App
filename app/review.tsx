@@ -119,7 +119,7 @@ const Review = () => {
   };
 
   return (
-    <ScrollView style={{ backgroundColor: "white" }}>
+    <ScrollView style={{ backgroundColor: Colors.primaryBg }}>
       <View
         style={{
           flex: 1,

@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     height: 60,
     marginTop: 45,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.primaryBg,
   },
   searchSection: {
     flexDirection: "row",

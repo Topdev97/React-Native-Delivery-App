@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
     padding: 15,
-    backgroundColor: "white",
+    backgroundColor: Colors.primaryBg,
   },
   logoutButton: {
     backgroundColor: Colors.primary,

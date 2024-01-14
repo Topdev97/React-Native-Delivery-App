@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "white",
+    backgroundColor: Colors.primaryBg,
     paddingHorizontal: 24,
   },
   imageContainer: {

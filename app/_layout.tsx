@@ -45,7 +45,8 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
-  const { token, setToken, products, setProducts } = useBasketStore();
+  const { token, setToken, products, setProducts, addProduct } =
+    useBasketStore();
 
   let result;
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
@@ -77,6 +78,9 @@ export default function RootLayout() {
       if (result) {
         const data = JSON.parse(result);
         setProducts(data);
+        data.map((obj: any) => {
+          return addProduct(obj);
+        });
       }
     }
     basketSet();

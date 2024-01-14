@@ -123,7 +123,7 @@ const Details = () => {
     <>
       <ParallaxScrollView
         scrollEvent={onScroll}
-        backgroundColor={"#fff"}
+        backgroundColor={Colors.primaryBg}
         style={{ flex: 1 }}
         parallaxHeaderHeight={250}
         stickyHeaderHeight={100}
@@ -218,7 +218,7 @@ const ShowMenus = (props: any) => {
 
 const styles = StyleSheet.create({
   detailsContainer: {
-    backgroundColor: Colors.lightGrey,
+    backgroundColor: Colors.primaryBg,
   },
   stickySection: {
     backgroundColor: "#fff",

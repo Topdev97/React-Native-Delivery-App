@@ -177,14 +177,7 @@ const Basket = () => {
                   onDelete={() => reduceProduct(item)}
                   style={{ marginHorizontal: 8 }}>
                   <View style={styles.row}>
-                    <Text
-                      style={{
-                        color: Colors.primary,
-                        fontSize: 18,
-                        fontWeight: "800",
-                      }}>
-                      {item.quantity}x
-                    </Text>
+                    <Text style={styles.quantity}>{item.quantity}x</Text>
                     <Text style={{ flex: 1, fontSize: 18, fontWeight: "700" }}>
                       {item.name}
                     </Text>
@@ -376,9 +369,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  quantity: {
+    color: Colors.primary,
+    fontSize: 18,
+    fontWeight: "800",
+  },
   items: { fontSize: 20, fontWeight: "bold" },
   imageContainer: {
-    backgroundColor: "white",
+    backgroundColor: Colors.primaryBg,
     flex: 10,
     justifyContent: "center",
     alignItems: "center",

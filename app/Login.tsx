@@ -435,7 +435,7 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: Colors.primaryBg,
     justifyContent: "center",
     padding: 16,
     paddingHorizontal: 24,

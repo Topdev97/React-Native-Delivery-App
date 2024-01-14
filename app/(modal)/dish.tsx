@@ -62,7 +62,7 @@ const Dish = () => {
   }, []);
   return (
     <SafeAreaView
-      style={{ flex: 1, backgroundColor: "#fff" }}
+      style={{ flex: 1, backgroundColor: Colors.primaryBg }}
       edges={["bottom"]}>
       <View style={styles.container}>
         <Image source={{ uri: items?.image }} style={styles.image} />
@@ -88,7 +88,7 @@ const Dish = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.primaryBg,
   },
   image: {
     width: "100%",
