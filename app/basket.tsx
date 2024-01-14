@@ -249,7 +249,7 @@ const Basket = () => {
                           width: "50%",
                           alignItems: "center",
                           backgroundColor:
-                            selectedTab === "COD" ? "#60B246" : "white",
+                            selectedTab === "COD" ? Colors.primary : "white",
                           borderRadius: 2,
                         }}>
                         <Text
@@ -267,7 +267,7 @@ const Basket = () => {
                           width: "50%",
                           alignItems: "center",
                           backgroundColor:
-                            selectedTab === "Online" ? "#60B246" : "white",
+                            selectedTab === "Online" ? Colors.primary : "white",
                         }}>
                         <Text
                           style={{
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   editButton: {
-    backgroundColor: "#37a7ed",
+    backgroundColor: Colors.primary,
     width: "25%",
     borderRadius: 4,
   },

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -38,6 +38,9 @@ export default function OrderHistory() {
   const handleNextPage = () => {
     setCurrentPage(currentPage + 1);
   };
+  useEffect(() => {
+    userOrders.refetch();
+  }, []);
 
   return (
     <>

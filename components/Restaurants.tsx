@@ -72,17 +72,19 @@ const MenuCards = (props: any) => {
                       : obj.description}
                   </Text>
                 </Pressable>
-                {products.length > 0 ? (
+                {/* {products.length > 0 ? (
                   <View style={styles.addBg}>
                     <Ionicons name="add" color="white" size={25} />
                     <Text style={styles.add}>1 </Text>
                     <Ionicons name="remove" color="white" size={25} />
                   </View>
-                ) : (
-                  <TouchableOpacity onPress={() => addToCart(obj)}>
-                    <Text style={styles.add}> Add</Text>
-                  </TouchableOpacity>
-                )}
+                ) : ( */}
+                <TouchableOpacity
+                  onPress={() => addToCart(obj)}
+                  style={{ width: "100%" }}>
+                  <Text style={styles.add}> Add</Text>
+                </TouchableOpacity>
+                {/* )} */}
               </View>
             </View>
           </View>
