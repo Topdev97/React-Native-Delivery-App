@@ -15,17 +15,21 @@ import { AntDesign } from "@expo/vector-icons";
 import { FlatList } from "react-native-gesture-handler";
 
 import { useLocalSearchParams } from "expo-router";
-import { getRestaurentDetails } from "@/core/services/home";
+import { getOrderById, getRestaurentDetails } from "@/core/services/home";
 
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 import { ProgressSteps, ProgressStep } from "react-native-progress-steps";
+import { RefreshControl } from "react-native";
 
 const OrderTrackingScreen = () => {
   const { data } = useLocalSearchParams();
   const [step, setStep] = useState<any>(0);
 
-  const item = JSON.parse(data);
+  const items = JSON.parse(data);
   const restaurent = getRestaurentDetails({});
+
+  const order = getOrderById({}, items?.id);
+  const item = order?.data;
 
   const makePhoneCall = () => {
     Linking.openURL(
@@ -69,8 +73,23 @@ const OrderTrackingScreen = () => {
     }
   }, [item]);
 
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    order.refetch();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       <View style={styles.addressContainer}>
         <Text style={styles.currentAddress}>Delivery Address</Text>
         <Text style={styles.currentAddressText}>
@@ -99,16 +118,13 @@ const OrderTrackingScreen = () => {
       <View style={{ height: 125 }}>
         <ProgressSteps {...progressStepsobj}>
           <ProgressStep label="Accepted" nextBtnText="" previousBtnText="" />
-          <ProgressStep
-            label={
-              item?.orderStatus.charAt(0).toUpperCase() +
-              item?.orderStatus.slice(1)
-            }
-            nextBtnText=""
-            previousBtnText=""
-          />
+          <ProgressStep label="Preparing" nextBtnText="" previousBtnText="" />
           <ProgressStep label="On the way" nextBtnText="" previousBtnText="" />
-          <ProgressStep label="Delivered" previousBtnText="" finishBtnText="" />
+          <ProgressStep
+            label={item?.orderStatus == "cancelled" ? "Cancelled" : "Delivered"}
+            previousBtnText=""
+            finishBtnText=""
+          />
         </ProgressSteps>
       </View>
 
@@ -215,7 +231,7 @@ const Drawer = ({ item }) => {
                 </View> */}
 
                 <View style={styles.totalRow}>
-                  <Text style={styles.total}>Total Amount with Charges</Text>
+                  <Text style={styles.total}>Total amount + charges</Text>
                   <Text style={{ fontSize: 18, fontWeight: "bold" }}>
                     ₹{item?.bill_total}
                   </Text>

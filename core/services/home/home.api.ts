@@ -103,6 +103,11 @@ export const postReviews = (data:any) =>
     data,
   })   
 
+  export const getOrdersById=(id:any)=>
+  GET({
+  url: ENV.BASE_URL + `/orders/${id}`,
+})
+
 export const test=()=>
 GET({
   url: ENV.BASE_URL + 'posts',

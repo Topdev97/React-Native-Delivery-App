@@ -59,6 +59,13 @@ export const getRestaurentDetails = (options: any) =>
     ...options,
   });
 
+export const getOrderById = (options: any, id: any) =>
+  useQuery({
+    queryKey: [queries.home.order.queryKey, id],
+    queryFn: () => API.getOrdersById(id),
+    ...options,
+  });
+
 export const updateFavMenus = (options: any) =>
   useMutation({ mutationFn: API.upateFav, ...options });
 

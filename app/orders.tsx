@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   Pressable,
+  RefreshControl,
 } from "react-native";
 
 import moment from "moment";
@@ -37,8 +38,19 @@ export default function OrderHistory() {
   const handleNextPage = () => {
     setCurrentPage(currentPage + 1);
   };
+
   useEffect(() => {
     userOrders.refetch();
+  }, []);
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    userOrders.refetch();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
   }, []);
 
   return (
@@ -54,7 +66,11 @@ export default function OrderHistory() {
           {userOrders?.data?.orders?.length <= 0 ? (
             <EmptyIllustration />
           ) : (
-            <ScrollView style={styles.container}>
+            <ScrollView
+              style={styles.container}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }>
               <>
                 {userOrders?.data?.orders?.map((item, i) => {
                   const indianDateTime = moment
