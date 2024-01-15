@@ -18,15 +18,16 @@ const Loading = () => {
 const styles = StyleSheet.create({
   container: {
     top: 50,
-    backgroundColor: Colors.lightGrey,
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.primaryBg,
   },
   containerForLoading: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: Colors.primaryBg,
   },
 });
 

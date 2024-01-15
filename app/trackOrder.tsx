@@ -108,14 +108,7 @@ const OrderTrackingScreen = () => {
             previousBtnText=""
           />
           <ProgressStep label="On the way" nextBtnText="" previousBtnText="" />
-          <ProgressStep
-            label={
-              item?.orderStatus.charAt(0).toUpperCase() +
-              item?.orderStatus.slice(1)
-            }
-            previousBtnText=""
-            finishBtnText=""
-          />
+          <ProgressStep label="Delivered" previousBtnText="" finishBtnText="" />
         </ProgressSteps>
       </View>
 
@@ -169,11 +162,6 @@ const Drawer = ({ item }) => {
 
   const toggleContent = () => {
     setContentVisible(!isContentVisible);
-  };
-
-  const FEES = {
-    service: 2.99,
-    delivery: 5.99,
   };
 
   return (

@@ -43,8 +43,8 @@ const Details = () => {
   const { setUserInfo, userInfo } = useCommonStore();
 
   const FEES = {
-    service: 2.99,
-    delivery: 5.99,
+    service: 10,
+    delivery: 10,
   };
 
   const updateMenu = updateFavMenus({

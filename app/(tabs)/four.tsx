@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, Image, Alert } from "react-native";
 
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
@@ -11,11 +11,13 @@ import * as SecureStore from "expo-secure-store";
 import useBasketStore from "@/store/basketStore";
 
 import { getUserInfo } from "@/core/services/home";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Menus() {
   const user = getUserInfo({});
   const { clearToken } = useBasketStore();
 
+  const queryClient = useQueryClient();
   const data = [
     { title: "My Orders", icon: "reorder-three", nav: "/orders" },
     { title: "Address", icon: "location", nav: "/address" },
@@ -35,9 +37,15 @@ export default function Menus() {
   };
 
   const Logout = async () => {
+    queryClient.invalidateQueries();
     await SecureStore.deleteItemAsync("token");
+    await SecureStore.deleteItemAsync("basket");
     clearToken();
   };
+
+  useEffect(() => {
+    user.refetch();
+  });
 
   return (
     <View style={styles.container}>

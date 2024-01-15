@@ -195,7 +195,6 @@ export default function AddressForm() {
                 <Text style={styles.inputLabel}>House No:</Text>
                 <TextInput
                   style={styles.input}
-                  keyboardType="numeric"
                   value={formData?.house_no?.toString() || ""}
                   onChangeText={(text) =>
                     handleChange("house_no", Number(text))
@@ -269,7 +268,7 @@ export default function AddressForm() {
                       }}>
                       Geolocation
                     </Text>
-                    <Link<{ pathname: any; params: { id: any } }>
+                    {/* <Link<{ pathname: any; params: { id: any } }>
                       href={{
                         pathname: "/(modal)/location-search",
                         params: { id: formData?.id || "" },
@@ -286,7 +285,7 @@ export default function AddressForm() {
                         disabled={true}>
                         Click Below to Set Your Map Location
                       </Text>
-                    </Link>
+                    </Link> */}
                   </View>
                   <View
                     style={{
@@ -299,11 +298,21 @@ export default function AddressForm() {
                       }}
                       style={{
                         flexDirection: "row",
-                        paddingHorizontal: 20,
+                        paddingVertical: 10,
+                        paddingHorizontal: 60,
                         marginRight: 10,
+                        borderColor: "#ccc",
+                        borderWidth: 1,
+                        borderRadius: 6,
                       }}>
-                      <Text style={styles.editText}>Select on Map </Text>
-                      <Icon name="location" size={20} color={Colors.primary} />
+                      <View style={{ flexDirection: "row" }}>
+                        <Text style={styles.editText}>Select on Map </Text>
+                        <Icon
+                          name="location"
+                          size={20}
+                          color={Colors.primary}
+                        />
+                      </View>
                     </Link>
                   </View>
                 </View>

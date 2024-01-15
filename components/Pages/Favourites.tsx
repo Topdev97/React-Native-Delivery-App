@@ -16,14 +16,13 @@ import { useNavigation } from "expo-router";
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 
 import useBasketStore from "@/store/basketStore";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { getUserInfo } from "@/core/services/home";
 
-import useCommonStore from "@/store/commonStore";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default function favourites() {
   const navigation = useNavigation();
-
-  const { userInfo } = useCommonStore();
+  const userInfo = getUserInfo({});
 
   function nav() {
     navigation.goBack();
@@ -31,8 +30,8 @@ export default function favourites() {
 
   return (
     <View style={{ backgroundColor: Colors.primaryBg, flex: 1 }}>
-      {userInfo?.favoriteMenus?.length > 0 ? (
-        <MenuCards data={userInfo?.favoriteMenus} />
+      {userInfo?.data?.favoriteMenus?.length > 0 ? (
+        <MenuCards data={userInfo?.data?.favoriteMenus} />
       ) : (
         <View style={styles.container}>
           <View style={styles.imageContainer}>

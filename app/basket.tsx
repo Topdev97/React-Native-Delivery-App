@@ -25,6 +25,7 @@ import { getUserInfo, postOrder } from "@/core/services/home";
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 import { useQueryClient } from "@tanstack/react-query";
 import { queries } from "@/core/constants/queryKeys";
+import { Ionicons } from "@expo/vector-icons";
 
 const Basket = () => {
   const userInfo = getUserInfo({});
@@ -36,11 +37,11 @@ const Basket = () => {
   const { clearCart } = useBasketStore();
   const [selectedTab, setSelectedTab] = useState("COD");
 
-  const { products, total, reduceProduct } = useBasketStore();
+  const { products, total, reduceProduct, addProduct } = useBasketStore();
 
   const FEES = {
-    service: 2.99,
-    delivery: 5.99,
+    service: 10,
+    delivery: 10,
   };
 
   const orderDetails: any = {
@@ -65,6 +66,9 @@ const Basket = () => {
       queryClient.invalidateQueries({
         queryKey: queries.home.userOrders.queryKey,
       });
+
+      navigation.navigate("orders");
+      navigation.canGoBack(true);
       clearCart();
     },
     onError: () => {
@@ -150,18 +154,6 @@ const Basket = () => {
                     marginHorizontal: 8,
                   }}>
                   <Text style={styles.items}>Items</Text>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}>
-                    <Icon name="chevron-back" size={24} color={"red"} />
-
-                    <Text style={{ fontWeight: "500" }}>
-                      Swipe Right To Left Reduce
-                    </Text>
-                  </View>
                 </View>
               }
               ItemSeparatorComponent={() => (
@@ -173,19 +165,44 @@ const Basket = () => {
                 />
               )}
               renderItem={({ item }) => (
-                <SwipeableRow
-                  onDelete={() => reduceProduct(item)}
-                  style={{ marginHorizontal: 8 }}>
+                <View>
                   <View style={styles.row}>
-                    <Text style={styles.quantity}>{item.quantity}x</Text>
-                    <Text style={{ flex: 1, fontSize: 18, fontWeight: "700" }}>
+                    <Text
+                      style={{
+                        width: "60%",
+                        fontSize: 18,
+                        fontWeight: "700",
+                      }}>
                       {item.name}
                     </Text>
-                    <Text style={{ fontSize: 18, fontWeight: "600" }}>
-                      ₹{item.price * item.quantity}
-                    </Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        width: "40%",
+                        paddingRight: 10,
+                        justifyContent: "space-between",
+                      }}>
+                      <>
+                        <Ionicons
+                          name="remove"
+                          color="#bebfc5"
+                          size={22}
+                          onPress={() => reduceProduct(item)}
+                        />
+                        <Text style={styles.quantity}>{item.quantity}</Text>
+                        <Ionicons
+                          name="add"
+                          color="#60B246"
+                          size={22}
+                          onPress={() => addProduct(item)}
+                        />
+                      </>
+                      <Text style={{ fontSize: 18, fontWeight: "600" }}>
+                        ₹{item.price * item.quantity}
+                      </Text>
+                    </View>
                   </View>
-                </SwipeableRow>
+                </View>
               )}
               ListFooterComponent={
                 <View style={{ marginHorizontal: 8 }}>
@@ -209,20 +226,12 @@ const Basket = () => {
                     <Text style={{ ...styles.total, fontWeight: "800" }}>
                       Order Total
                     </Text>
-                    <Text
-                      style={{
-                        fontSize: 18,
-                        color: "white",
-                        fontWeight: "800",
-                        backgroundColor: "#60B246",
-                        paddingHorizontal: 20,
-                        paddingVertical: 1,
-                      }}>
+                    <Text style={styles.totalText}>
                       ₹{(total + FEES.service + FEES.delivery)?.toFixed(2)}
                     </Text>
                   </View>
                   <View style={styles.totalRow}>
-                    <Text style={{ ...styles.total, fontWeight: "800" }}>
+                    <Text style={{ ...styles.total, fontWeight: "700" }}>
                       Payment Method
                     </Text>
                     <View
@@ -483,6 +492,14 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: "center",
     marginTop: 20,
+  },
+  totalText: {
+    fontSize: 18,
+    color: "white",
+    fontWeight: "800",
+    backgroundColor: "#60B246",
+    paddingHorizontal: 20,
+    paddingVertical: 1,
   },
 });
 

@@ -2,9 +2,9 @@ import React, { useRef } from "react";
 import { WebView } from "react-native-webview";
 import { Alert, StyleSheet, View } from "react-native";
 import Colors from "@/constants/Colors";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useNavigation } from "expo-router";
 import { postOrder } from "@/core/services/home";
-import { useNavigation } from "@react-navigation/native";
+
 import useBasketStore from "@/store/basketStore";
 import { ToastAndroid } from "react-native";
 import { useQueryClient } from "@tanstack/react-query";
@@ -32,6 +32,8 @@ export default function RazorpayButton() {
       });
       clearCart();
       navigate.goBack();
+      navigate.navigate("orders");
+      navigate.canGoBack(true);
     },
     onError: () => {
       ToastAndroid.showWithGravity(

@@ -18,8 +18,8 @@ const OrderDetails = () => {
   const [order, setOrder] = useState(false);
 
   const FEES = {
-    service: 2.99,
-    delivery: 5.99,
+    service: 10,
+    delivery: 10,
   };
 
   return (

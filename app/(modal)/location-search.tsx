@@ -148,7 +148,7 @@ const LocationSearch = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <GooglePlacesAutocomplete
+      {/* <GooglePlacesAutocomplete
         placeholder="Search or move the map"
         fetchDetails={true}
         onPress={(data, details) => {
@@ -187,7 +187,7 @@ const LocationSearch = () => {
             backgroundColor: "#fff",
           },
         }}
-      />
+      /> */}
 
       <MapView
         showsUserLocation={true}

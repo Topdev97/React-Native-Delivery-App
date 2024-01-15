@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "expo-router";
 
 import Colors from "@/constants/Colors";
@@ -8,6 +8,7 @@ import * as SecureStore from "expo-secure-store";
 import useBasketStore from "@/store/basketStore";
 
 import { getUserInfo } from "@/core/services/home";
+import { useQueryClient } from "@tanstack/react-query";
 
 import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 import { View, Text, FlatList, StyleSheet, Image, Alert } from "react-native";
@@ -15,6 +16,7 @@ import { View, Text, FlatList, StyleSheet, Image, Alert } from "react-native";
 export default function Menus() {
   const { clearToken } = useBasketStore();
   const user = getUserInfo({});
+  const queryClient = useQueryClient();
 
   const handleLogout = () => {
     Alert.alert(
@@ -29,9 +31,15 @@ export default function Menus() {
   };
 
   const Logout = async () => {
+    queryClient.invalidateQueries();
     await SecureStore.deleteItemAsync("token");
+    await SecureStore.deleteItemAsync("basket");
     clearToken();
   };
+
+  useEffect(() => {
+    user.refetch();
+  });
 
   const data = [
     { title: "My Orders", icon: "reorder-three", nav: "/orders" },

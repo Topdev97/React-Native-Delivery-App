@@ -7,7 +7,7 @@ import {
   TextInput,
   Image,
 } from "react-native";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 import BottomSheet from "./BottomSheet";
 import Colors from "../constants/Colors";
@@ -17,8 +17,6 @@ import { Link, useNavigation } from "expo-router";
 
 import { getUserInfo } from "@/core/services/home";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-
-import useCommonStore from "@/store/commonStore";
 
 const SearchBar = () => {
   const navigation = useNavigation();
@@ -61,6 +59,10 @@ const CustomHeader = () => {
     bottomSheetRef.current?.present();
   };
 
+  useEffect(() => {
+    user.refetch();
+  }, []);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <BottomSheet ref={bottomSheetRef} />
@@ -76,7 +78,6 @@ const CustomHeader = () => {
               />
             </Link>
           </TouchableOpacity>
-
           <TouchableOpacity onPress={() => openModal()}>
             <Link href="/address">
               <View style={styles.titleContainer}>

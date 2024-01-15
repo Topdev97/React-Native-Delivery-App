@@ -7,7 +7,6 @@ import {
   ScrollView,
   Image,
   Pressable,
-  Button,
 } from "react-native";
 
 import moment from "moment";
@@ -43,7 +42,11 @@ export default function OrderHistory() {
   }, []);
 
   return (
-    <>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: Colors.primaryBg,
+      }}>
       {userOrders.isLoading ? (
         <Loading />
       ) : (
@@ -104,10 +107,12 @@ export default function OrderHistory() {
                                   ? Colors.green
                                   : item.orderStatus == "cancelled"
                                   ? "red"
-                                  : Colors.primary,
+                                  : Colors.pending,
                             }}>
                             {item?.orderStatus == "new"
                               ? "Accepted"
+                              : item?.orderStatus == "picked"
+                              ? "On the way"
                               : item?.orderStatus.charAt(0).toUpperCase() +
                                 item?.orderStatus.slice(1)}
                           </Text>
@@ -241,7 +246,7 @@ export default function OrderHistory() {
           )}
         </>
       )}
-    </>
+    </View>
   );
 }
 
