@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { useNavigation } from "expo-router";
 
-const Categories = (props: any) => {
+const CategoriesTwo = (props: any) => {
   const { data } = props;
   const navigation = useNavigation();
 
@@ -39,29 +39,27 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 15,
     paddingBottom: 0,
-    marginBottom: 8,
   },
   image: {
     width: "100%",
-    height: "100%",
-    // borderTopLeftRadius: 6,
-    // borderTopRightRadius: 6,
-    borderRadius: 6,
+    height: "70%",
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
   },
   categoryCard: {
     flexBasis: "31%",
     height: 100,
-    marginBottom: 32,
+    marginBottom: 16,
     backgroundColor: "#fff",
     display: "flex",
     alignItems: "center",
-    // elevation: 2,
-    // shadowColor: "#000",
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 4,
-    // },
-    // shadowOpacity: 0.06,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.06,
     borderRadius: 6,
   },
   categoryText: {
@@ -71,4 +69,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Categories;
+export default CategoriesTwo;

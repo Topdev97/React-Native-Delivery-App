@@ -28,8 +28,13 @@ export default function CatMenu() {
   const route = useRoute();
   const navigation = useNavigation();
 
-  const { items, total } = useBasketStore();
+  const { items, total, products } = useBasketStore();
   const menus = getCatMenus({ enabled: false, retry: false }, route.params.id);
+
+  const FEES = {
+    service: 2.99,
+    delivery: 5.99,
+  };
 
   function nav() {
     navigation.goBack();
@@ -88,7 +93,7 @@ export default function CatMenu() {
               </View>
             </View>
           )}
-          {items > 0 && (
+          {products?.length > 0 && (
             <View style={styles.footer}>
               <SafeAreaView
                 edges={["bottom"]}
@@ -96,9 +101,11 @@ export default function CatMenu() {
                 <TouchableOpacity
                   style={styles.fullButton}
                   onPress={() => basketNav()}>
-                  <Text style={styles.basket}>{items}</Text>
+                  <Text style={styles.basket}>{products.length}</Text>
                   <Text style={styles.footerText}>View Basket</Text>
-                  <Text style={styles.basketTotal}>₹{total}</Text>
+                  <Text style={styles.basketTotal}>
+                    ₹{(total + FEES.service + FEES.delivery)?.toFixed(2)}
+                  </Text>
                 </TouchableOpacity>
               </SafeAreaView>
             </View>

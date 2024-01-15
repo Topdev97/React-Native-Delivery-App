@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "white",
+    backgroundColor: Colors.primaryBg,
     paddingHorizontal: 24,
   },
   imageContainer: {
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: "#f5f6f7",
+    backgroundColor: Colors.primaryBg,
     marginBottom: 10,
   },
   flex: {

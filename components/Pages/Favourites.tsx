@@ -30,7 +30,7 @@ export default function favourites() {
   }
 
   return (
-    <>
+    <View style={{ backgroundColor: Colors.primaryBg, flex: 1 }}>
       {userInfo?.favoriteMenus?.length > 0 ? (
         <MenuCards data={userInfo?.favoriteMenus} />
       ) : (
@@ -59,7 +59,7 @@ export default function favourites() {
           </View>
         </View>
       )}
-    </>
+    </View>
   );
 }
 
@@ -86,6 +86,7 @@ const MenuCards = (props: any) => {
       contentContainerStyle={{
         paddingVertical: 24,
         alignItems: "center",
+        backgroundColor: Colors.primaryBg,
       }}>
       {data.map((obj: any, index: any) => (
         <View key={index}>
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
   categoryCard: {
     width: utils.fullwidth - 24,
     height: 300,
-    backgroundColor: "#fff",
+    backgroundColor: Colors.primaryBg,
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: {

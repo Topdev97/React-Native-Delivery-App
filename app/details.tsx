@@ -34,13 +34,18 @@ const Details = () => {
   const queryClient = useQueryClient();
 
   const [isFav, setIsFav] = useState();
-  const { items, total, addProduct } = useBasketStore();
+  const { items, total, addProduct, products } = useBasketStore();
 
   const data = route?.params?.data;
   const allMenus = getAllMenus({});
 
   const user = getUserInfo({ enabled: false });
   const { setUserInfo, userInfo } = useCommonStore();
+
+  const FEES = {
+    service: 2.99,
+    delivery: 5.99,
+  };
 
   const updateMenu = updateFavMenus({
     onSuccess: () => {
@@ -164,14 +169,16 @@ const Details = () => {
         </View>
       </ParallaxScrollView>
 
-      {items > 0 && (
+      {products?.length > 0 && (
         <View style={styles.footer}>
           <SafeAreaView edges={["bottom"]} style={{ backgroundColor: "#fff" }}>
             <Link href="/basket" asChild>
               <TouchableOpacity style={styles.fullButton}>
-                <Text style={styles.basket}>{items}</Text>
+                <Text style={styles.basket}>{products.length}</Text>
                 <Text style={styles.footerText}>View Basket</Text>
-                <Text style={styles.basketTotal}>₹{total}</Text>
+                <Text style={styles.basketTotal}>
+                  ₹{(total + FEES.service + FEES.delivery)?.toFixed(2)}
+                </Text>
               </TouchableOpacity>
             </Link>
           </SafeAreaView>

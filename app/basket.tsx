@@ -218,7 +218,7 @@ const Basket = () => {
                         paddingHorizontal: 20,
                         paddingVertical: 1,
                       }}>
-                      ₹{(total + FEES.service + FEES.delivery).toFixed(2)}
+                      ₹{(total + FEES.service + FEES.delivery)?.toFixed(2)}
                     </Text>
                   </View>
                   <View style={styles.totalRow}>
