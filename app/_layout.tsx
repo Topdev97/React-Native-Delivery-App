@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Colors from "@/constants/Colors";
 
 import { Icon } from "@/constants/utils";
@@ -27,6 +27,9 @@ import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import { setAuthHeader } from "@/core/lib/AxiosClient";
 
+import NoNetwork from "@/components/NoNetwork";
+import NetInfo from "@react-native-community/netinfo";
+
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -45,6 +48,7 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
+  const [network, setNetwork] = useState<any>(true);
   const { token, setToken, products, setProducts, setTotal } = useBasketStore();
 
   let result;
@@ -82,7 +86,6 @@ export default function RootLayout() {
           0
         );
         setTotal(totalCost);
-        console.log("totalCost", totalCost);
       }
     }
     basketSet();
@@ -102,7 +105,20 @@ export default function RootLayout() {
     return null;
   }
 
-  return token ? <RootLayoutNav /> : <LoginScreenWithQueryClient />;
+  NetInfo.fetch().then((state) => {
+    console.log("Is connected?", state.isConnected);
+    setNetwork(state.isConnected);
+  });
+
+  if (!network) {
+    if (token) {
+      return <RootLayoutNav />;
+    } else {
+      return <LoginScreenWithQueryClient />;
+    }
+  } else {
+    return <NoNetwork NetInfo={NetInfo} setNetwork={setNetwork} />;
+  }
 }
 
 Notifications.setNotificationHandler({
@@ -112,9 +128,10 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
+
 function RootLayoutNav() {
-  const navigation = useNavigation();
   // Notification Setup
+  const navigation = useNavigation();
   useEffect(() => {
     console.log("Registering for push notifications...");
     registerForPushNotificationsAsync()
@@ -139,7 +156,6 @@ function RootLayoutNav() {
     if (Device.isDevice) {
       const { status: existingStatus } =
         await Notifications.getPermissionsAsync();
-      console.log(existingStatus);
 
       let finalStatus = existingStatus;
       if (existingStatus !== "granted") {

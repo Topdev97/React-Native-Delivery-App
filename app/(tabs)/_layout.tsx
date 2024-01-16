@@ -1,12 +1,13 @@
-import { Tabs, useNavigation } from "expo-router";
 import Colors from "../../constants/Colors";
+import { Tabs, useNavigation } from "expo-router";
 
-import CustomHeader from "@/components/CustomHeader";
-import { Ionicons } from "@expo/vector-icons";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { Icon } from "@/constants/utils";
-import { View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+
 import useBasketStore from "@/store/basketStore";
+import CustomHeader from "@/components/CustomHeader";
+
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof Ionicons>["name"];
