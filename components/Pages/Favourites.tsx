@@ -19,6 +19,7 @@ import useBasketStore from "@/store/basketStore";
 import { getUserInfo } from "@/core/services/home";
 
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { RefreshControl } from "react-native";
 
 export default function favourites() {
   const navigation = useNavigation();
@@ -31,7 +32,10 @@ export default function favourites() {
   return (
     <View style={{ backgroundColor: Colors.primaryBg, flex: 1 }}>
       {userInfo?.data?.favoriteMenus?.length > 0 ? (
-        <MenuCards data={userInfo?.data?.favoriteMenus} />
+        <MenuCards
+          data={userInfo?.data?.favoriteMenus}
+          refetch={userInfo.refetch}
+        />
       ) : (
         <View style={styles.container}>
           <View style={styles.imageContainer}>
@@ -63,7 +67,7 @@ export default function favourites() {
 }
 
 const MenuCards = (props: any) => {
-  const { data } = props;
+  const { data, refetch } = props;
   const navigation = useNavigation();
 
   function nav(data: any) {
@@ -71,6 +75,8 @@ const MenuCards = (props: any) => {
     navigation.canGoBack(true);
   }
   const { addProduct } = useBasketStore();
+  const [refreshing, setRefreshing] = React.useState(false);
+
   const addToCart = (data: any) => {
     addProduct(data);
     ToastAndroid.showWithGravity(
@@ -79,6 +85,15 @@ const MenuCards = (props: any) => {
       ToastAndroid.CENTER
     );
   };
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={true}
@@ -86,7 +101,10 @@ const MenuCards = (props: any) => {
         paddingVertical: 24,
         alignItems: "center",
         backgroundColor: Colors.primaryBg,
-      }}>
+      }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       {data.map((obj: any, index: any) => (
         <View key={index}>
           <View>

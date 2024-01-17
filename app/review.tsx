@@ -75,7 +75,7 @@ const Review = () => {
 
   const onSubmitDelivery = () => {
     const payload = {
-      ReviewType: "Delivery Review",
+      ReviewType: "Delivery",
       reviewTitle: title,
       review_description: description,
       stars: rating,
@@ -96,7 +96,7 @@ const Review = () => {
 
   const onSubmitHotel = () => {
     const payload = {
-      ReviewType: "Food Review",
+      ReviewType: "Food",
       reviewTitle: title,
       review_description: description,
       stars: rating,

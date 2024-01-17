@@ -18,14 +18,17 @@ import {
   ToastAndroid,
   Alert,
 } from "react-native";
+
 import useBasketStore from "@/store/basketStore";
 import {
   createAddress,
   getUserInfo,
   updateUserAddress,
 } from "@/core/services/home";
+
 import { useQueryClient } from "@tanstack/react-query";
 import { queries } from "@/core/constants/queryKeys";
+
 import Loading from "@/components/Pages/Loading";
 import useCommonStore from "@/store/commonStore";
 
@@ -195,10 +198,8 @@ export default function AddressForm() {
                 <Text style={styles.inputLabel}>House No:</Text>
                 <TextInput
                   style={styles.input}
-                  value={formData?.house_no?.toString() || ""}
-                  onChangeText={(text) =>
-                    handleChange("house_no", Number(text))
-                  }
+                  value={formData?.house_no || ""}
+                  onChangeText={(text) => handleChange("house_no", text)}
                 />
               </View>
               <View style={styles.formGroup}>
