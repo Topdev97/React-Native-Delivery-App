@@ -32,18 +32,17 @@ const NoNetwork = (props: any) => {
             fontSize: 25,
             fontWeight: "700",
             textAlign: "center",
-            marginTop: 10,
-            marginBottom: 30,
+            marginVertical: 10,
           }}>
           No Internet Connection !
         </Text>
-        <View style={{ width: "40%" }}>
-          <TouchableOpacity
-            style={{ ...styles.logoutButton }}
-            onPress={handleClick}>
+        <View style={{ width: "90%" }}>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleClick}>
             <View style={styles.logoutButtonContent}>
-              <Icon name={"reload"} size={18} color={Colors.primary} />
-              <Text style={styles.logoutButtonText}>Retry</Text>
+              {/* <Icon name={"reload"} size={18} color={Colors.primary} /> */}
+              <Text style={styles.logoutButtonText}>
+                Verify Your Connection or Try to Reopen the Application
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -66,11 +65,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primaryBg,
     width: "100%",
     padding: 15,
+    borderRadius: 100,
     paddingVertical: 12,
     alignItems: "center",
-    borderColor: Colors.primary,
-    borderWidth: 1,
-    borderRadius: 100,
   },
   logoutButtonContent: {
     flexDirection: "row",
@@ -78,11 +75,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   logoutButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
-    color: Colors.primary,
     textAlign: "center",
     marginLeft: 8,
+    color: Colors.primary,
   },
   flex: {
     flex: 1,

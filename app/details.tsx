@@ -34,7 +34,7 @@ const Details = () => {
   const queryClient = useQueryClient();
 
   const [isFav, setIsFav] = useState();
-  const { items, total, addProduct, products } = useBasketStore();
+  const { total, addProduct, products } = useBasketStore();
 
   const data = route?.params?.data;
   const allMenus = getAllMenus({});
@@ -54,7 +54,7 @@ const Details = () => {
         queryKey: queries.home.userAddress.queryKey,
       });
       ToastAndroid.showWithGravity(
-        "Favourites updated successfully",
+        "Favourites updated",
         ToastAndroid.SHORT,
         ToastAndroid.CENTER
       );
@@ -184,6 +184,7 @@ const Details = () => {
           </SafeAreaView>
         </View>
       )}
+      <View style={{ height: 82 }} />
     </>
   );
 };

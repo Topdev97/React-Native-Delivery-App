@@ -22,15 +22,18 @@ export default function Carousel(props: any) {
           horizontal={true}
           pagingEnabled
           showsHorizontalScrollIndicator={false}
-          onScroll={Animated.event([
-            {
-              nativeEvent: {
-                contentOffset: {
-                  x: scrollX,
+          onScroll={Animated.event(
+            [
+              {
+                nativeEvent: {
+                  contentOffset: {
+                    x: scrollX,
+                  },
                 },
               },
-            },
-          ])}
+            ],
+            { useNativeDriver: false }
+          )}
           scrollEventThrottle={1}>
           {data?.map((data: any, imageIndex: any) => {
             return (

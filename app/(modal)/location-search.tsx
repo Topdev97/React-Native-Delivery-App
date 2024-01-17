@@ -216,7 +216,8 @@ const LocationSearch = () => {
           <Callout style={{ width: 250 }}>
             <Text
               style={{ fontSize: 13, fontWeight: "800", textAlign: "center" }}>
-              Press and hold the marker to update your location.
+              Press and hold the Marker to update your Location.Zoom out to see
+              your Location Exactly.
             </Text>
           </Callout>
         </Marker>

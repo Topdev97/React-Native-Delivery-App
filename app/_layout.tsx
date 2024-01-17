@@ -22,7 +22,7 @@ import useBasketStore from "@/store/basketStore";
 import QueryClient from "@/core/lib/QueryClient";
 
 import * as Device from "expo-device";
-import { Platform } from "react-native";
+import { LogBox, Platform } from "react-native";
 
 import * as Notifications from "expo-notifications";
 import { setAuthHeader } from "@/core/lib/AxiosClient";
@@ -48,11 +48,14 @@ export default function RootLayout() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
     ...FontAwesome.font,
   });
+
   const [network, setNetwork] = useState<any>(true);
   const { token, setToken, products, setProducts, setTotal } = useBasketStore();
 
+  //Disable this While Go For Production
+  LogBox.ignoreAllLogs();
+
   let result;
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
   }, [error]);
@@ -110,7 +113,7 @@ export default function RootLayout() {
     setNetwork(state.isConnected);
   });
 
-  if (!network) {
+  if (network) {
     if (token) {
       return <RootLayoutNav />;
     } else {
