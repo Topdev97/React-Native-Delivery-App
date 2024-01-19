@@ -1,12 +1,3 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "expo-router";
-
-import * as Location from "expo-location";
-import Colors from "@/constants/Colors";
-
-import { Icon } from "@/constants/utils";
-import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
-
 import {
   View,
   Text,
@@ -14,17 +5,23 @@ import {
   StyleSheet,
   ScrollView,
   Pressable,
-  Linking,
   ToastAndroid,
   Alert,
 } from "react-native";
 
-import useBasketStore from "@/store/basketStore";
 import {
   createAddress,
   getUserInfo,
   updateUserAddress,
 } from "@/core/services/home";
+
+import React, { useEffect, useState } from "react";
+
+import { Link } from "expo-router";
+import Colors from "@/constants/Colors";
+
+import { Icon } from "@/constants/utils";
+import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 
 import { useQueryClient } from "@tanstack/react-query";
 import { queries } from "@/core/constants/queryKeys";
@@ -39,8 +36,6 @@ export default function AddressForm() {
   const [editMode, setEditMode] = useState(false);
 
   const user = getUserInfo({});
-  const { currentLocation, setCurrentLocation } = useBasketStore();
-
   const { geoPoint } = useCommonStore();
 
   const addressMutate = updateUserAddress({
@@ -92,8 +87,21 @@ export default function AddressForm() {
   };
 
   const handleSubmit = () => {
-    const hnumber = Number(formData?.house_no);
-    if (!geoPoint.lat && !geoPoint.lon) {
+    if (
+      !formData?.house_no ||
+      !formData?.street_address ||
+      !formData?.area ||
+      !formData?.landmark ||
+      !formData?.city ||
+      !formData?.state ||
+      !formData?.pincode
+    ) {
+      ToastAndroid.showWithGravity(
+        "Please complete all the necessary fields",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    } else if (!geoPoint.lat && !geoPoint.lon) {
       Alert.alert(
         "Alert",
         `Please choose your Geo Location by clicking the "Select on Map"`,
@@ -102,7 +110,6 @@ export default function AddressForm() {
       );
     } else {
       newAddress.mutate({
-        house_no: hnumber,
         user_id: user?.data?.id,
         address_type: "Home",
         ...geoPoint,
@@ -113,55 +120,31 @@ export default function AddressForm() {
   };
 
   const handleUpdate = () => {
-    const hnumber = Number(formData?.house_no);
-    delete formData?.user_id;
-
-    addressMutate.mutate({
-      Address: { house_no: hnumber, ...formData },
-    });
-    setEditMode(false);
+    if (
+      !formData?.house_no ||
+      !formData?.street_address ||
+      !formData?.area ||
+      !formData?.landmark ||
+      !formData?.city ||
+      !formData?.state ||
+      !formData?.pincode
+    ) {
+      ToastAndroid.showWithGravity(
+        "Please complete all the necessary fields",
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    } else {
+      delete formData?.user_id;
+      addressMutate.mutate({
+        Address: formData,
+      });
+      setEditMode(false);
+    }
   };
 
   const handleEditClick = () => {
     setEditMode(true);
-  };
-
-  const onMapPress = () => {
-    if (currentLocation) {
-      const url = `https://www.google.com/maps?q=${currentLocation}`;
-
-      Linking.canOpenURL(url).then((supported) => {
-        if (supported) {
-          Linking.openURL(url);
-        } else {
-          null;
-        }
-      });
-    } else if (!currentLocation) {
-      getLocation();
-    }
-  };
-
-  const fetchGeoData = async (latitude: any, longitude: any) => {
-    setCurrentLocation(`${latitude},${longitude}`);
-    handleChange("latitude", latitude);
-    handleChange("longitude", longitude);
-  };
-
-  const getLocation = async () => {
-    try {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-
-      if (status !== "granted") {
-        console.error("Location permission denied");
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync({});
-      fetchGeoData(location.coords.latitude, location.coords.longitude);
-    } catch (error) {
-      console.error("Error requesting location permission:", error);
-    }
   };
 
   useEffect(() => {
@@ -259,53 +242,21 @@ export default function AddressForm() {
                     alignItems: "center",
                   }}>
                   <View>
-                    <Text
-                      style={{
-                        ...styles.inputLabel,
-                        textAlign: "center",
-                        fontWeight: "800",
-                        fontSize: 16,
-                        color: "black",
-                      }}>
+                    <Text style={{ ...styles.inputLabel, ...styles.geo }}>
                       Geolocation
                     </Text>
-                    {/* <Link<{ pathname: any; params: { id: any } }>
-                      href={{
-                        pathname: "/(modal)/location-search",
-                        params: { id: formData?.id || "" },
-                      }}
-                      style={{ marginBottom: 4, marginTop: 6 }}>
-                      <Text
-                        style={{
-                          ...styles.inputLabel,
-                          color: "#0000EE",
-                          fontWeight: "800",
-                          fontSize: 16,
-                        }}
-                        onPress={onMapPress}
-                        disabled={true}>
-                        Click Below to Set Your Map Location
-                      </Text>
-                    </Link> */}
                   </View>
                   <View
                     style={{
                       flexDirection: "row",
+                      marginTop: 12,
                     }}>
                     <Link<{ pathname: any; params: { id: any } }>
                       href={{
                         pathname: "/(modal)/location-search",
                         params: { id: formData?.id || "" },
                       }}
-                      style={{
-                        flexDirection: "row",
-                        paddingVertical: 10,
-                        paddingHorizontal: 60,
-                        marginRight: 10,
-                        borderColor: "#ccc",
-                        borderWidth: 1,
-                        borderRadius: 6,
-                      }}>
+                      style={styles.selectOnMap}>
                       <View style={{ flexDirection: "row" }}>
                         <Text style={styles.editText}>Select on Map </Text>
                         <Icon
@@ -388,5 +339,21 @@ const styles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     padding: 5,
+  },
+  selectOnMap: {
+    flexDirection: "row",
+    paddingVertical: 10,
+    paddingHorizontal: 60,
+    marginRight: 10,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 6,
+  },
+  geo: {
+    textAlign: "center",
+    fontWeight: "800",
+    fontSize: 16,
+    color: "black",
+    marginVertical: 8,
   },
 });

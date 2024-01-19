@@ -121,26 +121,23 @@ const Basket = () => {
   }
 
   useEffect(() => {
+    const loc = pincode?.data?.some(
+      (obj) => obj.code == userInfo?.data?.Address?.[0]?.pincode
+    );
+
     navigation.setOptions({
       headerTitle: `Cart`,
     });
 
     if (userInfo.data && pincode.data) {
-      setLocationCheck(
-        pincode?.data?.some(
-          (obj) => obj.code == userInfo?.data?.Address?.[0]?.pincode
-        )
-      );
+      setLocationCheck(loc);
+      if (!loc) {
+        navigation.setOptions({
+          headerTitle: ``,
+        });
+      }
     }
   }, [userInfo.data, pincode.data]);
-
-  useEffect(() => {
-    if (!locationCheck) {
-      navigation.setOptions({
-        headerTitle: ``,
-      });
-    }
-  }, [locationCheck]);
 
   return (
     <View style={{ flex: 1, backgroundColor: Colors.primaryBg }}>

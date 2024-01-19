@@ -126,7 +126,7 @@ export default function OrderHistory() {
                                   : Colors.pending,
                             }}>
                             {item?.orderStatus == "new"
-                              ? "Accepted"
+                              ? "Pending"
                               : item?.orderStatus == "picked"
                               ? "On the way"
                               : item?.orderStatus.charAt(0).toUpperCase() +

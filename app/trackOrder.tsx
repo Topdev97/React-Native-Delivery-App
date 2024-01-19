@@ -105,7 +105,7 @@ const OrderTrackingScreen = () => {
           <Text style={styles.orderStatusSubText}>
             {" "}
             {item?.orderStatus == "new"
-              ? "Accepted"
+              ? "Pending"
               : item?.orderStatus.charAt(0).toUpperCase() +
                 item?.orderStatus.slice(1)}
           </Text>
@@ -117,8 +117,15 @@ const OrderTrackingScreen = () => {
       </View>
       <View style={{ height: 125 }}>
         <ProgressSteps {...progressStepsobj}>
-          <ProgressStep label="Accepted" nextBtnText="" previousBtnText="" />
-          <ProgressStep label="Preparing" nextBtnText="" previousBtnText="" />
+          <ProgressStep label="Pending" nextBtnText="" previousBtnText="" />
+          <ProgressStep
+            label={
+              item?.orderStatus.charAt(0).toUpperCase() +
+              item?.orderStatus.slice(1)
+            }
+            nextBtnText=""
+            previousBtnText=""
+          />
           <ProgressStep label="On the way" nextBtnText="" previousBtnText="" />
           <ProgressStep
             label={item?.orderStatus == "cancelled" ? "Cancelled" : "Delivered"}
