@@ -9,5 +9,6 @@ export const homeQueries = createQueryKeys('home', {
   userOrders:null,
   topPicks:null,
   restaurent:null,
-  order:null
+  order:null,
+  pincodes:null
 })

@@ -101,7 +101,7 @@ export default function CatMenu() {
                 <TouchableOpacity
                   style={styles.fullButton}
                   onPress={() => basketNav()}>
-                  <Text style={styles.basket}>{products.length}</Text>
+                  <Text style={styles.basket}>{products.length} Qty</Text>
                   <Text style={styles.footerText}>View Basket</Text>
                   <Text style={styles.basketTotal}>
                     ₹{(total + FEES.service + FEES.delivery)?.toFixed(2)}
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   },
   basket: {
     color: "#fff",
-    backgroundColor: "#19AA86",
+    backgroundColor: Colors.primary,
     fontWeight: "bold",
     padding: 8,
     borderRadius: 2,

@@ -108,6 +108,11 @@ export const postReviews = (data:any) =>
   url: ENV.BASE_URL + `/orders/${id}`,
 })
 
+export const getPincode=()=>
+GET({
+url: ENV.BASE_URL + `/pincodes`,
+})
+
 export const test=()=>
 GET({
   url: ENV.BASE_URL + 'posts',

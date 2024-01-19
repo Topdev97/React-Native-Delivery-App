@@ -66,6 +66,13 @@ export const getOrderById = (options: any, id: any) =>
     ...options,
   });
 
+export const getPincodes = (options: any) =>
+  useQuery({
+    queryKey: queries.home.pincodes.queryKey,
+    queryFn: API.getPincode,
+    ...options,
+  });
+
 export const updateFavMenus = (options: any) =>
   useMutation({ mutationFn: API.upateFav, ...options });
 

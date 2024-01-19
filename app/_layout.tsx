@@ -27,6 +27,8 @@ import { setAuthHeader } from "@/core/lib/AxiosClient";
 import NoNetwork from "@/components/NoNetwork";
 import NetInfo from "@react-native-community/netinfo";
 
+import { LogBox } from "react-native";
+
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -50,7 +52,7 @@ export default function RootLayout() {
   const { token, setToken, products, setProducts, setTotal } = useBasketStore();
 
   //Disable this While Go For Production
-  // LogBox.ignoreAllLogs();
+  LogBox.ignoreAllLogs();
 
   let result;
   useEffect(() => {

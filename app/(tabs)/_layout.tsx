@@ -38,7 +38,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="two"
         options={{
-          title: "Basket",
+          title: "Cart",
           tabBarBadge: products.length > 0 ? products.length : null,
           headerLeft: () => (
             <TouchableOpacity

@@ -10,32 +10,35 @@ import {
   ToastAndroid,
 } from "react-native";
 
-import { Link, useNavigation } from "expo-router";
+import { useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 
 import Colors from "@/constants/Colors";
 import useBasketStore from "@/store/basketStore";
 
-import SwipeableRow from "@/components/SwipeableRow";
-import ConfettiCannon from "react-native-confetti-cannon";
+import { Ionicons } from "@expo/vector-icons";
+import { queries } from "@/core/constants/queryKeys";
 
 import { Icon } from "@/constants/utils";
-import { getUserInfo, postOrder } from "@/core/services/home";
+import NoPincode from "@/components/NoPincode";
 
-import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
 import { useQueryClient } from "@tanstack/react-query";
-import { queries } from "@/core/constants/queryKeys";
-import { Ionicons } from "@expo/vector-icons";
+import HalfBottomButton from "@/components/Buttons/HalfBottomButton";
+
+import { getPincodes, getUserInfo, postOrder } from "@/core/services/home";
+import NoAddress from "@/components/NoAddress";
 
 const Basket = () => {
   const userInfo = getUserInfo({});
-  const [order, setOrder] = useState(false);
+  const pincode = getPincodes({});
 
   const navigation = useNavigation();
   const queryClient = useQueryClient();
 
   const { clearCart } = useBasketStore();
+
   const [selectedTab, setSelectedTab] = useState("COD");
+  const [locationCheck, setLocationCheck] = useState(false);
 
   const { products, total, reduceProduct, addProduct } = useBasketStore();
 
@@ -71,6 +74,7 @@ const Basket = () => {
       navigation.canGoBack(true);
       clearCart();
     },
+
     onError: () => {
       ToastAndroid.showWithGravity(
         "Something Went Wrong",
@@ -116,260 +120,283 @@ const Basket = () => {
     navigation.goBack();
   }
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: `Cart`,
+    });
+
+    if (userInfo.data && pincode.data) {
+      setLocationCheck(
+        pincode?.data?.some(
+          (obj) => obj.code == userInfo?.data?.Address?.[0]?.pincode
+        )
+      );
+    }
+  }, [userInfo.data, pincode.data]);
+
+  useEffect(() => {
+    if (!locationCheck) {
+      navigation.setOptions({
+        headerTitle: ``,
+      });
+    }
+  }, [locationCheck]);
+
   return (
-    <>
-      {order && (
-        <ConfettiCannon
-          count={200}
-          origin={{ x: -10, y: 0 }}
-          fallSpeed={2500}
-          fadeOut={true}
-          autoStart={true}
-        />
-      )}
-      {order && (
-        <View style={{ marginTop: "50%", padding: 20, alignItems: "center" }}>
-          <Text
-            style={{ fontSize: 24, fontWeight: "bold", textAlign: "center" }}>
-            Thank you for your order!
-          </Text>
-          <Link href={"/"} asChild>
-            <TouchableOpacity style={styles.orderBtn}>
-              <Text style={styles.footerText}>New order</Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
-      )}
-      {!order && (
+    <View style={{ flex: 1, backgroundColor: Colors.primaryBg }}>
+      {userInfo?.data?.Address?.length <= 0 ? (
+        <NoAddress />
+      ) : (
         <>
-          {products.length > 0 ? (
-            <FlatList
-              style={{ backgroundColor: "white" }}
-              data={products}
-              ListHeaderComponent={
-                <View
-                  style={{
-                    ...styles.flex,
-                    ...styles.section,
-                    marginHorizontal: 8,
-                  }}>
-                  <Text style={styles.items}>Items</Text>
-                </View>
-              }
-              ItemSeparatorComponent={() => (
-                <View
-                  style={{
-                    height: 1,
-                    backgroundColor: Colors.grey,
-                  }}
-                />
-              )}
-              renderItem={({ item }) => (
-                <View>
-                  <View style={styles.row}>
-                    <Text
-                      style={{
-                        width: "60%",
-                        fontSize: 18,
-                        fontWeight: "700",
-                      }}>
-                      {item.name}
-                    </Text>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        width: "40%",
-                        paddingRight: 10,
-                        justifyContent: "space-between",
-                      }}>
-                      <>
-                        <Ionicons
-                          name="remove"
-                          color="#bebfc5"
-                          size={22}
-                          onPress={() => reduceProduct(item)}
-                        />
-                        <Text style={styles.quantity}>{item.quantity}</Text>
-                        <Ionicons
-                          name="add"
-                          color="#60B246"
-                          size={22}
-                          onPress={() => addProduct(item)}
-                        />
-                      </>
-                      <Text style={{ fontSize: 18, fontWeight: "600" }}>
-                        ₹{item.price * item.quantity}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              )}
-              ListFooterComponent={
-                <View style={{ marginHorizontal: 8 }}>
-                  <View
-                    style={{ height: 1, backgroundColor: Colors.grey }}></View>
-                  <View style={{ ...styles.totalRow, marginTop: 16 }}>
-                    <Text style={styles.total}>Subtotal</Text>
-                    <Text style={{ fontSize: 18 }}>₹{total}</Text>
-                  </View>
-                  <View style={styles.totalRow}>
-                    <Text style={styles.total}>Service fee</Text>
-                    <Text style={{ fontSize: 18 }}>₹{FEES.service}</Text>
-                  </View>
-
-                  <View style={styles.totalRow}>
-                    <Text style={styles.total}>Delivery fee</Text>
-                    <Text style={{ fontSize: 18 }}>₹{FEES.delivery}</Text>
-                  </View>
-
-                  <View style={styles.totalRow}>
-                    <Text style={{ ...styles.total, fontWeight: "800" }}>
-                      Order Total
-                    </Text>
-                    <Text style={styles.totalText}>
-                      ₹{(total + FEES.service + FEES.delivery)?.toFixed(2)}
-                    </Text>
-                  </View>
-                  <View style={styles.totalRow}>
-                    <Text style={{ ...styles.total, fontWeight: "700" }}>
-                      Payment Method
-                    </Text>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        width: "40%",
-                        borderColor: Colors.medium,
-                        borderWidth: 1,
-                        padding: 0.8,
-                        borderRadius: 2,
-                        marginTop: 8,
-                      }}>
-                      <TouchableOpacity
-                        onPress={() => setSelectedTab("COD")}
-                        style={{
-                          width: "50%",
-                          alignItems: "center",
-                          backgroundColor:
-                            selectedTab === "COD" ? Colors.primary : "white",
-                          borderRadius: 2,
-                        }}>
-                        <Text
-                          style={{
-                            fontSize: 17,
-                            color: selectedTab === "COD" ? "white" : "black",
-                            fontWeight: "800",
-                          }}>
-                          COD
-                        </Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => setSelectedTab("Online")}
-                        style={{
-                          width: "50%",
-                          alignItems: "center",
-                          backgroundColor:
-                            selectedTab === "Online" ? Colors.primary : "white",
-                        }}>
-                        <Text
-                          style={{
-                            fontSize: 17,
-                            color: selectedTab === "Online" ? "white" : "black",
-                            fontWeight: "800",
-                          }}>
-                          Online
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={{ paddingHorizontal: 10 }}>
-                    <Text style={styles.currentAddress}>
-                      Delivery Address :
-                    </Text>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "flex-start",
-                        justifyContent: "space-between",
-                      }}>
-                      <Text style={styles.currentAddressText}>
-                        {userInfo?.data?.Address?.length <= 0 ? (
-                          "Clikc Add to Add Your Address  👉"
-                        ) : (
-                          <>
-                            {userInfo?.data?.Address?.[0]?.house_no},{" "}
-                            {userInfo?.data?.Address?.[0]?.street_address},{" "}
-                            {userInfo?.data?.Address?.[0]?.area},{" "}
-                            {userInfo?.data?.Address?.[0]?.landmark},{" "}
-                            {userInfo?.data?.Address?.[0]?.city},{" "}
-                            {userInfo?.data?.Address?.[0]?.state}-{" "}
-                            {userInfo?.data?.Address?.[0]?.pincode}
-                          </>
-                        )}
-                      </Text>
-
-                      <Pressable
-                        style={styles.editButton}
-                        onPress={goToAdrress}>
-                        <Text style={styles.text}>
-                          {userInfo?.data?.Address?.length < 0
-                            ? "Add "
-                            : "Edit "}
-                          <Icon name="create-outline" size={22} />
-                        </Text>
-                      </Pressable>
-                    </View>
-                  </View>
-                </View>
-              }
+          {!locationCheck ? (
+            <NoPincode
+              pin={userInfo?.data?.Address?.[0]?.pincode}
+              area={userInfo?.data?.Address?.[0]?.area}
             />
           ) : (
-            <View style={styles.imageContainer}>
-              <Image
-                style={styles.emptyIllustration}
-                source={require("@/assets/images/empty-basket.png")}
-                resizeMode="contain"
-              />
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  marginTop: 20,
-                }}>
-                Basket is Empty
-              </Text>
-            </View>
-          )}
-          {products.length > 0 ? (
             <>
-              {userInfo?.data?.Address?.length <= 0 ? (
-                <HalfBottomButton
-                  title="Order Now"
-                  handleClick={alertAddress}
-                  width={"45%"}
+              {products.length > 0 ? (
+                <FlatList
+                  style={{ backgroundColor: "white" }}
+                  data={products}
+                  ListHeaderComponent={
+                    <View
+                      style={{
+                        ...styles.flex,
+                        ...styles.section,
+                        marginHorizontal: 8,
+                      }}>
+                      <Text style={styles.items}>Items</Text>
+                    </View>
+                  }
+                  ItemSeparatorComponent={() => (
+                    <View
+                      style={{
+                        height: 1,
+                        backgroundColor: Colors.grey,
+                      }}
+                    />
+                  )}
+                  renderItem={({ item }) => (
+                    <View>
+                      <View style={styles.row}>
+                        <Text
+                          style={{
+                            width: "60%",
+                            fontSize: 18,
+                            fontWeight: "700",
+                          }}>
+                          {item.name}
+                        </Text>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            width: "40%",
+                            paddingRight: 10,
+                            justifyContent: "space-between",
+                          }}>
+                          <>
+                            <Ionicons
+                              name="remove"
+                              color="#bebfc5"
+                              size={22}
+                              onPress={() => reduceProduct(item)}
+                            />
+                            <Text style={styles.quantity}>{item.quantity}</Text>
+                            <Ionicons
+                              name="add"
+                              color="#60B246"
+                              size={22}
+                              onPress={() => addProduct(item)}
+                            />
+                          </>
+                          <Text style={{ fontSize: 18, fontWeight: "600" }}>
+                            ₹{item.price * item.quantity}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  )}
+                  ListFooterComponent={
+                    <View style={{ marginHorizontal: 8 }}>
+                      <View
+                        style={{
+                          height: 1,
+                          backgroundColor: Colors.grey,
+                        }}></View>
+                      <View style={{ ...styles.totalRow, marginTop: 16 }}>
+                        <Text style={styles.total}>Subtotal</Text>
+                        <Text style={{ fontSize: 18 }}>₹{total}</Text>
+                      </View>
+                      <View style={styles.totalRow}>
+                        <Text style={styles.total}>Service fee</Text>
+                        <Text style={{ fontSize: 18 }}>₹{FEES.service}</Text>
+                      </View>
+
+                      <View style={styles.totalRow}>
+                        <Text style={styles.total}>Delivery fee</Text>
+                        <Text style={{ fontSize: 18 }}>₹{FEES.delivery}</Text>
+                      </View>
+
+                      <View style={styles.totalRow}>
+                        <Text style={{ ...styles.total, fontWeight: "800" }}>
+                          Order Total
+                        </Text>
+                        <Text style={styles.totalText}>
+                          ₹{(total + FEES.service + FEES.delivery)?.toFixed(2)}
+                        </Text>
+                      </View>
+                      <View style={styles.totalRow}>
+                        <Text style={{ ...styles.total, fontWeight: "700" }}>
+                          Payment Method
+                        </Text>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            width: "40%",
+                            borderColor: Colors.medium,
+                            borderWidth: 1,
+                            padding: 0.8,
+                            borderRadius: 2,
+                            marginTop: 8,
+                          }}>
+                          <TouchableOpacity
+                            onPress={() => setSelectedTab("COD")}
+                            style={{
+                              width: "50%",
+                              alignItems: "center",
+                              backgroundColor:
+                                selectedTab === "COD"
+                                  ? Colors.primary
+                                  : "white",
+                              borderRadius: 2,
+                            }}>
+                            <Text
+                              style={{
+                                fontSize: 17,
+                                color:
+                                  selectedTab === "COD" ? "white" : "black",
+                                fontWeight: "800",
+                              }}>
+                              COD
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={() => setSelectedTab("Online")}
+                            style={{
+                              width: "50%",
+                              alignItems: "center",
+                              backgroundColor:
+                                selectedTab === "Online"
+                                  ? Colors.primary
+                                  : "white",
+                            }}>
+                            <Text
+                              style={{
+                                fontSize: 17,
+                                color:
+                                  selectedTab === "Online" ? "white" : "black",
+                                fontWeight: "800",
+                              }}>
+                              Online
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                      <Pressable
+                        style={{ paddingHorizontal: 10 }}
+                        onPress={goToAdrress}>
+                        <Text style={styles.currentAddress}>
+                          Delivery Address :
+                        </Text>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "flex-start",
+                            justifyContent: "space-between",
+                          }}>
+                          <Text style={styles.currentAddressText}>
+                            {userInfo?.data?.Address?.length <= 0 ? (
+                              "Clikc Add to Add Your Address  👉"
+                            ) : (
+                              <>
+                                {userInfo?.data?.Address?.[0]?.house_no},{" "}
+                                {userInfo?.data?.Address?.[0]?.street_address},{" "}
+                                {userInfo?.data?.Address?.[0]?.area},{" "}
+                                {userInfo?.data?.Address?.[0]?.landmark},{" "}
+                                {userInfo?.data?.Address?.[0]?.city},{" "}
+                                {userInfo?.data?.Address?.[0]?.state}-{" "}
+                                {userInfo?.data?.Address?.[0]?.pincode}
+                              </>
+                            )}
+                          </Text>
+
+                          <Pressable
+                            style={styles.editButton}
+                            onPress={goToAdrress}>
+                            <Text style={styles.text}>
+                              <Icon name="create-outline" size={22} />
+                            </Text>
+                          </Pressable>
+                        </View>
+                      </Pressable>
+                    </View>
+                  }
                 />
               ) : (
+                <View style={styles.imageContainer}>
+                  <Image
+                    style={styles.emptyIllustration}
+                    source={require("@/assets/images/empty-basket.png")}
+                    resizeMode="contain"
+                  />
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: "bold",
+                      textAlign: "center",
+                      marginTop: 20,
+                    }}>
+                    Basket is Empty
+                  </Text>
+                </View>
+              )}
+              {products.length > 0 ? (
+                <>
+                  {userInfo?.data?.Address?.length <= 0 ? (
+                    <HalfBottomButton
+                      title="Order Now"
+                      handleClick={alertAddress}
+                      width={"45%"}
+                    />
+                  ) : (
+                    <HalfBottomButton
+                      title={"Order Now"}
+                      nav={selectedTab == "Online" && "/razorpay"}
+                      handleClick={orderWithCOD}
+                      data={orderDetails}
+                      orderTotal={(
+                        total +
+                        FEES.service +
+                        FEES.delivery
+                      ).toFixed(2)}
+                      width={"50%"}
+                    />
+                  )}
+                </>
+              ) : (
                 <HalfBottomButton
-                  title={"Order Now"}
-                  nav={selectedTab == "Online" && "/razorpay"}
-                  handleClick={orderWithCOD}
-                  data={orderDetails}
-                  orderTotal={(total + FEES.service + FEES.delivery).toFixed(2)}
-                  width={"50%"}
+                  title="Order Now"
+                  handleClick={nav}
+                  width={"45%"}
                 />
               )}
             </>
-          ) : (
-            <HalfBottomButton
-              title="Order Now"
-              handleClick={nav}
-              width={"45%"}
-            />
           )}
         </>
       )}
-    </>
+    </View>
   );
 };
 
@@ -392,7 +419,7 @@ const styles = StyleSheet.create({
   },
   editButton: {
     backgroundColor: Colors.primary,
-    width: "25%",
+    width: "10%",
     borderRadius: 4,
   },
   text: {
